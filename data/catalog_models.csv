@@ -1,0 +1,293 @@
+model_id,size,name,category_id,apple_model,identifier,colors,storage_options,memory_options,chip_options,years,specs
+macbook-neo,"13""",MacBook Neo,mac,,,"silber, zitrus, indigo, rosa","256 GB, 512 GB, 1 TB, 2 TB","16 GB, 24 GB, 32 GB","A18 Pro, A18 Pro mit Touch ID","2025, 2026","Größe und Gewicht: 304,1 × 212,4 × 15,6 mm / 1.400 g
+Display: 13,6‑Zoll‑Liquid‑Retina mit True Tone
+Auflösung: 2560 × 1664, 224 Pixel pro Zoll
+Helligkeit: 500 Nits
+Farbraum: P3 Wide Color
+Kamera: 1080p FaceTime‑HD‑Kamera
+Audio: Vier Lautsprecher, drei Mikrofone
+Authentifizierung: Touch ID
+Anschlüsse: MagSafe, zwei Thunderbolt / USB 4, 3,5‑mm‑Kopfhörer
+Netzwerk: WLAN 6E, Bluetooth 5.3
+Batterie: Bis zu 18 Stunden Videowiedergabe
+Betriebssystem: macOS"
+macbook-neo,"15""",MacBook Neo,mac,,,"silber, zitrus, indigo, rosa","256 GB, 512 GB, 1 TB, 2 TB","16 GB, 24 GB, 32 GB","A18 Pro, A18 Pro mit Touch ID","2025, 2026","Größe und Gewicht: 340,4 × 237,6 × 15,6 mm / 1.600 g
+Display: 15,3‑Zoll‑Liquid‑Retina mit True Tone
+Auflösung: 2880 × 1864, 224 Pixel pro Zoll
+Helligkeit: 500 Nits
+Farbraum: P3 Wide Color
+Kamera: 1080p FaceTime‑HD‑Kamera
+Audio: Vier Lautsprecher, drei Mikrofone
+Authentifizierung: Touch ID
+Anschlüsse: MagSafe, zwei Thunderbolt / USB 4, 3,5‑mm‑Kopfhörer
+Netzwerk: WLAN 6E, Bluetooth 5.3
+Batterie: Bis zu 18 Stunden Videowiedergabe
+Betriebssystem: macOS"
+macbook-air,"13""",MacBook Air,mac,"A3240 (M4, 2025) und Vorgänger je Baujahr","Mac16,12 (M4, 13"")","mitternacht, polarstern, himmelblau, silber","256 GB, 512 GB, 1 TB, 2 TB","8 GB, 16 GB, 24 GB","M2, M3, M4","2022, 2023, 2024, 2025","Größe und Gewicht: 304,1 × 215,0 × 11,3 mm / 1.240 g
+Display: 13,6‑Zoll‑Liquid‑Retina mit True Tone
+Auflösung: 2560 × 1664, 224 Pixel pro Zoll
+Helligkeit: 500 Nits
+Farbraum: P3 Wide Color
+Kamera: 1080p FaceTime‑HD‑Kamera
+Audio: Vier Lautsprecher, drei Mikrofone
+Authentifizierung: Touch ID
+Anschlüsse: MagSafe, zwei Thunderbolt / USB 4, 3,5‑mm‑Kopfhörer
+Netzwerk: WLAN 6E, Bluetooth 5.3
+Batterie: Bis zu 18 Stunden Videowiedergabe
+Betriebssystem: macOS"
+macbook-air,"15""",MacBook Air,mac,"je Baujahr, siehe Gehäuseunterseite","Mac16,13 (M4, 15"")","mitternacht, polarstern, himmelblau, silber","256 GB, 512 GB, 1 TB, 2 TB","8 GB, 16 GB, 24 GB","M2, M3, M4","2022, 2023, 2024, 2025","Größe und Gewicht: 340,4 × 237,6 × 11,5 mm / 1.510 g
+Display: 15,3‑Zoll‑Liquid‑Retina mit True Tone
+Auflösung: 2880 × 1864, 224 Pixel pro Zoll
+Helligkeit: 500 Nits
+Farbraum: P3 Wide Color
+Kamera: 1080p FaceTime‑HD‑Kamera
+Audio: Vier Lautsprecher, drei Mikrofone
+Authentifizierung: Touch ID
+Anschlüsse: MagSafe, zwei Thunderbolt / USB 4, 3,5‑mm‑Kopfhörer
+Netzwerk: WLAN 6E, Bluetooth 5.3
+Batterie: Bis zu 18 Stunden Videowiedergabe
+Betriebssystem: macOS"
+macbook-pro,"14""",MacBook Pro,mac,"je Chip und Baujahr, siehe Gehäuseunterseite","Mac16,1 / Mac16,5 (M4 / M4 Pro, 14"")","space-schwarz, silber","512 GB, 1 TB, 2 TB, 4 TB","16 GB, 24 GB, 32 GB, 48 GB, 64 GB","M1 Pro, M1 Max, M2 Pro, M2 Max, M3 Pro, M3 Max, M4 Pro, M4 Max","2021, 2022, 2023, 2024, 2025","Größe und Gewicht: 312,6 × 221,2 × 15,5 mm / 1.550 g
+Display: 14,2‑Zoll‑Liquid‑Retina‑XDR mit ProMotion
+Auflösung: 3024 × 1964, 254 Pixel pro Zoll
+Helligkeit: 1000 Nits SDR, 1600 Nits HDR
+Kontrast: 1.000.000:1, True Tone
+Farbraum: P3 Wide Color
+Kamera: 1080p FaceTime‑HD‑Kamera
+Audio: Sechs Lautsprecher mit Force‑cancelling
+Authentifizierung: Touch ID
+Anschlüsse: MagSafe, HDMI, SDXC, drei Thunderbolt 4, 3,5‑mm‑Kopfhörer
+Netzwerk: WLAN 6E, Bluetooth 5.3
+Batterie: Bis zu 22 Stunden Videowiedergabe
+Betriebssystem: macOS"
+macbook-pro,"16""",MacBook Pro,mac,"je Chip und Baujahr, siehe Gehäuseunterseite","Mac16,6 / Mac16,8 (M4 Pro / M4 Max, 16"")","space-schwarz, silber","512 GB, 1 TB, 2 TB, 4 TB","16 GB, 24 GB, 32 GB, 48 GB, 64 GB","M1 Pro, M1 Max, M2 Pro, M2 Max, M3 Pro, M3 Max, M4 Pro, M4 Max","2021, 2022, 2023, 2024, 2025","Größe und Gewicht: 355,7 × 248,1 × 16,8 mm / 2.140 g
+Display: 16,2‑Zoll‑Liquid‑Retina‑XDR mit ProMotion
+Auflösung: 3456 × 2234, 254 Pixel pro Zoll
+Helligkeit: 1000 Nits SDR, 1600 Nits HDR
+Kontrast: 1.000.000:1, True Tone
+Farbraum: P3 Wide Color
+Kamera: 1080p FaceTime‑HD‑Kamera
+Audio: Sechs Lautsprecher mit Force‑cancelling
+Authentifizierung: Touch ID
+Anschlüsse: MagSafe, HDMI, SDXC, drei Thunderbolt 4, 3,5‑mm‑Kopfhörer
+Netzwerk: WLAN 6E, Bluetooth 5.3
+Batterie: Bis zu 22 Stunden Videowiedergabe
+Betriebssystem: macOS"
+imac,"24""",iMac,mac,"je Chip und Baujahr, siehe Standfuß","Mac16,2 / Mac16,3 (M4, 24"")","blau, gruen, rosa, silber, gelb, violett, orange","256 GB, 512 GB, 1 TB, 2 TB","8 GB, 16 GB, 24 GB, 32 GB","M1, M3, M4","2021, 2023, 2024","Größe und Gewicht: 547 × 461 × 147 mm / 4.430 g
+Display: 24‑Zoll‑4,5K‑Retina mit True Tone
+Auflösung: 4480 × 2520, 218 Pixel pro Zoll
+Helligkeit: 500 Nits
+Farbraum: P3 Wide Color
+Kamera: 1080p FaceTime‑HD‑Kamera
+Audio: Sechs Lautsprecher, Studioqualität‑Mikrofon
+Authentifizierung: Touch ID in der Magic Keyboard
+Anschlüsse: Zwei Thunderbolt / USB 4, Gigabit Ethernet, 3,5‑mm‑Kopfhörer
+Netzwerk: WLAN 6E, Bluetooth 5.3
+Betriebssystem: macOS"
+mac-mini,,Mac mini,mac,"je Chip und Baujahr, siehe Unterseite","Mac16,10 / Mac16,11 (M4 / M4 Pro)",silber,"256 GB, 512 GB, 1 TB, 2 TB","8 GB, 16 GB, 24 GB, 32 GB","M1, M2, M2 Pro, M4, M4 Pro","2020, 2023, 2024","Größe und Gewicht: 127 × 127 × 50 mm / 670 g
+Anschlüsse vorne: Zwei USB‑C, 3,5‑mm‑Kopfhörer
+Anschlüsse hinten: Drei Thunderbolt, HDMI, zwei USB‑A, Gigabit Ethernet
+Netzwerk: WLAN 6E, Bluetooth 5.3
+Video: Bis zu drei Displays
+Betriebssystem: macOS"
+mac-studio,,Mac Studio,mac,"je Chip und Baujahr, siehe Unterseite","Mac16,9 (M4 Max / M3 Ultra, aktuell)",silber,"512 GB, 1 TB, 2 TB, 4 TB, 8 TB","32 GB, 64 GB, 128 GB","M1 Max, M1 Ultra, M2 Max, M2 Ultra, M4 Max","2022, 2023, 2025","Größe und Gewicht: 197 × 197 × 95 mm / 2.740 g
+Anschlüsse vorne: Zwei USB‑C, SDXC
+Anschlüsse hinten: Vier Thunderbolt, HDMI, 10‑Gb‑Ethernet, zwei USB‑A, 3,5‑mm‑Kopfhörer
+Netzwerk: WLAN 6E, Bluetooth 5.3
+Video: Bis zu fünf Displays
+Betriebssystem: macOS"
+ipad-pro,"11""",iPad Pro,ipad,"A2836 (Wi‑Fi), A2837 (Cellular), A3006 (China)","iPad16,3 / iPad16,4 (M4, 11"")","space-schwarz, silber","256 GB, 512 GB, 1 TB, 2 TB",,"M2, M4","2022, 2024","Größe und Gewicht: 249,7 × 177,5 × 5,3 mm / 444 g
+Display: 11‑Zoll‑Ultra‑Retina‑XDR mit ProMotion
+Auflösung: 2420 × 1668, 264 Pixel pro Zoll
+Helligkeit: 1000 Nits SDR, 1600 Nits HDR
+Bildwiederholung: 10–120 Hz ProMotion, True Tone
+Kameras: 12‑MP‑Weitwinkel, 10‑MP‑Ultraweitwinkel, LiDAR
+Frontkamera: 12‑MP‑TrueDepth mit Center Stage
+Authentifizierung: Face ID
+Anschlüsse: USB‑C mit Thunderbolt / USB 4
+Netzwerk: WLAN 6E, Bluetooth 5.3, optional 5G
+Apple Pencil: Apple Pencil Pro
+Betriebssystem: iPadOS"
+ipad-pro,"13""",iPad Pro,ipad,"A2925 (Wi‑Fi), A2926 (Cellular), A3007 (China)","iPad16,5 / iPad16,6 (M4, 13"")","space-schwarz, silber","256 GB, 512 GB, 1 TB, 2 TB",,"M2, M4","2022, 2024","Größe und Gewicht: 281,6 × 215,5 × 5,1 mm / 579 g
+Display: 13‑Zoll‑Ultra‑Retina‑XDR mit ProMotion
+Auflösung: 2752 × 2064, 264 Pixel pro Zoll
+Helligkeit: 1000 Nits SDR, 1600 Nits HDR
+Bildwiederholung: 10–120 Hz ProMotion, True Tone
+Kameras: 12‑MP‑Weitwinkel, 10‑MP‑Ultraweitwinkel, LiDAR
+Frontkamera: 12‑MP‑TrueDepth mit Center Stage
+Authentifizierung: Face ID
+Anschlüsse: USB‑C mit Thunderbolt / USB 4
+Netzwerk: WLAN 6E, Bluetooth 5.3, optional 5G
+Apple Pencil: Apple Pencil Pro
+Betriebssystem: iPadOS"
+ipad-air,"11""",iPad Air,ipad,"A3459 (Wi‑Fi), A3460 (Cellular), A3463 (China)","iPad15,3 / iPad15,4 (M3/M4, 11"")","space-grau, blau, violett, polarstern","128 GB, 256 GB, 512 GB, 1 TB",,"M1, M2, M3","2022, 2024, 2025","Größe und Gewicht: 247,6 × 178,5 × 6,1 mm / 462 g
+Display: 11‑Zoll‑Liquid‑Retina mit True Tone
+Auflösung: 2360 × 1640, 264 Pixel pro Zoll
+Helligkeit: 500 Nits
+Kamera: 12‑MP‑Weitwinkel
+Frontkamera: 12‑MP‑Ultraweitwinkel mit Center Stage
+Authentifizierung: Touch ID in der oberen Taste
+Anschlüsse: USB‑C
+Netzwerk: WLAN 6E, Bluetooth 5.3, optional 5G
+Apple Pencil: Apple Pencil Pro
+Betriebssystem: iPadOS"
+ipad-air,"13""",iPad Air,ipad,"A3461 (Wi‑Fi), A3462 (Cellular), A3464 (China)","iPad15,5 / iPad15,6 (M3/M4, 13"")","space-grau, blau, violett, polarstern","128 GB, 256 GB, 512 GB, 1 TB",,"M1, M2, M3","2022, 2024, 2025","Größe und Gewicht: 280,6 × 214,9 × 6,1 mm / 617 g
+Display: 13‑Zoll‑Liquid‑Retina mit True Tone
+Auflösung: 2732 × 2048, 264 Pixel pro Zoll
+Helligkeit: 500 Nits
+Kamera: 12‑MP‑Weitwinkel
+Frontkamera: 12‑MP‑Ultraweitwinkel mit Center Stage
+Authentifizierung: Touch ID in der oberen Taste
+Anschlüsse: USB‑C
+Netzwerk: WLAN 6E, Bluetooth 5.3, optional 5G
+Apple Pencil: Apple Pencil Pro
+Betriebssystem: iPadOS"
+ipad,"10.9""",iPad,ipad,"A2696 (Wi‑Fi), A2757 (Cellular) — 10. Generation","iPad13,18 / iPad13,19","blau, rosa, gelb, silber","64 GB, 128 GB, 256 GB, 512 GB",,"A14, A16","2022, 2025","Größe und Gewicht: 248,6 × 179,5 × 7,0 mm / 477 g
+Display: 10,9‑Zoll‑Liquid‑Retina mit True Tone
+Auflösung: 2360 × 1640, 264 Pixel pro Zoll
+Helligkeit: 500 Nits
+Kamera: 12‑MP‑Weitwinkel
+Frontkamera: 12‑MP‑Ultraweitwinkel mit Center Stage
+Authentifizierung: Touch ID in der oberen Taste
+Anschlüsse: USB‑C
+Netzwerk: WLAN, Bluetooth, optional 5G
+Betriebssystem: iPadOS"
+ipad,"11""",iPad,ipad,"A3354 (Wi‑Fi), A3355 (Cellular), A3356 (China) — A16","iPad15,7 / iPad15,8","blau, rosa, gelb, silber","64 GB, 128 GB, 256 GB, 512 GB",,"A14, A16","2022, 2025","Größe und Gewicht: 249,7 × 177,5 × 5,3 mm / 477 g
+Display: 11‑Zoll‑Liquid‑Retina mit True Tone
+Auflösung: 2360 × 1640, 264 Pixel pro Zoll
+Helligkeit: 500 Nits
+Kamera: 12‑MP‑Weitwinkel
+Frontkamera: 12‑MP‑Ultraweitwinkel mit Center Stage
+Authentifizierung: Touch ID in der oberen Taste
+Anschlüsse: USB‑C
+Netzwerk: WLAN, Bluetooth, optional 5G
+Betriebssystem: iPadOS"
+ipad-mini,"8.3""",iPad mini,ipad,"A2993 (Wi‑Fi), A2995 (Cellular), A2996 (China) — A17 Pro","iPad16,1 / iPad16,2","space-grau, rosa, violett, polarstern","64 GB, 256 GB",,"A15, A17 Pro","2021, 2024","Größe und Gewicht: 195,4 × 134,8 × 6,3 mm / 293 g
+Display: 8,3‑Zoll‑Liquid‑Retina mit True Tone
+Auflösung: 2266 × 1488, 326 Pixel pro Zoll
+Helligkeit: 500 Nits
+Kamera: 12‑MP‑Weitwinkel
+Frontkamera: 12‑MP‑Ultraweitwinkel mit Center Stage
+Authentifizierung: Touch ID in der oberen Taste
+Anschlüsse: USB‑C
+Netzwerk: WLAN, Bluetooth, optional 5G
+Betriebssystem: iPadOS"
+iphone-16-pro,"6,3""",iPhone 16 Pro,iphone,"A3083, A3292, A3293, A3294","iPhone17,1","natural, schwarz-ti, weiss-ti, blau-ti","128 GB, 256 GB, 512 GB, 1 TB",,A18 Pro,2024,"Größe und Gewicht: 149,6 × 71,5 × 8,25 mm / 199 g
+Display: 6,3‑Zoll‑Super‑Retina‑XDR‑OLED
+Auflösung: 2622 × 1206, 460 Pixel pro Zoll
+Bildwiederholung: 1–120 Hz ProMotion, Always On, True Tone
+Helligkeit: 1000 Nits SDR, 2000 Nits Peak
+Hauptkamera: 48‑MP‑Fusion mit 5x Tetraprism‑Tele
+Frontkamera: 12‑MP‑TrueDepth
+Authentifizierung: Face ID
+Netzwerk: 5G, WLAN 7, Bluetooth 5.3
+SIM‑Karte: Dual SIM: eSIM und/oder nano‑SIM
+Anschlüsse: USB‑C
+Laden: MagSafe, Qi2, kabelloses Laden
+Betriebssystem: iOS
+Wasserdichtigkeit: IP68 ab Werk; bei Gebrauchtgeräten nicht mehr garantiert."
+iphone-16-pro,"6,9""",iPhone 16 Pro,iphone,"A3084, A3295, A3296, A3297","iPhone17,2","natural, schwarz-ti, weiss-ti, blau-ti","128 GB, 256 GB, 512 GB, 1 TB",,A18 Pro,2024,"Größe und Gewicht: 163,0 × 77,6 × 8,25 mm / 227 g
+Display: 6,9‑Zoll‑Super‑Retina‑XDR‑OLED
+Auflösung: 2868 × 1320, 460 Pixel pro Zoll
+Bildwiederholung: 1–120 Hz ProMotion, Always On, True Tone
+Helligkeit: 1000 Nits SDR, 2000 Nits Peak
+Hauptkamera: 48‑MP‑Fusion mit 5x Tetraprism‑Tele
+Frontkamera: 12‑MP‑TrueDepth
+Authentifizierung: Face ID
+Netzwerk: 5G, WLAN 7, Bluetooth 5.3
+SIM‑Karte: Dual SIM: eSIM und/oder nano‑SIM
+Anschlüsse: USB‑C
+Laden: MagSafe, Qi2, kabelloses Laden
+Betriebssystem: iOS
+Wasserdichtigkeit: IP68 ab Werk; bei Gebrauchtgeräten nicht mehr garantiert."
+iphone-16,"6,1""",iPhone 16,iphone,"A3081, A3286, A3287, A3288","iPhone17,3","schwarz, weiss, rosa, teal, ultramarine","128 GB, 256 GB, 512 GB",,A18,2024,"Größe und Gewicht: 147,6 × 71,6 × 7,80 mm / 170 g
+Display: 6,1‑Zoll‑Super‑Retina‑XDR‑OLED
+Auflösung: 2556 × 1179, 460 Pixel pro Zoll
+Helligkeit: 1000 Nits SDR, 2000 Nits Peak, True Tone
+Hauptkamera: 48‑MP‑Fusion‑Kamera
+Frontkamera: 12‑MP‑TrueDepth
+Authentifizierung: Face ID
+Netzwerk: 5G, WLAN 7, Bluetooth 5.3
+SIM‑Karte: Dual SIM: eSIM und/oder nano‑SIM
+Anschlüsse: USB‑C
+Laden: MagSafe, Qi2, kabelloses Laden
+Betriebssystem: iOS
+Wasserdichtigkeit: IP68 ab Werk; bei Gebrauchtgeräten nicht mehr garantiert."
+iphone-16,"6,7""",iPhone 16,iphone,"A3082, A3289, A3290, A3291","iPhone17,4","schwarz, weiss, rosa, teal, ultramarine","128 GB, 256 GB, 512 GB",,A18,2024,"Größe und Gewicht: 160,9 × 77,8 × 7,80 mm / 199 g
+Display: 6,7‑Zoll‑Super‑Retina‑XDR‑OLED
+Auflösung: 2796 × 1290, 460 Pixel pro Zoll
+Helligkeit: 1000 Nits SDR, 2000 Nits Peak, True Tone
+Hauptkamera: 48‑MP‑Fusion‑Kamera
+Frontkamera: 12‑MP‑TrueDepth
+Authentifizierung: Face ID
+Netzwerk: 5G, WLAN 7, Bluetooth 5.3
+SIM‑Karte: Dual SIM: eSIM und/oder nano‑SIM
+Anschlüsse: USB‑C
+Laden: MagSafe, Qi2, kabelloses Laden
+Betriebssystem: iOS
+Wasserdichtigkeit: IP68 ab Werk; bei Gebrauchtgeräten nicht mehr garantiert."
+iphone-15,"6,1""",iPhone 15,iphone,"A2846, A3089, A3090, A3092","iPhone15,4","schwarz, blau, gruen, gelb, rosa","128 GB, 256 GB, 512 GB",,A16,2023,"Größe und Gewicht: 147,6 × 71,6 × 7,80 mm / 171 g
+Display: 6,1‑Zoll‑Super‑Retina‑XDR‑OLED
+Auflösung: 2556 × 1179, 460 Pixel pro Zoll
+Helligkeit: 1000 Nits SDR, 2000 Nits Peak, True Tone
+Hauptkamera: 48‑MP‑Hauptkamera mit 2x Tele
+Frontkamera: 12‑MP‑TrueDepth
+Authentifizierung: Face ID
+Netzwerk: 5G, WLAN 6, Bluetooth 5.3
+SIM‑Karte: Dual SIM: eSIM und/oder nano‑SIM
+Anschlüsse: USB‑C
+Laden: MagSafe, Qi, kabelloses Laden
+Betriebssystem: iOS
+Wasserdichtigkeit: IP68 ab Werk; bei Gebrauchtgeräten nicht mehr garantiert."
+iphone-15,"6,7""",iPhone 15,iphone,"A2847, A3093, A3094, A3096","iPhone15,5","schwarz, blau, gruen, gelb, rosa","128 GB, 256 GB, 512 GB",,A16,2023,"Größe und Gewicht: 160,9 × 77,8 × 7,80 mm / 201 g
+Display: 6,7‑Zoll‑Super‑Retina‑XDR‑OLED
+Auflösung: 2796 × 1290, 460 Pixel pro Zoll
+Helligkeit: 1000 Nits SDR, 2000 Nits Peak, True Tone
+Hauptkamera: 48‑MP‑Hauptkamera mit 2x Tele
+Frontkamera: 12‑MP‑TrueDepth
+Authentifizierung: Face ID
+Netzwerk: 5G, WLAN 6, Bluetooth 5.3
+SIM‑Karte: Dual SIM: eSIM und/oder nano‑SIM
+Anschlüsse: USB‑C
+Laden: MagSafe, Qi, kabelloses Laden
+Betriebssystem: iOS
+Wasserdichtigkeit: IP68 ab Werk; bei Gebrauchtgeräten nicht mehr garantiert."
+iphone-14,"6,1""",iPhone 14,iphone,"A2649, A2881, A2882, A2883, A2884","iPhone14,7","mitternacht, polarstern, blau, violett, rot, gelb","128 GB, 256 GB, 512 GB",,A15,2022,"Größe und Gewicht: 146,7 × 71,5 × 7,80 mm / 172 g
+Display: 6,1‑Zoll‑Super‑Retina‑XDR‑OLED
+Auflösung: 2532 × 1170, 460 Pixel pro Zoll
+Helligkeit: 800 Nits SDR, 1200 Nits HDR, True Tone
+Hauptkamera: 12‑MP‑Dualkamera
+Frontkamera: 12‑MP‑TrueDepth
+Authentifizierung: Face ID
+Netzwerk: 5G / LTE, WLAN 6, Bluetooth 5.3
+SIM‑Karte: Dual SIM: nano‑SIM und/oder eSIM
+Anschlüsse: Lightning
+Laden: MagSafe, Qi, kabelloses Laden
+Betriebssystem: iOS
+Wasserdichtigkeit: IP68 ab Werk; bei Gebrauchtgeräten nicht mehr garantiert."
+iphone-14,"6,7""",iPhone 14,iphone,"A2632, A2885, A2886, A2887, A2888","iPhone14,8","mitternacht, polarstern, blau, violett, rot, gelb","128 GB, 256 GB, 512 GB",,A15,2022,"Größe und Gewicht: 160,7 × 78,1 × 7,80 mm / 203 g
+Display: 6,7‑Zoll‑Super‑Retina‑XDR‑OLED
+Auflösung: 2778 × 1284, 458 Pixel pro Zoll
+Helligkeit: 800 Nits SDR, 1200 Nits HDR, True Tone
+Hauptkamera: 12‑MP‑Dualkamera
+Frontkamera: 12‑MP‑TrueDepth
+Authentifizierung: Face ID
+Netzwerk: 5G / LTE, WLAN 6, Bluetooth 5.3
+SIM‑Karte: Dual SIM: nano‑SIM und/oder eSIM
+Anschlüsse: Lightning
+Laden: MagSafe, Qi, kabelloses Laden
+Betriebssystem: iOS
+Wasserdichtigkeit: IP68 ab Werk; bei Gebrauchtgeräten nicht mehr garantiert."
+iphone-se,"4,7""",iPhone SE,iphone,"A2595, A2782, A2783, A2784, A2785","iPhone14,6","mitternacht, polarstern, rot","64 GB, 128 GB, 256 GB",,A15,2022,"Größe und Gewicht: 138,4 × 67,3 × 7,3 mm / 144 g
+Display: 4,7‑Zoll‑Retina‑HD mit True Tone
+Auflösung: 1334 × 750, 326 Pixel pro Zoll
+Helligkeit: 625 Nits
+Hauptkamera: 12‑MP‑Weitwinkel
+Frontkamera: 7‑MP FaceTime‑HD
+Authentifizierung: Touch ID
+Netzwerk: 5G / LTE, WLAN 6, Bluetooth 5.0
+SIM‑Karte: Dual SIM: nano‑SIM und/oder eSIM
+Anschlüsse: Lightning
+Laden: Qi, kabelloses Laden
+Betriebssystem: iOS
+Wasserdichtigkeit: IP67 ab Werk; bei Gebrauchtgeräten nicht mehr garantiert."

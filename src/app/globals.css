@@ -1,0 +1,182 @@
+@import "tailwindcss";
+
+:root {
+  --uf-bg: #ffffff;
+  --uf-bg-subtle: #f5f5f7;
+  --uf-text: #1d1d1f;
+  --uf-text-secondary: #6e6e73;
+  --uf-text-tertiary: #86868b;
+  --uf-border: #d2d2d7;
+  --uf-border-soft: #e8e8ed;
+  --uf-link: #0066cc;
+  --uf-link-hover: #0077ed;
+  --uf-nav-height: 48px;
+  --uf-font: "SF Pro Text", "SF Pro Display", -apple-system, BlinkMacSystemFont,
+    "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+@theme inline {
+  --color-uf-bg: var(--uf-bg);
+  --color-uf-bg-subtle: var(--uf-bg-subtle);
+  --color-uf-text: var(--uf-text);
+  --color-uf-text-secondary: var(--uf-text-secondary);
+  --color-uf-text-tertiary: var(--uf-text-tertiary);
+  --color-uf-border: var(--uf-border);
+  --color-uf-border-soft: var(--uf-border-soft);
+  --color-uf-link: var(--uf-link);
+  --font-sans: var(--uf-font);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+  background: var(--uf-bg);
+  color: var(--uf-text);
+  font-family: var(--uf-font);
+  font-size: 14px;
+  line-height: 1.47059;
+  letter-spacing: -0.016em;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.uf-nav-link {
+  font-family: "SF Pro Text", "SF Pro Display", -apple-system, BlinkMacSystemFont,
+    "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  transition: color 0.18s ease, opacity 0.18s ease;
+}
+
+@media (max-width: 639px) {
+  .uf-nav-link {
+    font-size: 12px;
+    padding: 8px 3px;
+  }
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+}
+
+::selection {
+  background: rgba(0, 102, 204, 0.18);
+}
+
+.uf-select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none' viewBox='0 0 10 6'%3E%3Cpath stroke='%236e6e73' stroke-linecap='round' stroke-width='1.3' d='m1.2 1.2 3.8 3.6 3.8-3.6'/%3E%3C/svg%3E");
+  background-position: right 0.7rem center;
+  background-repeat: no-repeat;
+  background-size: 10px 6px;
+  padding-right: 1.85rem;
+}
+
+.uf-select::-ms-expand {
+  display: none;
+}
+
+.uf-select:focus,
+.uf-select:focus-visible {
+  outline: none;
+  border-color: var(--uf-border);
+}
+
+.uf-scroll-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.uf-scroll-hidden::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.uf-legal {
+  color: var(--uf-text);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.uf-legal h2 {
+  margin: 2rem 0 0.55rem;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.uf-legal h2:first-child {
+  margin-top: 0;
+}
+
+.uf-legal p,
+.uf-legal ul,
+.uf-legal address {
+  margin: 0 0 0.85rem;
+  color: var(--uf-text-secondary);
+}
+
+.uf-legal address {
+  font-style: normal;
+}
+
+.uf-legal ul {
+  padding-left: 1.2rem;
+  list-style: disc;
+}
+
+.uf-legal li {
+  margin-bottom: 0.3rem;
+}
+
+.uf-legal a {
+  color: var(--uf-link);
+}
+
+.uf-legal a:hover {
+  text-decoration: underline;
+}
+
+.uf-grid-cell {
+  border-right: 1px solid var(--uf-border-soft);
+  border-bottom: 1px solid var(--uf-border-soft);
+}
+
+.uf-grid-cell:nth-child(3n) {
+  border-right: none;
+}
+
+@media (max-width: 1023px) {
+  .uf-grid-cell:nth-child(3n) {
+    border-right: 1px solid var(--uf-border-soft);
+  }
+  .uf-grid-cell:nth-child(2n) {
+    border-right: none;
+  }
+}
