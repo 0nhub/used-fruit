@@ -10,11 +10,12 @@ import {
   writeSignedIn,
   type UserProfile,
 } from "@/lib/profile";
+import { syncPublicSellerPage } from "@/lib/sellerPage";
 import { useCallback, useEffect, useState } from "react";
 
 export function useProfile() {
   const [profile, setProfile] = useState<UserProfile>(DEFAULT_PROFILE);
-  const [signedIn, setSignedIn] = useState(true);
+  const [signedIn, setSignedIn] = useState(false);
   const [ready, setReady] = useState(false);
 
   const refresh = useCallback(() => {
@@ -34,7 +35,10 @@ export function useProfile() {
   }, [refresh]);
 
   const saveProfile = useCallback((next: UserProfile) => {
-    setProfile(writeProfile(next));
+    const previousName = readProfile().name;
+    const saved = writeProfile(next);
+    if (saved.name) syncPublicSellerPage(saved, previousName);
+    setProfile(saved);
     writeSignedIn(true);
     setSignedIn(true);
   }, []);

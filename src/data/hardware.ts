@@ -33,7 +33,6 @@ const SPECS: Record<string, ModelHardware> = {
       { label: "Anschlüsse", value: "MagSafe, zwei Thunderbolt / USB 4, 3,5‑mm‑Kopfhörer" },
       { label: "Netzwerk", value: "WLAN 6E, Bluetooth 5.3" },
       { label: "Batterie", value: "Bis zu 18 Stunden Videowiedergabe" },
-      { label: "Betriebssystem", value: "macOS" },
     ],
   },
   "macbook-air": {
@@ -58,7 +57,6 @@ const SPECS: Record<string, ModelHardware> = {
       { label: "Anschlüsse", value: "MagSafe, zwei Thunderbolt / USB 4, 3,5‑mm‑Kopfhörer" },
       { label: "Netzwerk", value: "WLAN 6E, Bluetooth 5.3" },
       { label: "Batterie", value: "Bis zu 18 Stunden Videowiedergabe" },
-      { label: "Betriebssystem", value: "macOS" },
     ],
   },
   "macbook-pro": {
@@ -84,7 +82,6 @@ const SPECS: Record<string, ModelHardware> = {
       { label: "Anschlüsse", value: "MagSafe, HDMI, SDXC, drei Thunderbolt 4, 3,5‑mm‑Kopfhörer" },
       { label: "Netzwerk", value: "WLAN 6E, Bluetooth 5.3" },
       { label: "Batterie", value: "Bis zu 22 Stunden Videowiedergabe" },
-      { label: "Betriebssystem", value: "macOS" },
     ],
   },
   imac: {
@@ -103,7 +100,6 @@ const SPECS: Record<string, ModelHardware> = {
       { label: "Authentifizierung", value: "Touch ID in der Magic Keyboard" },
       { label: "Anschlüsse", value: "Zwei Thunderbolt / USB 4, Gigabit Ethernet, 3,5‑mm‑Kopfhörer" },
       { label: "Netzwerk", value: "WLAN 6E, Bluetooth 5.3" },
-      { label: "Betriebssystem", value: "macOS" },
     ],
   },
   "mac-mini": {
@@ -113,7 +109,6 @@ const SPECS: Record<string, ModelHardware> = {
       { label: "Anschlüsse hinten", value: "Drei Thunderbolt, HDMI, zwei USB‑A, Gigabit Ethernet" },
       { label: "Netzwerk", value: "WLAN 6E, Bluetooth 5.3" },
       { label: "Video", value: "Bis zu drei Displays" },
-      { label: "Betriebssystem", value: "macOS" },
     ],
   },
   "mac-studio": {
@@ -123,7 +118,6 @@ const SPECS: Record<string, ModelHardware> = {
       { label: "Anschlüsse hinten", value: "Vier Thunderbolt, HDMI, 10‑Gb‑Ethernet, zwei USB‑A, 3,5‑mm‑Kopfhörer" },
       { label: "Netzwerk", value: "WLAN 6E, Bluetooth 5.3" },
       { label: "Video", value: "Bis zu fünf Displays" },
-      { label: "Betriebssystem", value: "macOS" },
     ],
   },
   "ipad-pro": {
@@ -148,7 +142,6 @@ const SPECS: Record<string, ModelHardware> = {
       { label: "Anschlüsse", value: "USB‑C mit Thunderbolt / USB 4" },
       { label: "Netzwerk", value: "WLAN 6E, Bluetooth 5.3, optional 5G" },
       { label: "Apple Pencil", value: "Apple Pencil Pro" },
-      { label: "Betriebssystem", value: "iPadOS" },
     ],
   },
   "ipad-air": {
@@ -172,7 +165,6 @@ const SPECS: Record<string, ModelHardware> = {
       { label: "Anschlüsse", value: "USB‑C" },
       { label: "Netzwerk", value: "WLAN 6E, Bluetooth 5.3, optional 5G" },
       { label: "Apple Pencil", value: "Apple Pencil Pro" },
-      { label: "Betriebssystem", value: "iPadOS" },
     ],
   },
   ipad: {
@@ -195,7 +187,6 @@ const SPECS: Record<string, ModelHardware> = {
       { label: "Authentifizierung", value: "Touch ID in der oberen Taste" },
       { label: "Anschlüsse", value: "USB‑C" },
       { label: "Netzwerk", value: "WLAN, Bluetooth, optional 5G" },
-      { label: "Betriebssystem", value: "iPadOS" },
     ],
   },
   "ipad-mini": {
@@ -213,7 +204,6 @@ const SPECS: Record<string, ModelHardware> = {
       { label: "Authentifizierung", value: "Touch ID in der oberen Taste" },
       { label: "Anschlüsse", value: "USB‑C" },
       { label: "Netzwerk", value: "WLAN, Bluetooth, optional 5G" },
-      { label: "Betriebssystem", value: "iPadOS" },
     ],
   },
   "iphone-16-pro": {
@@ -239,7 +229,6 @@ const SPECS: Record<string, ModelHardware> = {
       { label: "SIM‑Karte", value: "Dual SIM: eSIM und/oder nano‑SIM" },
       { label: "Anschlüsse", value: "USB‑C" },
       { label: "Laden", value: "MagSafe, Qi2, kabelloses Laden" },
-      { label: "Betriebssystem", value: "iOS" },
       {
         label: "Wasserdichtigkeit",
         value: "IP68 ab Werk; bei Gebrauchtgeräten nicht mehr garantiert.",
@@ -268,7 +257,6 @@ const SPECS: Record<string, ModelHardware> = {
       { label: "SIM‑Karte", value: "Dual SIM: eSIM und/oder nano‑SIM" },
       { label: "Anschlüsse", value: "USB‑C" },
       { label: "Laden", value: "MagSafe, Qi2, kabelloses Laden" },
-      { label: "Betriebssystem", value: "iOS" },
       {
         label: "Wasserdichtigkeit",
         value: "IP68 ab Werk; bei Gebrauchtgeräten nicht mehr garantiert.",
@@ -297,7 +285,6 @@ const SPECS: Record<string, ModelHardware> = {
       { label: "SIM‑Karte", value: "Dual SIM: eSIM und/oder nano‑SIM" },
       { label: "Anschlüsse", value: "USB‑C" },
       { label: "Laden", value: "MagSafe, Qi, kabelloses Laden" },
-      { label: "Betriebssystem", value: "iOS" },
       {
         label: "Wasserdichtigkeit",
         value: "IP68 ab Werk; bei Gebrauchtgeräten nicht mehr garantiert.",
@@ -326,7 +313,6 @@ const SPECS: Record<string, ModelHardware> = {
       { label: "SIM‑Karte", value: "Dual SIM: nano‑SIM und/oder eSIM" },
       { label: "Anschlüsse", value: "Lightning" },
       { label: "Laden", value: "MagSafe, Qi, kabelloses Laden" },
-      { label: "Betriebssystem", value: "iOS" },
       {
         label: "Wasserdichtigkeit",
         value: "IP68 ab Werk; bei Gebrauchtgeräten nicht mehr garantiert.",
@@ -350,7 +336,6 @@ const SPECS: Record<string, ModelHardware> = {
       { label: "SIM‑Karte", value: "Dual SIM: nano‑SIM und/oder eSIM" },
       { label: "Anschlüsse", value: "Lightning" },
       { label: "Laden", value: "Qi, kabelloses Laden" },
-      { label: "Betriebssystem", value: "iOS" },
       {
         label: "Wasserdichtigkeit",
         value: "IP67 ab Werk; bei Gebrauchtgeräten nicht mehr garantiert.",
@@ -371,7 +356,9 @@ export function getHardwareSpecs(listing: Listing): HardwareSpec[] {
   if (!model) return [];
 
   const sizeRows = listing.size ? (model.sizes?.[listing.size] ?? []) : [];
-  const rows = [...sizeRows, ...model.specs].filter((row) => !DUPLICATE_LABELS.has(row.label));
+  const rows = [...sizeRows, ...model.specs].filter(
+    (row) => !DUPLICATE_LABELS.has(row.label) && row.label !== "Betriebssystem",
+  );
 
   if (!listing.chip) return rows;
   if (rows.some((row) => row.label === "Chip")) {

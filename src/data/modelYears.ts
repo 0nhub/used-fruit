@@ -278,3 +278,33 @@ export function yearChoiceLabel(modelId: string, year: number): string {
   if (chips.length <= 3) return `${year} · ${chips.join(" / ")}`;
   return `${year} · ${chips[0]} – ${chips[chips.length - 1]}`;
 }
+
+export function chipsForModel(model: ModelDefinition | undefined): string[] {
+  if (!model) return [];
+  const variants = VARIANTS[model.id];
+  if (variants?.length) {
+    const seen = new Set<string>();
+    const chips: string[] = [];
+    for (const variant of variants) {
+      for (const chip of variant.chips ?? []) {
+        if (!seen.has(chip)) {
+          seen.add(chip);
+          chips.push(chip);
+        }
+      }
+    }
+    return chips;
+  }
+  return model.chipOptions ?? [];
+}
+
+export function yearsForChip(model: ModelDefinition | undefined, chip?: string): number[] {
+  if (!model?.years?.length) return [];
+  const variants = VARIANTS[model.id];
+  if (!variants?.length) {
+    if (chip && model.chipOptions?.length && !model.chipOptions.includes(chip)) return [];
+    return [...model.years];
+  }
+  if (!chip) return variants.map((variant) => variant.year);
+  return variants.filter((variant) => variant.chips?.includes(chip)).map((variant) => variant.year);
+}

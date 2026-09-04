@@ -11,16 +11,17 @@ export function LegalNav({ compact = false }: { compact?: boolean }) {
           : "border-t border-uf-border-soft pt-4 pb-6"
       }
     >
-      <ul className="flex flex-nowrap gap-x-2.5 overflow-x-auto text-[11px] leading-4 whitespace-nowrap text-uf-text-tertiary">
-        {LEGAL_LINKS.map((item) => (
-          <li key={item.href}>
+      <p className="text-[11px] leading-5 text-uf-text-tertiary">
+        {LEGAL_LINKS.map((item, index) => (
+          <span key={item.href}>
+            {index > 0 ? <span aria-hidden> · </span> : null}
             <Link href={item.href} className="hover:text-uf-text">
               {item.label}
             </Link>
-          </li>
+          </span>
         ))}
-      </ul>
-      <p className="mt-3 text-[11px] leading-4 text-uf-text-tertiary">
+      </p>
+      <p className="mt-2 text-[11px] leading-5 text-uf-text-tertiary">
         © {LEGAL.copyrightYear} {LEGAL.platformName}
       </p>
     </nav>

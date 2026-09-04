@@ -71,6 +71,20 @@ export function ArchiveIcon({ className }: { className?: string }) {
   );
 }
 
+export function MuteIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M6.2 9.6v4.8h3.1L14 19.2V4.8L9.3 9.6H6.2Z"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+      />
+      <path d="m16.4 9.4 4.2 5.2M20.6 9.4l-4.2 5.2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export function BanIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -199,6 +213,32 @@ export function LoginIcon({ className }: { className?: string }) {
   );
 }
 
+export function MacBookIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
+      <rect
+        x="5.4"
+        y="4.2"
+        width="13.2"
+        height="8.6"
+        rx="1.2"
+        stroke="currentColor"
+        strokeWidth="1.4"
+      />
+      <rect
+        x="2.2"
+        y="14.6"
+        width="19.6"
+        height="4"
+        rx="1"
+        stroke="currentColor"
+        strokeWidth="1.4"
+      />
+      <path d="M10 16.2h4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export function PlusIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -233,6 +273,64 @@ export function CloseIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
       <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function ExternalLinkIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M10 6H7.5A2.5 2.5 0 0 0 5 8.5v8A2.5 2.5 0 0 0 7.5 19h8a2.5 2.5 0 0 0 2.5-2.5V14"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      />
+      <path
+        d="M13 5h6v6M19 5l-8 8"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function MedalIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="12" cy="13.5" r="5.25" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M9.2 8.6 8 3.8h8L14.8 8.6" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+      <path d="M10.6 13.5h2.8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function ThumbUpIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M8 20V10.5L12.2 4.6c.4-.6 1.3-.4 1.4.3l.4 3.4h4.1c1.2 0 2.1 1.1 1.9 2.3l-1 6.2c-.2 1-.9 1.7-1.9 1.7H8Z"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+      />
+      <path d="M8 10.5H5.6A1.6 1.6 0 0 0 4 12.1V18.4A1.6 1.6 0 0 0 5.6 20H8" stroke="currentColor" strokeWidth="1.4" />
+    </svg>
+  );
+}
+
+export function ThumbDownIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M16 4v9.5L11.8 19.4c-.4.6-1.3.4-1.4-.3l-.4-3.4H5.9c-1.2 0-2.1-1.1-1.9-2.3l1-6.2C5.2 6.2 5.9 5.5 6.9 5.5H16Z"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+      />
+      <path d="M16 13.5h2.4A1.6 1.6 0 0 0 20 11.9V5.6A1.6 1.6 0 0 0 18.4 4H16" stroke="currentColor" strokeWidth="1.4" />
     </svg>
   );
 }

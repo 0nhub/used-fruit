@@ -7,21 +7,36 @@ import { ProductCard } from "@/components/ProductCard";
 import { useCatalogFilters } from "@/lib/useCatalogFilters";
 import type { Listing } from "@/lib/types";
 import { useListings } from "@/lib/useListings";
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 
-export function CatalogShell({
+export function CatalogShell(props: {
+  listings: Listing[];
+  resetOnLogo?: boolean;
+  noItemsMessage?: string;
+  noItemsAction?: ReactNode;
+  banner?: ReactNode;
+}) {
+  return (
+    <Suspense fallback={<div className="min-h-dvh bg-white" />}>
+      <CatalogShellInner {...props} />
+    </Suspense>
+  );
+}
+
+function CatalogShellInner({
   listings,
   resetOnLogo = true,
   noItemsMessage,
   noItemsAction,
+  banner,
 }: {
   listings: Listing[];
   resetOnLogo?: boolean;
   noItemsMessage?: string;
   noItemsAction?: ReactNode;
+  banner?: ReactNode;
 }) {
-  const { filtered, userPlace, categoryId, resetFilters, applyCategory, sidebar } =
-    useCatalogFilters(listings);
+  const { filtered, userPlace, resetFilters, sidebar } = useCatalogFilters(listings);
   const activeFilterCount = [
     sidebar.modelId,
     sidebar.sizes.length,
@@ -36,15 +51,12 @@ export function CatalogShell({
     sidebar.minPrice,
     sidebar.maxPrice,
     sidebar.shipping,
+    sidebar.originalBox,
   ].filter(Boolean).length;
 
   return (
     <div className="flex min-h-dvh flex-col bg-white lg:h-dvh lg:overflow-hidden">
-      <Header
-        activeCategory={categoryId}
-        onHome={resetOnLogo ? resetFilters : undefined}
-        onCategoryChange={applyCategory}
-      />
+      <Header onHome={resetOnLogo ? resetFilters : undefined} />
       <MobileFilterHost count={activeFilterCount}>
         <FilterSidebar {...sidebar} hideLegal />
       </MobileFilterHost>
@@ -55,6 +67,7 @@ export function CatalogShell({
         </div>
 
         <main className="uf-scroll-hidden min-h-0 min-w-0 flex-1 pb-6 pt-3 lg:overflow-y-auto lg:overscroll-contain lg:pt-0">
+          {banner ? <div className="px-4 pb-4 sm:px-6">{banner}</div> : null}
           {listings.length === 0 ? (
             <div className="px-2 py-16 text-center">
               <p className="text-[17px] font-medium text-uf-text">

@@ -151,7 +151,8 @@ function MobileDrawer() {
             </p>
             <div ref={setFilterTarget} />
           </section>
-
+        </div>
+        <div className="shrink-0 px-4">
           <LegalNav compact />
         </div>
       </aside>

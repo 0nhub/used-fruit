@@ -10,19 +10,32 @@ import Link from "next/link";
 export function ProductCard({
   listing,
   userPlace,
+  variant = "catalog",
 }: {
   listing: Listing;
   userPlace?: Place;
+  variant?: "catalog" | "shop";
 }) {
   const listingPlace = findPlace(listing.postalCode, listing.city);
   const distance =
     userPlace && listingPlace ? distanceKm(userPlace, listingPlace) : undefined;
+  const shop = variant === "shop";
 
   return (
-    <div className="uf-grid-cell group relative flex h-full flex-col">
+    <div
+      className={
+        shop
+          ? "group relative flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-[0_1px_2px_rgba(0,0,0,0.05)]"
+          : "uf-grid-cell group relative flex h-full flex-col"
+      }
+    >
       <Link
         href={`/listing/${listing.id}`}
-        className="flex h-full flex-col px-2.5 pt-2.5 pb-5 transition-colors hover:bg-[#fafafa] sm:px-6 sm:pt-3 sm:pb-8"
+        className={
+          shop
+            ? "flex h-full flex-col px-3 pt-3 pb-5 sm:px-4 sm:pt-4 sm:pb-6"
+            : "flex h-full flex-col px-2.5 pt-2.5 pb-5 transition-colors hover:bg-[#fafafa] sm:px-6 sm:pt-3 sm:pb-8"
+        }
       >
         <div className="flex min-h-7 items-center pr-8 sm:min-h-8 sm:pr-10">
           <p className="flex min-w-0 items-center gap-1 text-[11px] text-uf-text-secondary sm:text-[12px]">

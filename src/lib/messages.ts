@@ -1,5 +1,5 @@
 import { createId } from "@/lib/format";
-import { BLOCKED_STORAGE_KEY, PROFILE_EVENT } from "@/lib/profile";
+import { BLOCKED_STORAGE_KEY, MUTED_STORAGE_KEY, PROFILE_EVENT } from "@/lib/profile";
 import type { Listing } from "@/lib/types";
 
 export const MESSAGES_STORAGE_KEY = "used-fruit-messages";
@@ -208,6 +208,40 @@ export function unblockPerson(name: string) {
         : thread,
     ),
   );
+}
+
+export function readMuted(): string[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(MUTED_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as unknown;
+    return Array.isArray(parsed) ? parsed.filter((item): item is string => typeof item === "string") : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeMuted(names: string[]) {
+  localStorage.setItem(MUTED_STORAGE_KEY, JSON.stringify([...new Set(names)]));
+  notify();
+  return names;
+}
+
+export function isNameMuted(name: string) {
+  const key = personKey(name);
+  return Boolean(key) && readMuted().includes(key);
+}
+
+export function mutePerson(name: string) {
+  const key = personKey(name);
+  if (!key) return;
+  writeMuted([...readMuted(), key]);
+}
+
+export function unmutePerson(name: string) {
+  const key = personKey(name);
+  writeMuted(readMuted().filter((item) => item !== key));
 }
 
 export function declineOtherOffers(listingId: string, exceptThreadId: string) {

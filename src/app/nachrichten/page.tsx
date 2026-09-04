@@ -1,6 +1,7 @@
 "use client";
 
-import { ArchiveIcon, BanIcon, MessageIcon, MoreIcon, TrashIcon } from "@/components/icons";
+import { RatingPrompt } from "@/components/RatingPrompt";
+import { ArchiveIcon, BanIcon, ExternalLinkIcon, MessageIcon, MoreIcon, MuteIcon, TrashIcon } from "@/components/icons";
 import { ProductImage } from "@/components/ProductImage";
 import { SiteHeader } from "@/components/SiteHeader";
 import {
@@ -12,10 +13,12 @@ import {
   isSameMessageDay,
 } from "@/lib/format";
 import { personKey, type Thread } from "@/lib/messages";
+import { canRateThread, daysUntilRating, hasRatedThread } from "@/lib/reputation";
 import { INBOX_WIDTH_KEY } from "@/lib/profile";
 import { useListings } from "@/lib/useListings";
 import { useMessages } from "@/lib/useMessages";
 import { useProfile } from "@/lib/useProfile";
+import { useReputation } from "@/lib/useReputation";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
@@ -94,7 +97,7 @@ function NachrichtenInner() {
   const selectedId = searchParams.get("id") ?? "";
   const tab = parseInboxTab(searchParams.get("tab"));
   const { width, startResize } = useInboxWidth();
-  const { profile, signedIn, login } = useProfile();
+  const { profile, signedIn } = useProfile();
   const { userListings, getListing } = useListings();
   const {
     threads,
@@ -107,7 +110,11 @@ function NachrichtenInner() {
     block,
     unblock,
     isBlocked,
+    mute,
+    unmute,
+    isMuted,
   } = useMessages();
+  const { ratings, rate } = useReputation(profile.name);
   const sellerListingIds = useMemo(
     () => new Set(userListings.map((item) => item.id)),
     [userListings],
@@ -168,6 +175,15 @@ function NachrichtenInner() {
       : selected.sellerName
     : "";
   const counterpartBlocked = counterpartName ? isBlocked(counterpartName) : false;
+  const counterpartMuted = counterpartName ? isMuted(counterpartName) : false;
+  const ratingReady =
+    Boolean(selected && profile.name.trim()) &&
+    canRateThread(selected!, profile.name, ratings);
+  const ratingWaiting =
+    Boolean(selected?.offer?.status === "accepted" && profile.name.trim()) &&
+    !hasRatedThread(ratings, selected!.id, profile.name) &&
+    !ratingReady;
+  const ratingDaysLeft = selected ? daysUntilRating(selected) : 0;
 
   const title = useMemo(() => {
     if (!selected) return "";
@@ -205,13 +221,12 @@ function NachrichtenInner() {
           <p className="mt-3 text-[14px] text-uf-text-secondary">
             Melde dich an, um Kaufanfragen und Chats zu sehen.
           </p>
-          <button
-            type="button"
-            onClick={login}
-            className="mt-6 h-10 rounded-full bg-uf-text px-5 text-[14px] text-white"
+          <a
+            href="/anmelden?next=/nachrichten"
+            className="mt-6 inline-flex h-10 items-center rounded-full bg-uf-text px-5 text-[14px] text-white"
           >
             Anmelden
-          </button>
+          </a>
         </div>
       </Shell>
     );
@@ -260,52 +275,30 @@ function NachrichtenInner() {
             </p>
           ) : (
             <ul>
-              {visible.map((thread) => (
-                <li key={thread.id}>
-                  <button
-                    type="button"
-                    onClick={() => openList(tab, thread.id)}
-                    className={`flex w-full items-center gap-3 px-4 py-3 text-left ${
-                      thread.id === selected?.id ? "bg-uf-bg-subtle" : "hover:bg-uf-bg-subtle/70"
-                    }`}
-                  >
-                    {(() => {
-                      const item = getListing(thread.listingId);
-                      const listingLabel = item
-                        ? formatListingHeadline(item, { includeParts: false })
-                        : thread.listingTitle.replace(/^Refurbished\s+/, "").replace(/\s+Apple$/, "");
-                      return (
-                        <>
-                          <span className="h-10 w-[3.2rem] shrink-0 overflow-hidden rounded-[8px] bg-uf-bg-subtle">
-                            {item ? (
-                              <ProductImage
-                                modelId={item.modelId}
-                                colorId={item.colorId}
-                                alt={listingLabel}
-                                className="h-full"
-                              />
-                            ) : null}
-                          </span>
-                          <span className="min-w-0 flex-1">
-                            <span className="block truncate text-[13px] font-medium">
-                              {listingLabel}
-                            </span>
-                            <span className="block truncate text-[12px] text-uf-text-tertiary">
-                              {thread.offer
-                                ? thread.offer.status === "accepted"
-                                  ? `Verkauf ${formatPrice(thread.offer.price)}`
-                                  : thread.offer.status === "declined"
-                                    ? `Abgelehnt ${formatPrice(thread.offer.price)}`
-                                    : `Offerte ${formatPrice(thread.offer.price)}`
-                                : "Nachricht"}
-                            </span>
-                          </span>
-                        </>
-                      );
-                    })()}
-                  </button>
-                </li>
-              ))}
+              {visible.map((thread) => {
+                const person = counterpartOf(thread, sellerListingIds);
+                return (
+                  <li key={thread.id}>
+                    <button
+                      type="button"
+                      onClick={() => openList(tab, thread.id)}
+                      className={`flex w-full items-center gap-3 px-4 py-3 text-left ${
+                        thread.id === selected?.id ? "bg-uf-bg-subtle" : "hover:bg-uf-bg-subtle/70"
+                      }`}
+                    >
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-uf-bg-subtle text-[22px] leading-none">
+                        {person.emoji}
+                      </span>
+                      <span className="flex min-w-0 flex-1 items-center gap-1.5">
+                        <span className="truncate text-[13px] font-medium">{person.name}</span>
+                        {isMuted(person.name) ? (
+                          <MuteIcon className="h-3 w-3 shrink-0 text-uf-text-tertiary" />
+                        ) : null}
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
             </ul>
           )}
           {tab === "blockiert" && blockedOrphans.length > 0 ? (
@@ -363,19 +356,23 @@ function NachrichtenInner() {
                   ) : (
                     <Link
                       href={`/listing/${selected.listingId}`}
-                      className="flex min-w-0 items-center gap-3"
+                      aria-label={`Inserat öffnen: ${title}`}
+                      className="group flex min-w-0 items-center gap-3"
                     >
                       <span className="h-11 w-[3.6rem] shrink-0 overflow-hidden rounded-[10px] bg-uf-bg-subtle">
                         {listing ? (
                           <ProductImage
                             modelId={listing.modelId}
                             colorId={listing.colorId}
-                            alt={title}
+                            alt=""
                             className="h-full"
                           />
                         ) : null}
                       </span>
-                      <p className="truncate text-[15px] font-medium text-uf-text">{title}</p>
+                      <span className="flex min-w-0 items-center gap-1.5">
+                        <p className="truncate text-[15px] font-medium text-uf-text">{title}</p>
+                        <ExternalLinkIcon className="h-[15px] w-[15px] shrink-0 text-uf-link" />
+                      </span>
                     </Link>
                   )}
                 </div>
@@ -418,7 +415,20 @@ function NachrichtenInner() {
                         }}
                       >
                         <TrashIcon className="h-4 w-4 shrink-0 text-uf-text-secondary" />
-                        Löschen
+                        Nachricht löschen
+                      </button>
+                      <button
+                        type="button"
+                        role="menuitem"
+                        className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-[13px] text-uf-text hover:bg-uf-bg-subtle"
+                        onClick={() => {
+                          setMenuOpen(false);
+                          if (counterpartMuted) unmute(counterpartName);
+                          else mute(counterpartName);
+                        }}
+                      >
+                        <MuteIcon className="h-4 w-4 shrink-0 text-uf-text-secondary" />
+                        {counterpartMuted ? "Stummschaltung aufheben" : "Nachricht stumm schalten"}
                       </button>
                       <button
                         type="button"
@@ -458,6 +468,11 @@ function NachrichtenInner() {
                     `Kauf vereinbart für ${formatPrice(selected.offer.price)}. Ihr könnt jetzt Versand oder Abholung klären.`}
                   {selected.offer.status === "declined" &&
                     `Angebot über ${formatPrice(selected.offer.price)} abgelehnt.`}
+                  {ratingWaiting && ratingDaysLeft > 0 && (
+                    <p className="mt-2 text-[13px] text-[#1d6b32]/80">
+                      Bewertung in {ratingDaysLeft === 1 ? "1 Tag" : `${ratingDaysLeft} Tagen`} möglich.
+                    </p>
+                  )}
                   {selected.offer.status === "pending" && !selected.archived && !counterpartBlocked && (
                     <div className="mt-2 flex gap-2">
                       <button
@@ -477,6 +492,13 @@ function NachrichtenInner() {
                     </div>
                   )}
                 </div>
+              )}
+
+              {ratingReady && (
+                <RatingPrompt
+                  counterpart={counterpartName}
+                  onRate={(sentiment) => rate(selected, profile.name, sentiment)}
+                />
               )}
 
               <div className="uf-scroll-hidden flex-1 space-y-3 overflow-y-auto px-4 py-4">

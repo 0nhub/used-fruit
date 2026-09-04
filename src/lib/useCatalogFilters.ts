@@ -1,17 +1,24 @@
 "use client";
 
+import { parseCategoryParam } from "@/components/CategoryNav";
 import { getModelById } from "@/data/catalog";
 import { filterListings, sortListings } from "@/lib/format";
 import { useUserLocation } from "@/lib/useUserLocation";
 import type { CategoryId, ConditionId, Listing, SortId } from "@/lib/types";
-import { useEffect, useMemo, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 function toggleValue<T>(list: T[], value: T): T[] {
   return list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
 }
 
 export function useCatalogFilters(listings: Listing[]) {
-  const [categoryId, setCategoryId] = useState<CategoryId | undefined>(undefined);
+  const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const urlCategory = parseCategoryParam(searchParams.get("kategorie"));
+  const urlCategoryRef = useRef(urlCategory);
+  const [categoryId, setCategoryId] = useState<CategoryId | undefined>(urlCategory);
   const [modelId, setModelId] = useState<string | undefined>(undefined);
   const [sizes, setSizes] = useState<string[]>([]);
   const [years, setYears] = useState<number[]>([]);
@@ -26,6 +33,7 @@ export function useCatalogFilters(listings: Listing[]) {
   const [minPrice, setMinPrice] = useState<number | undefined>();
   const [maxPrice, setMaxPrice] = useState<number | undefined>();
   const [shipping, setShipping] = useState<"yes" | "no" | undefined>();
+  const [originalBox, setOriginalBox] = useState<"yes" | "no" | undefined>();
   const { location, setLocation, userPlace } = useUserLocation();
 
   useEffect(() => {
@@ -43,21 +51,32 @@ export function useCatalogFilters(listings: Listing[]) {
     setStorage([]);
     setConditions([]);
     setWarrantyOnly(false);
+    setOriginalBox(undefined);
     setMinBatteryCapacity(undefined);
     setMaxBatteryCycles(undefined);
   };
 
-  const resetFilters = () => {
-    setCategoryId(undefined);
+  useEffect(() => {
+    if (urlCategoryRef.current === urlCategory) {
+      setCategoryId(urlCategory);
+      return;
+    }
+    urlCategoryRef.current = urlCategory;
+    setCategoryId(urlCategory);
     clearModelFilters();
+  }, [urlCategory]);
+
+  const resetFilters = () => {
     setMinPrice(undefined);
     setMaxPrice(undefined);
     setShipping(undefined);
+    setOriginalBox(undefined);
+    router.replace(pathname);
   };
 
   const applyCategory = (id?: CategoryId) => {
-    setCategoryId(id);
-    clearModelFilters();
+    const next = id ? `${pathname}?kategorie=${id}` : pathname;
+    router.replace(next);
   };
 
   const filtered = useMemo(() => {
@@ -81,6 +100,7 @@ export function useCatalogFilters(listings: Listing[]) {
       minPrice,
       maxPrice,
       shipping,
+      originalBox,
     });
     return sortListings(matches, sortId, userPlace);
   }, [
@@ -102,6 +122,7 @@ export function useCatalogFilters(listings: Listing[]) {
     minPrice,
     maxPrice,
     shipping,
+    originalBox,
   ]);
 
   const sidebar = {
@@ -116,9 +137,18 @@ export function useCatalogFilters(listings: Listing[]) {
     warrantyOnly,
     minBatteryCapacity,
     maxBatteryCycles,
+    onCategoryChange: applyCategory,
     onModelChange: (id?: string) => {
       const model = id ? getModelById(id) : undefined;
-      if (model) setCategoryId(model.categoryId);
+      if (model) {
+        setCategoryId(model.categoryId);
+        if (urlCategory !== model.categoryId) {
+          urlCategoryRef.current = model.categoryId;
+          router.replace(`${pathname}?kategorie=${model.categoryId}`);
+        }
+      } else {
+        setCategoryId(urlCategory);
+      }
       setModelId(id);
       setSizes([]);
       setYears([]);
@@ -148,6 +178,8 @@ export function useCatalogFilters(listings: Listing[]) {
     onMaxPriceChange: setMaxPrice,
     shipping,
     onShippingChange: setShipping,
+    originalBox,
+    onOriginalBoxChange: setOriginalBox,
   };
 
   return {

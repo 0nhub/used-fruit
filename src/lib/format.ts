@@ -1,5 +1,5 @@
 import { findPlace, distanceKm, type Place } from "@/data/locations";
-import { getModelById, isPartsListing } from "@/data/catalog";
+import { getModelById, isPartsListing, normalizeConditionId } from "@/data/catalog";
 import { getBatteryMetricForModel, isAppleWarrantyActive } from "@/lib/device";
 import type { Listing, ListingFilters, SortId } from "@/lib/types";
 
@@ -106,7 +106,14 @@ export function filterListings(listings: Listing[], filters: ListingFilters): Li
     if (filters.colors.length && !filters.colors.includes(listing.colorId)) return false;
     if (filters.memory.length && (!listing.memory || !filters.memory.includes(listing.memory))) return false;
     if (filters.storage.length && (!listing.storage || !filters.storage.includes(listing.storage))) return false;
-    if (filters.conditions.length && !filters.conditions.includes(listing.condition)) return false;
+    if (
+      filters.conditions.length &&
+      !filters.conditions.includes(normalizeConditionId(listing.condition))
+    ) {
+      return false;
+    }
+    if (filters.originalBox === "yes" && listing.originalBox !== true) return false;
+    if (filters.originalBox === "no" && listing.originalBox !== false) return false;
     if (filters.warrantyOnly && !isAppleWarrantyActive(listing.appleWarrantyUntil)) return false;
     if (filters.minPrice != null && listing.price < filters.minPrice) return false;
     if (filters.maxPrice != null && listing.price > filters.maxPrice) return false;

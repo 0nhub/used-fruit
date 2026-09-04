@@ -10,7 +10,7 @@ import { useEffect, useRef } from "react";
 export function MessageNotifier() {
   const pathname = usePathname();
   const { profile } = useProfile();
-  const { threads, ready } = useMessages();
+  const { threads, ready, isMuted } = useMessages();
   const { userListings } = useListings();
   const seenRef = useRef<Set<string> | null>(null);
 
@@ -40,6 +40,7 @@ export function MessageNotifier() {
         (iAmSeller && latest.author === "buyer") || (!iAmSeller && latest.author === "seller");
       if (!incoming) continue;
       const who = iAmSeller ? thread.buyerName : thread.sellerName;
+      if (isMuted(who)) continue;
       const body =
         latest.kind === "offer"
           ? "Neue Kaufoption"
@@ -49,7 +50,7 @@ export function MessageNotifier() {
       showMessageNotification(who || "Used Fruit", body, `/nachrichten?id=${encodeURIComponent(thread.id)}`);
     }
     seenRef.current = ids;
-  }, [ready, threads, profile.notifyOnMessage, pathname, userListings]);
+  }, [ready, threads, profile.notifyOnMessage, pathname, userListings, isMuted]);
 
   return null;
 }

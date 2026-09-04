@@ -3,7 +3,7 @@
 import {
   LoginIcon,
   LogoutIcon,
-  MegaphoneIcon,
+  MacBookIcon,
   PlusIcon,
   ProfileIcon,
 } from "@/components/icons";
@@ -144,7 +144,7 @@ export function ProfileMenu() {
                 }}
               >
                 <MenuIconWrap>
-                  <MegaphoneIcon className="h-4 w-4" />
+                  <MacBookIcon className="h-4 w-4" />
                 </MenuIconWrap>
                 Meine Inserate
               </Link>

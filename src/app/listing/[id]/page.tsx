@@ -6,6 +6,7 @@ import { FavoriteButton } from "@/components/FavoriteButton";
 import { OwnerListingActions } from "@/components/OwnerListingActions";
 import { ProductGallery } from "@/components/ProductGallery";
 import { ShareButton } from "@/components/ShareButton";
+import { ReputationBadge } from "@/components/ReputationBadge";
 import { SiteHeader } from "@/components/SiteHeader";
 import { formatConnectivity, getCondition, getColor } from "@/data/catalog";
 import { getHardwareSpecs } from "@/data/hardware";
@@ -19,9 +20,11 @@ import {
 import { formatListingMeta, formatListingName, formatMemberSince, formatPrice } from "@/lib/format";
 import { findThreadForListing } from "@/lib/messages";
 import { listingJoinedAt, listingSellerEmoji } from "@/lib/seller";
+import { sellerHref } from "@/lib/sellerPage";
 import { useListings } from "@/lib/useListings";
 import { useMessages } from "@/lib/useMessages";
 import { useProfile } from "@/lib/useProfile";
+import { useReputation } from "@/lib/useReputation";
 import { useUserLocation } from "@/lib/useUserLocation";
 import type { Listing } from "@/lib/types";
 import Link from "next/link";
@@ -53,16 +56,21 @@ function SellerBox({
   isOwn: boolean;
 }) {
   const router = useRouter();
-  const { profile, signedIn, login } = useProfile();
+  const { profile, signedIn } = useProfile();
   const { threads, ready: messagesReady, openThread, send } = useMessages();
+  const { snapshot: sellerReputation } = useReputation(listing.sellerName);
   const [contactOpen, setContactOpen] = useState(false);
   const [note, setNote] = useState("");
   const [error, setError] = useState("");
   const existingThread = findThreadForListing(threads, listing);
+  const shopHref = sellerHref(listing.sellerName);
 
   const startConversation = (kind: "buy" | "contact") => {
     setError("");
-    if (!signedIn) login();
+    if (!signedIn) {
+      router.push(`/anmelden?next=/listing/${listing.id}`);
+      return;
+    }
     if (!profile.name.trim()) {
       setError("Bitte zuerst deinen Namen im Profil setzen.");
       return;
@@ -96,16 +104,35 @@ function SellerBox({
   return (
     <section className="rounded-3xl border border-uf-border-soft bg-uf-bg-subtle/70 px-4 py-4">
       <div className="flex items-center gap-3">
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white text-[28px] leading-none">
-          {sellerEmoji}
-        </span>
-        <p className="min-w-0 flex-1 truncate text-[15px] font-medium text-uf-text">
-          {listing.sellerName}
-        </p>
+        {shopHref ? (
+          <Link
+            href={shopHref}
+            className="flex min-w-0 flex-1 items-center gap-3 hover:opacity-80"
+          >
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white text-[28px] leading-none">
+              {sellerEmoji}
+            </span>
+            <p className="min-w-0 flex-1 truncate text-[15px] font-medium text-uf-text">
+              {listing.sellerName}
+            </p>
+          </Link>
+        ) : (
+          <>
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white text-[28px] leading-none">
+              {sellerEmoji}
+            </span>
+            <p className="min-w-0 flex-1 truncate text-[15px] font-medium text-uf-text">
+              {listing.sellerName}
+            </p>
+          </>
+        )}
         <p className="shrink-0 text-right text-[13px] text-uf-text-secondary">
           Mitglied seit {formatMemberSince(listingJoinedAt(listing))}
         </p>
       </div>
+      {sellerReputation && (
+        <ReputationBadge reputation={sellerReputation} personName={listing.sellerName} own={isOwn} />
+      )}
 
       {isOwn ? (
         <p className="mt-3 text-[13px] text-uf-text-secondary">
@@ -280,6 +307,11 @@ export default function ListingDetailPage() {
           )}
           <div className="px-4 py-6 sm:px-6">
             <SellerBox listing={listing} sellerEmoji={sellerEmoji} isOwn={isOwn} />
+            {isOwn ? (
+              <div className="mt-4">
+                <OwnerListingActions listing={listing} variant="pills" />
+              </div>
+            ) : null}
           </div>
         </div>
 
@@ -294,11 +326,6 @@ export default function ListingDetailPage() {
                   {formatListingMeta(listing)}
                 </p>
               )}
-              {isOwn ? (
-                <div className="mt-3">
-                  <OwnerListingActions listing={listing} />
-                </div>
-              ) : null}
             </div>
             <div className="flex shrink-0 items-center">
               <ShareButton listing={listing} />
@@ -330,6 +357,12 @@ export default function ListingDetailPage() {
                 }
                 value={condition?.label ?? listing.condition}
               />
+              {listing.originalBox != null && (
+                <SpecRow
+                  label="Originalverpackung"
+                  value={listing.originalBox ? "Ja" : "Nein"}
+                />
+              )}
               {formatBatteryLabel(listing) && (
                 <SpecRow label="Batteriezustand" value={formatBatteryLabel(listing)} />
               )}

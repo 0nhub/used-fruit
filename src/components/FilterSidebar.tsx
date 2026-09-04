@@ -37,6 +37,7 @@ interface FilterSidebarProps {
   minBatteryCapacity?: number;
   maxBatteryCycles?: number;
   onModelChange: (id?: string) => void;
+  onCategoryChange?: (id?: CategoryId) => void;
   onToggleSize: (value: string) => void;
   onToggleYear: (value: number) => void;
   onToggleColor: (value: string) => void;
@@ -57,6 +58,8 @@ interface FilterSidebarProps {
   onMaxPriceChange: (value?: number) => void;
   shipping?: "yes" | "no";
   onShippingChange: (value?: "yes" | "no") => void;
+  originalBox?: "yes" | "no";
+  onOriginalBoxChange: (value?: "yes" | "no") => void;
   hideLegal?: boolean;
 }
 
@@ -332,9 +335,13 @@ export function FilterSidebar(props: FilterSidebarProps) {
           <div className="pb-3">
             {groupedHomeModels.map((group) => (
               <div key={group.category.id} className="mb-3 last:mb-0">
-                <div className="pb-1 text-[11px] text-uf-text-tertiary">
+                <button
+                  type="button"
+                  onClick={() => props.onCategoryChange?.(group.category.id)}
+                  className="block pb-1 text-left text-[11px] text-uf-text-tertiary hover:text-uf-text"
+                >
                   {group.category.label}
-                </div>
+                </button>
                 <ul>
                   {group.models.map((model) => (
                     <li key={model.id}>
@@ -435,6 +442,16 @@ export function FilterSidebar(props: FilterSidebarProps) {
         ))}
       </Section>
 
+      <Section title="Originalverpackung">
+        <CheckRow
+          label="Nur mit Originalverpackung"
+          checked={props.originalBox === "yes"}
+          onChange={() =>
+            props.onOriginalBoxChange(props.originalBox === "yes" ? undefined : "yes")
+          }
+        />
+      </Section>
+
       <Section title="Garantie">
         <CheckRow
           label="Nur mit gültiger Garantie"
@@ -528,8 +545,12 @@ export function FilterSidebar(props: FilterSidebarProps) {
           <option value="yes">Abholung und Versand</option>
         </select>
       </Section>
-      {!props.hideLegal && <LegalNav />}
       </div>
+      {!props.hideLegal && (
+        <div className="shrink-0">
+          <LegalNav />
+        </div>
+      )}
     </aside>
   );
 }

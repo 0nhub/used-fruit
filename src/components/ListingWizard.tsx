@@ -3,6 +3,7 @@
 import { DateField } from "@/components/DateField";
 import { LocationAutocomplete } from "@/components/LocationAutocomplete";
 import { SiteHeader } from "@/components/SiteHeader";
+import { BindTryLeave, UnsavedGuard } from "@/components/UnsavedGuard";
 import {
   CATEGORIES,
   CONDITIONS,
@@ -11,9 +12,15 @@ import {
   getModelById,
 } from "@/data/catalog";
 import { formatPlaceLabel } from "@/data/locations";
-import { optionsForYear, yearChoiceLabel } from "@/data/modelYears";
+import { chipsForModel, optionsForYear, yearsForChip } from "@/data/modelYears";
 import { getBatteryMetricForModel } from "@/lib/device";
 import { buildListingTitle, createId } from "@/lib/format";
+import {
+  clearListingDraft,
+  readListingDraft,
+  writeListingDraft,
+  type ListingDraft,
+} from "@/lib/listingDraft";
 import {
   BATTERY_GUIDES,
   buildWizardSteps,
@@ -23,8 +30,8 @@ import {
 import { useListings } from "@/lib/useListings";
 import { useProfile } from "@/lib/useProfile";
 import type { CategoryId, ConditionId, IpadConnectivity, ShippingScope } from "@/lib/types";
-import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 function swatchNeedsOutline(hex: string): boolean {
   const raw = hex.replace("#", "");
@@ -95,8 +102,10 @@ const fieldClass =
 
 export function ListingWizard() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { addListing } = useListings();
-  const { profile } = useProfile();
+  const { profile, signedIn, ready: profileReady } = useProfile();
+  const [leavingForLogin, setLeavingForLogin] = useState(false);
 
   const [stepIndex, setStepIndex] = useState(0);
   const [categoryId, setCategoryId] = useState<CategoryId | undefined>();
@@ -109,6 +118,7 @@ export function ListingWizard() {
   const [storage, setStorage] = useState("");
   const [connectivity, setConnectivity] = useState<IpadConnectivity | undefined>();
   const [condition, setCondition] = useState<ConditionId | undefined>();
+  const [originalBox, setOriginalBox] = useState<boolean | undefined>();
   const [hasAppleWarranty, setHasAppleWarranty] = useState(false);
   const [warrantyUntil, setWarrantyUntil] = useState("");
   const [batteryCapacity, setBatteryCapacity] = useState("");
@@ -121,40 +131,77 @@ export function ListingWizard() {
   const [street, setStreet] = useState("");
   const [shippingScope, setShippingScope] = useState<ShippingScope | undefined>();
   const [error, setError] = useState("");
+  const leaveRef = useRef<(go: () => void) => void>((go) => go());
+
+  const dirty =
+    !leavingForLogin &&
+    Boolean(
+      categoryId ||
+        modelId ||
+        colorId ||
+        chip ||
+        size ||
+        year != null ||
+        memory ||
+        storage ||
+        connectivity ||
+        condition ||
+        originalBox != null ||
+        hasAppleWarranty ||
+        warrantyUntil ||
+        batteryCapacity ||
+        batteryCycles ||
+        price ||
+        locationQuery ||
+        city ||
+        postalCode ||
+        locality ||
+        street ||
+        shippingScope ||
+        stepIndex > 0,
+    );
 
   const model = modelId ? getModelById(modelId) : undefined;
   const models = categoryId
     ? getModelsByCategory(categoryId).filter((item) => !item.disabled)
     : [];
   const batteryMetric = getBatteryMetricForModel(modelId);
-  const steps = useMemo(() => buildWizardSteps(modelId || undefined, year), [modelId, year]);
+  const steps = useMemo(
+    () => buildWizardSteps(modelId || undefined, year, chip),
+    [modelId, year, chip],
+  );
   const step = steps[Math.min(stepIndex, steps.length - 1)];
   const copy = STEP_COPY[step];
   const yearOptions = optionsForYear(
     model,
     year ?? (model?.years?.length === 1 ? model.years[0] : undefined),
   );
+  const chipChoices = useMemo(() => chipsForModel(model), [model]);
+  const yearChoices = useMemo(() => yearsForChip(model, chip || undefined), [model, chip]);
 
   useEffect(() => {
-    const soleYear = soleSpecValues(model);
-    if (soleYear.year != null) setYear(soleYear.year);
+    const sole = soleSpecValues(model);
+    if (sole.year != null) setYear(sole.year);
+    if (sole.chip) setChip(sole.chip);
   }, [model]);
 
   useEffect(() => {
     if (!model) return;
     const options = optionsForYear(model, year);
-    if (chip && options.chips && !options.chips.includes(chip)) setChip("");
+    if (chip && year != null && options.chips && !options.chips.includes(chip)) setChip("");
     if (size && options.sizes && !options.sizes.includes(size)) setSize("");
     if (colorId && !options.colors.some((item) => item.id === colorId)) setColorId("");
     if (memory && options.memory && !options.memory.includes(memory)) setMemory("");
     if (storage && options.storage && !options.storage.includes(storage)) setStorage("");
-    const sole = soleSpecValues(model, year);
+    const sole = soleSpecValues(model, year, chip);
+    if (chip && year != null && !yearsForChip(model, chip).includes(year)) setYear(undefined);
+    else if (sole.year != null) setYear(sole.year);
     if (sole.chip) setChip(sole.chip);
     if (sole.colorId) setColorId(sole.colorId);
     if (sole.size) setSize(sole.size);
     if (sole.memory) setMemory(sole.memory);
     if (sole.storage) setStorage(sole.storage);
-  }, [model, year]);
+  }, [model, year, chip]);
 
   const resetSpecs = () => {
     setColorId("");
@@ -165,6 +212,7 @@ export function ListingWizard() {
     setStorage("");
     setConnectivity(undefined);
     setCondition(undefined);
+    setOriginalBox(undefined);
     setHasAppleWarranty(false);
     setWarrantyUntil("");
     setBatteryCapacity("");
@@ -184,7 +232,7 @@ export function ListingWizard() {
       case "size":
         return Boolean(size);
       case "year":
-        return year != null;
+        return year != null && yearChoices.includes(year);
       case "memory":
         return Boolean(memory);
       case "storage":
@@ -193,6 +241,8 @@ export function ListingWizard() {
         return Boolean(connectivity);
       case "condition":
         return Boolean(condition);
+      case "packaging":
+        return originalBox != null;
       case "warranty":
         return !hasAppleWarranty || Boolean(warrantyUntil);
       case "battery":
@@ -219,7 +269,7 @@ export function ListingWizard() {
   const goBack = () => {
     setError("");
     if (stepIndex === 0) {
-      router.push("/");
+      leaveRef.current(() => router.push("/"));
       return;
     }
     setStepIndex((index) => index - 1);
@@ -235,9 +285,46 @@ export function ListingWizard() {
     setStepIndex((index) => Math.min(index + 1, steps.length - 1));
   };
 
-  const publish = () => {
-    const sellerName = profile.name.trim() || "Anbieter";
-    if (!categoryId || !modelId || !colorId || !condition || !shippingScope) {
+  const commitListing = useCallback(
+    (draft: ListingDraft) => {
+      const id = createId("uf");
+      addListing({
+        id,
+        categoryId: draft.categoryId,
+        modelId: draft.modelId,
+        title: buildListingTitle(draft.modelId),
+        chip: draft.chip,
+        colorId: draft.colorId,
+        size: draft.size,
+        year: draft.year,
+        memory: draft.memory,
+        storage: draft.storage,
+        connectivity: draft.connectivity,
+        condition: draft.condition,
+        originalBox: draft.originalBox,
+        price: draft.price,
+        city: draft.city,
+        postalCode: draft.postalCode,
+        locality: draft.locality,
+        street: draft.street,
+        radiusKm: 0,
+        shippingScope: draft.shippingScope,
+        createdAt: new Date().toISOString(),
+        sellerName: profile.name.trim() || "Anbieter",
+        sellerEmoji: profile.emoji,
+        sellerJoinedAt: new Date().toISOString(),
+        appleWarrantyUntil: draft.appleWarrantyUntil,
+        batteryMaxCapacityPercent: draft.batteryMaxCapacityPercent,
+        batteryCycleCount: draft.batteryCycleCount,
+      });
+      clearListingDraft();
+      router.push(`/listing/${id}`);
+    },
+    [addListing, profile.emoji, profile.name, router],
+  );
+
+  const collectDraft = (): ListingDraft | undefined => {
+    if (!categoryId || !modelId || !colorId || !condition || originalBox == null || !shippingScope) {
       setError("Bitte alle Angaben vollständig ausfüllen.");
       return;
     }
@@ -274,12 +361,9 @@ export function ListingWizard() {
       batteryCycleCount = parsed;
     }
 
-    const id = createId("uf");
-    addListing({
-      id,
+    return {
       categoryId,
       modelId,
-      title: buildListingTitle(modelId),
       chip: chip || undefined,
       colorId,
       size: size || undefined,
@@ -288,25 +372,52 @@ export function ListingWizard() {
       storage: storage || undefined,
       connectivity: categoryId === "ipad" ? connectivity : undefined,
       condition,
+      originalBox,
       price: parsedPrice,
       city: city.trim(),
       postalCode: postalCode.trim(),
       locality: locality.trim() || undefined,
       street: street.trim() || undefined,
-      radiusKm: 0,
       shippingScope,
-      createdAt: new Date().toISOString(),
-      sellerName,
-      sellerEmoji: profile.emoji,
-      sellerJoinedAt: new Date().toISOString(),
       appleWarrantyUntil: hasAppleWarranty ? warrantyUntil : undefined,
       batteryMaxCapacityPercent,
       batteryCycleCount,
-    });
-    router.push(`/listing/${id}`);
+    };
   };
 
+  const publish = () => {
+    const draft = collectDraft();
+    if (!draft) return;
+    if (!signedIn) {
+      writeListingDraft(draft);
+      setLeavingForLogin(true);
+      return;
+    }
+    commitListing(draft);
+  };
+
+  useEffect(() => {
+    if (!leavingForLogin) return;
+    router.push(`/anmelden?next=${encodeURIComponent("/inserieren?publish=1")}`);
+  }, [leavingForLogin, router]);
+
+  useEffect(() => {
+    if (!profileReady || !signedIn) return;
+    if (searchParams.get("publish") !== "1") return;
+    const draft = readListingDraft();
+    if (!draft) return;
+    commitListing(draft);
+  }, [commitListing, profileReady, searchParams, signedIn]);
+
   return (
+    <UnsavedGuard
+      dirty={dirty}
+      title="Seite verlassen?"
+      message="Hey, du willst gerade die Seite verlassen. Dabei gehen alle Daten verloren."
+      stayLabel="Hier bleiben"
+      leaveLabel="Verlassen"
+    >
+      <BindTryLeave leaveRef={leaveRef} />
     <div className="flex min-h-dvh flex-col bg-uf-bg-subtle">
       <SiteHeader />
       <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col px-4 py-8">
@@ -386,15 +497,16 @@ export function ListingWizard() {
                 />
               ))}
 
-            {step === "year" &&
-              model?.years?.map((value) => (
+            {step === "chip" &&
+              chipChoices.map((value) => (
                 <OptionRow
                   key={value}
-                  label={yearChoiceLabel(model.id, value)}
-                  selected={year === value}
+                  label={value}
+                  selected={chip === value}
                   onSelect={() => {
-                    setYear(value);
-                    setChip("");
+                    setChip(value);
+                    const years = yearsForChip(model, value);
+                    setYear(years.length === 1 ? years[0] : undefined);
                     setColorId("");
                     setSize("");
                     setMemory("");
@@ -403,13 +515,19 @@ export function ListingWizard() {
                 />
               ))}
 
-            {step === "chip" &&
-              yearOptions.chips?.map((value) => (
+            {step === "year" &&
+              yearChoices.map((value) => (
                 <OptionRow
                   key={value}
-                  label={value}
-                  selected={chip === value}
-                  onSelect={() => setChip(value)}
+                  label={String(value)}
+                  selected={year === value}
+                  onSelect={() => {
+                    setYear(value);
+                    setColorId("");
+                    setSize("");
+                    setMemory("");
+                    setStorage("");
+                  }}
                 />
               ))}
 
@@ -474,6 +592,21 @@ export function ListingWizard() {
                   onSelect={() => setCondition(item.id)}
                 />
               ))}
+
+            {step === "packaging" && (
+              <>
+                <OptionRow
+                  label="Ja, Originalverpackung ist vorhanden"
+                  selected={originalBox === true}
+                  onSelect={() => setOriginalBox(true)}
+                />
+                <OptionRow
+                  label="Nein, ohne Originalverpackung"
+                  selected={originalBox === false}
+                  onSelect={() => setOriginalBox(false)}
+                />
+              </>
+            )}
 
             {step === "warranty" && (
               <>
@@ -652,5 +785,6 @@ export function ListingWizard() {
         </section>
       </main>
     </div>
+    </UnsavedGuard>
   );
 }

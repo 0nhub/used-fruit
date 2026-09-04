@@ -13,24 +13,19 @@ export const CONDITIONS: { id: ConditionId; label: string; hint: string }[] = [
     hint: "Nagelneu, unbenutzt und noch originalverpackt.",
   },
   {
-    id: "wie-neu",
-    label: "Wie neu",
-    hint: "Kaum Gebrauchsspuren, sehr gepflegt.",
-  },
-  {
     id: "sehr-gut",
     label: "Sehr gut",
-    hint: "Leichte Gebrauchsspuren, voll funktionsfähig.",
+    hint: "Leichte Gebrauchsspuren, sehr gepflegt und voll funktionsfähig.",
   },
   {
     id: "gut",
-    label: "Gut",
-    hint: "Sichtbare Spuren, einwandfreie Funktion.",
+    label: "Gebraucht",
+    hint: "Sichtbare Gebrauchsspuren, voll funktionsfähig.",
   },
   {
     id: "akzeptabel",
     label: "Akzeptabel",
-    hint: "Deutliche Spuren, technisch in Ordnung.",
+    hint: "Deutliche Spuren oder Abnutzung, technisch in Ordnung.",
   },
   {
     id: "defekt",
@@ -278,8 +273,13 @@ export function getColor(modelId: string, colorId: string) {
   return getModelById(modelId)?.colors.find((c) => c.id === colorId);
 }
 
-export function getCondition(id: ConditionId) {
-  return CONDITIONS.find((c) => c.id === id);
+export function normalizeConditionId(id: string): ConditionId {
+  if (id === "wie-neu") return "sehr-gut";
+  return id as ConditionId;
+}
+
+export function getCondition(id: ConditionId | string) {
+  return CONDITIONS.find((c) => c.id === normalizeConditionId(id));
 }
 
 export function isPartsListing(condition: ConditionId) {

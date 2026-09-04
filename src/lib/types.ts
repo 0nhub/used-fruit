@@ -2,7 +2,6 @@ export type CategoryId = "mac" | "ipad" | "iphone";
 
 export type ConditionId =
   | "neu"
-  | "wie-neu"
   | "sehr-gut"
   | "gut"
   | "akzeptabel"
@@ -48,6 +47,8 @@ export interface Listing {
   /** iPad: WLAN oder WLAN + Cellular. */
   connectivity?: IpadConnectivity;
   condition: ConditionId;
+  /** Originalkarton / Originalverpackung vorhanden. */
+  originalBox?: boolean;
   price: number;
   city: string;
   postalCode: string;
@@ -92,4 +93,5 @@ export interface ListingFilters {
   minPrice?: number;
   maxPrice?: number;
   shipping?: "yes" | "no";
+  originalBox?: "yes" | "no";
 }

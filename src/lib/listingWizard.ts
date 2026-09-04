@@ -1,5 +1,5 @@
 import { getModelById } from "@/data/catalog";
-import { optionsForYear } from "@/data/modelYears";
+import { chipsForModel, optionsForYear, yearsForChip } from "@/data/modelYears";
 import { getBatteryMetricForModel } from "@/lib/device";
 import type { ModelDefinition } from "@/lib/types";
 
@@ -14,6 +14,7 @@ export type WizardStep =
   | "storage"
   | "connectivity"
   | "condition"
+  | "packaging"
   | "warranty"
   | "battery"
   | "price"
@@ -24,14 +25,22 @@ function onlyChoice<T>(items?: readonly T[]): T | undefined {
   return items?.length === 1 ? items[0] : undefined;
 }
 
-export function soleSpecValues(model: ModelDefinition | undefined, year?: number) {
+export function soleSpecValues(
+  model: ModelDefinition | undefined,
+  year?: number,
+  chip?: string,
+) {
   if (!model) return {};
-  const options = optionsForYear(model, year ?? onlyChoice(model.years));
+  const chips = chipsForModel(model);
+  const resolvedChip = chip || onlyChoice(chips);
+  const years = yearsForChip(model, resolvedChip);
+  const resolvedYear = year ?? onlyChoice(years);
+  const options = optionsForYear(model, resolvedYear);
   return {
-    chip: onlyChoice(options.chips),
+    chip: onlyChoice(chips),
     colorId: onlyChoice(options.colors)?.id,
     size: onlyChoice(options.sizes),
-    year: onlyChoice(model.years),
+    year: onlyChoice(years),
     memory: onlyChoice(options.memory),
     storage: onlyChoice(options.storage),
   };
@@ -41,23 +50,30 @@ function needsChoice<T>(items: readonly T[] | undefined) {
   return (items?.length ?? 0) > 1;
 }
 
-export function buildWizardSteps(modelId: string | undefined, year?: number): WizardStep[] {
+export function buildWizardSteps(
+  modelId: string | undefined,
+  year?: number,
+  chip?: string,
+): WizardStep[] {
   const steps: WizardStep[] = ["category", "model"];
   const model = modelId ? getModelById(modelId) : undefined;
-  if (needsChoice(model?.years)) steps.push("year");
+  const chips = chipsForModel(model);
+  if (needsChoice(chips)) steps.push("chip");
 
-  const resolvedYear = year ?? onlyChoice(model?.years);
+  const resolvedChip = chip || onlyChoice(chips);
+  const years = yearsForChip(model, resolvedChip);
+  if (resolvedChip && needsChoice(years)) steps.push("year");
+
+  const resolvedYear = year ?? onlyChoice(years);
   const ready = Boolean(model && (resolvedYear != null || !model.years?.length));
   const options = ready ? optionsForYear(model, resolvedYear) : undefined;
-
-  if (needsChoice(options?.chips)) steps.push("chip");
   if (needsChoice(options?.colors)) steps.push("color");
   if (needsChoice(options?.sizes)) steps.push("size");
   if (needsChoice(options?.memory)) steps.push("memory");
   if (needsChoice(options?.storage)) steps.push("storage");
   if (model?.categoryId === "ipad") steps.push("connectivity");
 
-  steps.push("condition", "warranty");
+  steps.push("condition", "packaging", "warranty");
   if (modelId && getBatteryMetricForModel(modelId)) steps.push("battery");
   steps.push("price", "location", "shipping");
   return steps;
@@ -91,8 +107,7 @@ export const STEP_COPY: Record<
   },
   year: {
     title: "Erscheinungsjahr",
-    subtitle:
-      "Jahr und Chip gehören zusammen. Wähle die Generation — der passende Chip steht direkt dabei.",
+    subtitle: "Diesen Chip gab es in mehreren Jahren. Welches Gerät hast du?",
     tip: "Einstellungen → Allgemein → Info, oder auf der Unterseite des Geräts.",
   },
   memory: {
@@ -113,6 +128,10 @@ export const STEP_COPY: Record<
   condition: {
     title: "Zustand",
     subtitle: "Wähle den Zustand. Die Erklärung steht direkt unter jeder Kachel.",
+  },
+  packaging: {
+    title: "Originalverpackung",
+    subtitle: "Ist die Originalverpackung noch vorhanden?",
   },
   warranty: {
     title: "Garantie",

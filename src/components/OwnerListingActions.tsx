@@ -5,13 +5,24 @@ import type { Listing, ListingVisibility } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-function actionClass(kind: "link" | "danger") {
+function actionClass(kind: "link" | "danger", variant: "links" | "pills") {
+  if (variant === "pills") {
+    return kind === "danger"
+      ? "h-8 rounded-full border border-[#d80000]/25 px-3 text-[13px] text-[#d80000] hover:bg-[#d80000]/5"
+      : "h-8 rounded-full border border-uf-border bg-white px-3 text-[13px] text-uf-text hover:bg-uf-bg-subtle";
+  }
   return kind === "danger"
     ? "text-[13px] text-[#d80000] hover:underline"
     : "text-[13px] text-uf-link hover:underline";
 }
 
-export function OwnerListingActions({ listing }: { listing: Listing }) {
+export function OwnerListingActions({
+  listing,
+  variant = "links",
+}: {
+  listing: Listing;
+  variant?: "links" | "pills";
+}) {
   const router = useRouter();
   const { updateListing, removeListing } = useListings();
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -24,33 +35,33 @@ export function OwnerListingActions({ listing }: { listing: Listing }) {
 
   return (
     <>
-      <div className="flex flex-wrap gap-x-5 gap-y-2">
+      <div className={variant === "pills" ? "flex flex-wrap gap-2" : "flex flex-wrap gap-x-5 gap-y-2"}>
         {visibility === "public" ? (
           <>
-            <button type="button" className={actionClass("link")} onClick={() => setVisibility("reserved")}>
+            <button type="button" className={actionClass("link", variant)} onClick={() => setVisibility("reserved")}>
               Reservieren
             </button>
-            <button type="button" className={actionClass("link")} onClick={() => setVisibility("inactive")}>
+            <button type="button" className={actionClass("link", variant)} onClick={() => setVisibility("inactive")}>
               Deaktivieren
             </button>
           </>
         ) : (
           <>
-            <button type="button" className={actionClass("link")} onClick={() => setVisibility("public")}>
+            <button type="button" className={actionClass("link", variant)} onClick={() => setVisibility("public")}>
               Aktivieren
             </button>
             {visibility === "reserved" ? (
-              <button type="button" className={actionClass("link")} onClick={() => setVisibility("inactive")}>
+              <button type="button" className={actionClass("link", variant)} onClick={() => setVisibility("inactive")}>
                 Deaktivieren
               </button>
             ) : (
-              <button type="button" className={actionClass("link")} onClick={() => setVisibility("reserved")}>
+              <button type="button" className={actionClass("link", variant)} onClick={() => setVisibility("reserved")}>
                 Reservieren
               </button>
             )}
           </>
         )}
-        <button type="button" className={actionClass("danger")} onClick={() => setConfirmDelete(true)}>
+        <button type="button" className={actionClass("danger", variant)} onClick={() => setConfirmDelete(true)}>
           Löschen
         </button>
       </div>
@@ -67,8 +78,7 @@ export function OwnerListingActions({ listing }: { listing: Listing }) {
             </h2>
             <p className="mt-2 text-[15px] text-uf-text-secondary">
               Sind Sie sicher, dass Sie das Inserat löschen möchten? Es ist danach nicht mehr
-              vorhanden. Alternativ können Sie es reservieren — dann bleibt es für Sie sichtbar,
-              ist aber nicht mehr online.
+              vorhanden.
             </p>
             <div className="mt-5 flex flex-wrap gap-2">
               <button
@@ -80,13 +90,6 @@ export function OwnerListingActions({ listing }: { listing: Listing }) {
                 className="h-10 rounded-full bg-[#d80000] px-5 text-[14px] text-white hover:bg-[#b40000]"
               >
                 Löschen
-              </button>
-              <button
-                type="button"
-                onClick={() => setVisibility("reserved")}
-                className="h-10 rounded-full border border-uf-border px-4 text-[14px] text-uf-text hover:bg-uf-bg-subtle"
-              >
-                Reservieren
               </button>
               <button
                 type="button"

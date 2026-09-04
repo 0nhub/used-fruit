@@ -1,16 +1,22 @@
 "use client";
 
 import { EmojiPicker } from "@/components/EmojiPicker";
+import { PendingRatings } from "@/components/ReputationSheet";
+import { ReputationBadge } from "@/components/ReputationBadge";
 import { LocationAutocomplete } from "@/components/LocationAutocomplete";
 import { SiteHeader } from "@/components/SiteHeader";
 import { UnsavedGuard } from "@/components/UnsavedGuard";
 import { RADIUS_OPTIONS } from "@/data/catalog";
 import { formatPlaceLabel } from "@/data/locations";
 import { requestMessagePermission } from "@/lib/notify";
-import { extractAvatarEmoji } from "@/lib/profile";
+import { BIO_MAX_LENGTH, extractAvatarEmoji } from "@/lib/profile";
+import { renameRatedPerson } from "@/lib/reputation";
+import { sellerHref } from "@/lib/sellerPage";
 import { useListings } from "@/lib/useListings";
 import { useProfile } from "@/lib/useProfile";
+import { useReputation } from "@/lib/useReputation";
 import { useUserLocation } from "@/lib/useUserLocation";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -19,10 +25,12 @@ const fieldClass =
 
 export default function ProfilPage() {
   const router = useRouter();
-  const { profile, signedIn, ready, saveProfile, login, deleteAccount } = useProfile();
+  const { profile, signedIn, ready, saveProfile, deleteAccount } = useProfile();
   const { location, setLocation } = useUserLocation();
   const { renameSeller } = useListings();
+  const { snapshot: reputation, pending, rate } = useReputation(profile.name);
   const [name, setName] = useState("");
+  const [bio, setBio] = useState("");
   const [emoji, setEmoji] = useState(profile.emoji);
   const [formReady, setFormReady] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -33,14 +41,18 @@ export default function ProfilPage() {
   useEffect(() => {
     if (!ready) return;
     setName(profile.name);
+    setBio(profile.bio);
     setEmoji(profile.emoji);
     setFormReady(true);
-  }, [ready, profile.name, profile.emoji]);
+  }, [ready, profile.name, profile.bio, profile.emoji]);
 
   const dirty =
     formReady &&
     signedIn &&
-    (name.trim() !== profile.name.trim() || emoji !== profile.emoji);
+    (name.trim() !== profile.name.trim() ||
+      bio.trim() !== profile.bio.trim() ||
+      emoji !== profile.emoji);
+  const publicPage = sellerHref(name || profile.name);
 
   if (!ready) {
     return (
@@ -59,13 +71,12 @@ export default function ProfilPage() {
         <p className="mt-3 text-[14px] text-uf-text-secondary">
           Melde dich an, um Namen, Standort und Konto zu verwalten.
         </p>
-        <button
-          type="button"
-          onClick={login}
-          className="mt-6 h-10 rounded-full bg-uf-text px-5 text-[14px] text-white"
+        <a
+          href="/anmelden?next=/profil"
+          className="mt-6 inline-flex h-10 items-center rounded-full bg-uf-text px-5 text-[14px] text-white"
         >
           Anmelden
-        </button>
+        </a>
       </Shell>
     );
   }
@@ -77,8 +88,8 @@ export default function ProfilPage() {
           Konto
         </h1>
         <p className="mt-2 text-[14px] text-uf-text-secondary">
-          Tippe auf den Kreis, um das Emoji zu ändern. Name erscheint bei deinen
-          Inseraten.
+          Tippe auf den Kreis, um das Emoji zu ändern. Name und Kurzbeschreibung
+          erscheinen auf deiner öffentlichen Seite.
         </p>
 
         <form
@@ -91,10 +102,16 @@ export default function ProfilPage() {
               ...profile,
               name: name.trim(),
               emoji: nextEmoji,
+              bio: bio.trim(),
             };
             setEmoji(nextEmoji);
             saveProfile(next);
-            if (next.name) renameSeller(next.name, nextEmoji);
+            if (next.name) {
+              if (profile.name.trim() && profile.name.trim() !== next.name) {
+                renameRatedPerson(profile.name, next.name);
+              }
+              renameSeller(next.name, nextEmoji);
+            }
             setSaved(true);
             window.setTimeout(() => setSaved(false), 1800);
           }}
@@ -124,7 +141,11 @@ export default function ProfilPage() {
               <p className="text-[15px] font-medium text-uf-text">
                 {name.trim() || "Noch kein Name"}
               </p>
-              <p className="text-[13px] text-uf-text-tertiary">Emoji antippen zum Ändern</p>
+              {reputation ? (
+                <ReputationBadge reputation={reputation} personName={name.trim() || profile.name} own />
+              ) : (
+                <p className="mt-2 text-[13px] text-uf-text-tertiary">Emoji antippen zum Ändern</p>
+              )}
             </div>
           </div>
 
@@ -144,6 +165,37 @@ export default function ProfilPage() {
                 setSaved(false);
               }}
             />
+          </div>
+
+          <div>
+            <label className="text-[12px] tracking-wide text-uf-text-secondary uppercase" htmlFor="uf-bio">
+              Kurzbeschreibung
+            </label>
+            <p className="mt-1 text-[13px] text-uf-text-tertiary">
+              Optional. Steht oben auf deiner öffentlichen Seite.
+            </p>
+            <textarea
+              id="uf-bio"
+              className="mt-1.5 min-h-[88px] w-full resize-none rounded-xl border border-uf-border bg-white px-3 py-2 text-[14px] outline-none"
+              value={bio}
+              maxLength={BIO_MAX_LENGTH}
+              placeholder="z. B. Geprüfte Geräte, Versand aus Stuttgart."
+              onChange={(e) => {
+                setBio(e.target.value);
+                setSaved(false);
+              }}
+            />
+            <p className="mt-1 text-[12px] text-uf-text-tertiary">
+              {bio.trim().length}/{BIO_MAX_LENGTH}
+              {publicPage ? (
+                <>
+                  {" · "}
+                  <Link href={publicPage} className="text-uf-link hover:underline">
+                    Öffentliche Seite ansehen
+                  </Link>
+                </>
+              ) : null}
+            </p>
           </div>
 
           <div>
@@ -217,10 +269,16 @@ export default function ProfilPage() {
           )}
         </form>
 
+        <PendingRatings
+          pending={pending}
+          onRate={(thread, sentiment) => rate(thread, profile.name, sentiment)}
+        />
+
         <section className="mt-14 border-t border-uf-border-soft pt-8">
           <h2 className="text-[17px] font-semibold text-uf-text">Benachrichtigungen</h2>
           <p className="mt-2 text-[14px] text-uf-text-secondary">
-            Stelle ein, wann du von neuen Nachrichten erfährst.
+            Stelle ein, wann du von neuen Nachrichten erfährst. Stumm geschaltete
+            Chats bleiben im Verlauf, lösen aber keine Hinweise aus.
           </p>
           <button
             type="button"

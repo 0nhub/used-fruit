@@ -5,18 +5,28 @@ import type { CategoryId } from "@/lib/types";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 
-const ITEMS: { id?: CategoryId; label: string; href: string }[] = [
-  { label: "Alle", href: "/" },
+const CATALOG_PATHS = new Set(["/", "/favoriten", "/meine-inserate"]);
+
+const ITEMS: { id?: CategoryId; label: string }[] = [
+  { label: "Alle" },
   ...CATEGORIES.map((category) => ({
     id: category.id,
     label: category.label,
-    href: `/?kategorie=${category.id}`,
   })),
 ];
 
 export function parseCategoryParam(value: string | null): CategoryId | undefined {
   if (value === "mac" || value === "ipad" || value === "iphone") return value;
   return undefined;
+}
+
+export function catalogBasePath(pathname: string): string {
+  return CATALOG_PATHS.has(pathname) ? pathname : "/";
+}
+
+export function categoryHref(pathname: string, categoryId?: CategoryId): string {
+  const base = catalogBasePath(pathname);
+  return categoryId ? `${base}?kategorie=${categoryId}` : base;
 }
 
 export function CategoryNav({
@@ -28,8 +38,8 @@ export function CategoryNav({
 }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const active = pathname === "/" ? parseCategoryParam(searchParams.get("kategorie")) : undefined;
-  const onHome = pathname === "/";
+  const onCatalog = CATALOG_PATHS.has(pathname);
+  const active = onCatalog ? parseCategoryParam(searchParams.get("kategorie")) : undefined;
 
   return (
     <nav
@@ -40,11 +50,11 @@ export function CategoryNav({
       }
     >
       {ITEMS.map((item) => {
-        const selected = onHome && item.id === active;
+        const selected = onCatalog && item.id === active;
         return (
           <Link
             key={item.id ?? "all"}
-            href={item.href}
+            href={categoryHref(pathname, item.id)}
             aria-current={selected ? "page" : undefined}
             onClick={onNavigate}
             className={

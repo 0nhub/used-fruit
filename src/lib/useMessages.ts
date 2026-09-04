@@ -6,11 +6,14 @@ import {
   appendMessage,
   blockPerson,
   deleteThread,
+  mutePerson,
   readBlocked,
+  readMuted,
   readThreads,
   setOfferStatus,
   setThreadArchived,
   unblockPerson,
+  unmutePerson,
   upsertThread,
   type ChatMessage,
   type OfferStatus,
@@ -22,11 +25,13 @@ import { useCallback, useEffect, useState } from "react";
 export function useMessages() {
   const [threads, setThreads] = useState<Thread[]>([]);
   const [blocked, setBlocked] = useState<string[]>([]);
+  const [muted, setMuted] = useState<string[]>([]);
   const [ready, setReady] = useState(false);
 
   const refresh = useCallback(() => {
     setThreads(readThreads());
     setBlocked(readBlocked());
+    setMuted(readMuted());
     setReady(true);
   }, []);
 
@@ -110,9 +115,31 @@ export function useMessages() {
     [blocked],
   );
 
+  const mute = useCallback(
+    (name: string) => {
+      mutePerson(name);
+      refresh();
+    },
+    [refresh],
+  );
+
+  const unmute = useCallback(
+    (name: string) => {
+      unmutePerson(name);
+      refresh();
+    },
+    [refresh],
+  );
+
+  const isMuted = useCallback(
+    (name: string) => muted.includes(name.trim().toLowerCase()),
+    [muted],
+  );
+
   return {
     threads,
     blocked,
+    muted,
     ready,
     openThread,
     send,
@@ -122,5 +149,8 @@ export function useMessages() {
     block,
     unblock,
     isBlocked,
+    mute,
+    unmute,
+    isMuted,
   };
 }

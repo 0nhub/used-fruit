@@ -1,6 +1,6 @@
 "use client";
 
-import { CATEGORIES } from "@/data/catalog";
+import { CATEGORIES, normalizeConditionId } from "@/data/catalog";
 import { SEED_LISTINGS } from "@/data/listings";
 import { readSoldAt } from "@/lib/listingSold";
 import { LISTINGS_STORAGE_KEY, PROFILE_EVENT } from "@/lib/profile";
@@ -12,7 +12,16 @@ function readUserListings(): Listing[] {
   try {
     const raw = localStorage.getItem(LISTINGS_STORAGE_KEY);
     if (!raw) return [];
-    return JSON.parse(raw) as Listing[];
+    const parsed = JSON.parse(raw) as Listing[];
+    let changed = false;
+    const next = parsed.map((listing) => {
+      const condition = normalizeConditionId(listing.condition);
+      if (condition === listing.condition) return listing;
+      changed = true;
+      return { ...listing, condition };
+    });
+    if (changed) localStorage.setItem(LISTINGS_STORAGE_KEY, JSON.stringify(next));
+    return next;
   } catch {
     return [];
   }
