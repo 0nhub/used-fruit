@@ -11,7 +11,7 @@ function switchAccount(user: Identity | null) {
   const previous = localStorage.getItem(identityKey);
   const next = user?.id ?? null;
   if (previous !== next) {
-    const keys = Object.keys(localStorage).filter(key => key.startsWith("used-fruit-") && key !== identityKey && key !== "used-fruit-session");
+    const keys = Object.keys(localStorage).filter(key => key.startsWith("used-fruit-") && key !== identityKey && key !== "used-fruit-session" && !key.startsWith("used-fruit-account:"));
     const snapshot = Object.fromEntries(keys.map(key => [key, localStorage.getItem(key)]));
     // Keep legacy prototype data separately; do not assign it to a new identity.
     if (keys.length) localStorage.setItem(archiveKey(previous ?? "legacy"), JSON.stringify(snapshot));
@@ -21,9 +21,10 @@ function switchAccount(user: Identity | null) {
       if (saved) {
         const values = JSON.parse(saved) as Record<string, unknown>;
         for (const [key, value] of Object.entries(values)) {
-          if (key.startsWith("used-fruit-") && key !== identityKey && key !== "used-fruit-session" && typeof value === "string") localStorage.setItem(key, value);
+          if (key.startsWith("used-fruit-") && key !== identityKey && key !== "used-fruit-session" && !key.startsWith("used-fruit-account:") && typeof value === "string") localStorage.setItem(key, value);
         }
       }
+      if (!saved) localStorage.setItem("used-fruit-onboarding", "pending");
       localStorage.setItem(identityKey, next);
     } else localStorage.removeItem(identityKey);
     // A guest draft must survive the OAuth callback; account switches/logouts clear it.

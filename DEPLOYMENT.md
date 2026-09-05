@@ -5,7 +5,8 @@ Deployed on the existing Hetzner server `bookmer` (`195.201.145.202`).
 - Domain: https://usedfruit.de/
 - www: redirects to https://usedfruit.de/ preserving path and query
 - Preview: http://195.201.145.202/
-- Active release: `/opt/used-fruit-releases/public-20260905-final`
+- Active release: `/opt/used-fruit-releases/smooth-20260905`
+- Previous consolidated release: `/opt/used-fruit-releases/public-20260905-final`
 - Previous release: `/opt/used-fruit-releases/mobile-navigation-Py98hf`
 - Previous about release: `/opt/used-fruit-releases/about-PAveL1`
 - Previous block-profiles release: `/opt/used-fruit-releases/block-profiles-get5ra`
@@ -146,3 +147,11 @@ Activated `/opt/used-fruit-releases/public-20260905-final` from the complete loc
 Validation: all 13 tests passed; Next.js production build passed with four non-blocking existing lint warnings. Public catalog, detail and session endpoint returned HTTP 200; report and rank dialogs opened in the public browser. Bookmer and Bookmer ID health returned HTTP 200 after activation. Only Used Fruit was restarted. A personal Apple sign-in/callback was not repeated.
 
 The release reuses existing dependencies through a symlink without installing or pruning inside Bookmer. Apple EnvironmentFile, LoadCredential and MapKit drop-in were preserved. Service override backup: `/etc/used-fruit/pre-public-20260905.conf`. To roll back, restore that backup to `/etc/systemd/system/used-fruit.service.d/20-oauth-release.conf`, run `systemctl daemon-reload`, then restart only `used-fruit` and verify health. The previous release remains intact. Server had 2.4 GB free before build; plan separate reviewed retention cleanup before accumulating further releases.
+
+## Filter motion and welcome profile — 2026-09-05
+
+Activated `/opt/used-fruit-releases/smooth-20260905`. Report link has pointer/hover/focus feedback. Filter sections animate height, opacity and chevrons over 300 ms, respect reduced motion and make collapsed controls inert; location suggestions remain unclipped after expansion. Removed the visible sorting heading while preserving its accessible label.
+
+New locally initialized authenticated accounts receive a dismissible welcome dialog for name, profile emoji and optional location. The `used-fruit-onboarding` marker is account-archived; saved or skipped setup does not recur on ordinary login. Existing local accounts are not prompted retroactively. This is browser-local onboarding, not server-side account creation detection across devices. Account archives are excluded from snapshots/removal so switching users preserves each account's welcome status and data.
+
+Production build and 13 tests passed, including new-account, return-login, account-switch and existing-account welcome checks. Local filter open/close and settled overflow verified in browser. Personal Apple login and authenticated welcome form were not tested end-to-end. Public Used Fruit, Bookmer and Bookmer ID health returned 200. Rollback service configuration: `/etc/used-fruit/pre-smooth-20260905.conf`; restore the override, daemon-reload and restart only Used Fruit. Apple and MapKit configuration is unchanged.

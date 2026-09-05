@@ -17,7 +17,7 @@ export function ListingReport({ listingId }: { listingId: string }) {
 
   return (
     <div>
-      <button type="button" className="text-uf-link" aria-haspopup="dialog" onClick={() => setOpen(true)}>
+      <button type="button" className="cursor-pointer text-uf-link underline-offset-4 transition-colors duration-150 hover:text-uf-action hover:underline focus-visible:underline motion-reduce:transition-none" aria-haspopup="dialog" onClick={() => setOpen(true)}>
         Problem melden
       </button>
       {open && (

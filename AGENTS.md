@@ -171,6 +171,7 @@ Nicht umbenennen, ohne Migration zu schreiben. Alte Browser behalten die alten K
 
 ```
 used-fruit-auth-identity
+used-fruit-onboarding
 used-fruit-account:<globalId oder legacy> (Archiv für Kontowechsel)
 used-fruit-profile
 used-fruit-session

@@ -18,7 +18,23 @@ test('guest draft survives real session transition; account switch removes draft
  assert.equal(sessionStorage.getItem('used-fruit-pending-favorite'),null);
  assert.equal(sessionStorage.getItem('used-fruit-listing-draft'),'{"simLock":"locked","price":500}');
  assert.equal(module.exports.currentIdentity().id,'account-a');
+ assert.equal(localStorage.getItem('used-fruit-onboarding'),'pending');
+ localStorage.setItem('used-fruit-onboarding','done');
  identity={id:'account-b',name:'Ben'};
  await module.exports.refreshIdentity();
  assert.equal(sessionStorage.getItem('used-fruit-listing-draft'),null);
+ assert.equal(localStorage.getItem('used-fruit-onboarding'),'pending');
+ identity={id:'account-a',name:'Anna'};
+ await module.exports.refreshIdentity();
+ assert.equal(localStorage.getItem('used-fruit-onboarding'),'done');
+ assert.deepEqual(JSON.parse(localStorage.getItem('used-fruit-favorites')),['uf-s-21']);
+ identity=null;
+ await module.exports.refreshIdentity();
+ identity={id:'account-a',name:'Anna'};
+ await module.exports.refreshIdentity();
+ assert.equal(localStorage.getItem('used-fruit-onboarding'),'done');
+ // Existing accounts without the new marker do not get the welcome dialog.
+ localStorage.removeItem('used-fruit-onboarding');
+ await module.exports.refreshIdentity();
+ assert.equal(localStorage.getItem('used-fruit-onboarding'),null);
 });

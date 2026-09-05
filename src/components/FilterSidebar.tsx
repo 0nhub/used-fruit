@@ -14,7 +14,7 @@ import {
 import { KEYBOARD_LAYOUTS, hasBuiltInKeyboard } from "@/lib/keyboard";
 import { SORT_OPTIONS } from "@/lib/format";
 import type { CategoryId, ConditionId, KeyboardLayoutId, SortId } from "@/lib/types";
-import { useMemo, useState, type ChangeEvent } from "react";
+import { useEffect, useId, useMemo, useState, type ChangeEvent } from "react";
 
 const fieldClass =
   "h-9 w-full rounded-lg border border-uf-border bg-uf-bg-subtle px-3 text-[13px] outline-none";
@@ -77,17 +77,29 @@ function Section({
   defaultOpen?: boolean;
 }) {
   const [open, setOpen] = useState(defaultOpen);
+  const panelId = useId();
+  const [settled, setSettled] = useState(defaultOpen);
+  useEffect(() => {
+    if (!open) { setSettled(false); return; }
+    const timer = window.setTimeout(() => setSettled(true), window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 300);
+    return () => window.clearTimeout(timer);
+  }, [open]);
   return (
     <div className="border-b border-uf-border-soft">
       <button
         type="button"
+        aria-expanded={open}
+        aria-controls={panelId}
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between py-3.5 text-left text-[12px] tracking-wide text-uf-text-secondary uppercase"
+        className="flex w-full cursor-pointer items-center justify-between py-3.5 text-left text-[12px] tracking-wide text-uf-text-secondary uppercase"
       >
         <span>{title}</span>
-        <ChevronIcon className="h-3 w-3 text-uf-text-tertiary" open={open} />
+        <span className={`transition-transform duration-300 ease-in-out motion-reduce:transition-none ${open ? "rotate-180" : ""}`}><ChevronIcon className="h-3 w-3 text-uf-text-tertiary" /></span>
       </button>
-      {open && <div className="pb-4">{children}</div>}
+      <div id={panelId} inert={!open} aria-hidden={!open}
+        className={`grid transition-[grid-template-rows,opacity] duration-300 ease-in-out motion-reduce:transition-none ${open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
+        <div className={`min-h-0 ${open && settled ? "overflow-visible" : "overflow-hidden"}`}><div className="pb-4">{children}</div></div>
+      </div>
     </div>
   );
 }
@@ -197,9 +209,6 @@ export function FilterSidebar(props: FilterSidebarProps) {
     >
       <div>
       <div className={`${props.hideLocation ? "" : "hidden lg:block"} border-b border-uf-border-soft pb-4`}>
-        <div className="pt-2 pb-3.5 text-[12px] tracking-wide text-uf-text-secondary uppercase">
-          Sortierung
-        </div>
         <label className="sr-only" htmlFor="uf-sort">
           Sortierung
         </label>
