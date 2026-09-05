@@ -6,15 +6,22 @@ struct InboxView: View {
         NavigationStack {
             Group {
                 if store.data.chats.isEmpty { ContentUnavailableView("Hier beginnt der Austausch", systemImage: "bubble.left.and.bubble.right", description: Text("Öffne ein Inserat und tippe auf „Nachricht schreiben“.")) }
-                else { List(store.data.chats) { chat in
+                else { List(store.data.chats.sorted { ($0.messages.last?.sentAt ?? .distantPast) > ($1.messages.last?.sentAt ?? .distantPast) }) { chat in
                     NavigationLink { ConversationView(id: chat.id) } label: {
                         HStack(spacing: 14) {
-                            Image(systemName: chat.offer.symbol).font(.title2).frame(width: 48, height: 52).background(Color(.secondarySystemBackground), in: .rect(cornerRadius: 12))
-                            VStack(alignment: .leading, spacing: 4) { Text(chat.offer.seller).font(.headline); Text(chat.offer.title).font(.subheadline); Text(chat.messages.last?.text ?? "Beginne die Unterhaltung").lineLimit(1).font(.caption).foregroundStyle(.secondary) }
+                            Text(WebCatalog.shared.sellers?[chat.offer.seller]?.emoji ?? "🍏").font(.title).frame(width:48,height:48).background(Color(.secondarySystemBackground),in:Circle())
+                            VStack(alignment: .leading, spacing: 5) {
+                                HStack(alignment:.firstTextBaseline) {
+                                    Text(chat.offer.seller).font(.headline)
+                                    Spacer()
+                                    if let date=chat.messages.last?.sentAt { Text(GermanDate.message(date)).font(.caption).foregroundStyle(.secondary) }
+                                }
+                                Text(chat.messages.last?.text ?? "Beginne die Unterhaltung").lineLimit(2).font(.subheadline).foregroundStyle(.secondary)
+                            }
                         }.padding(.vertical, 6)
                     }
                 } }
-            }.navigationTitle("Nachrichten")
+            }.listStyle(.plain).navigationTitle("Nachrichten")
         }
     }
 }

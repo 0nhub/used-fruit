@@ -33,7 +33,17 @@ struct WebListing: Codable {
     }
 }
 struct WizardFixture: Codable { var modelId: String; var chip: String?; var year: Int?; var connectivity: String?; var steps: [String] }
+struct HardwareRow: Codable, Hashable { var label: String; var value: String }
+struct SellerReputation: Codable {
+    struct Rank: Codable { var label: String; var blurb: String }
+    struct Medal: Codable, Identifiable { var id: String; var label: String; var how: String; var earned: Bool }
+    var rank: Rank; var ratingCount: Int; var percentPositive: Int?; var medals: [Medal]
+}
+struct CatalogSeller: Codable { var name: String; var emoji: String; var bio: String; var joinedAt: String; var reputation: SellerReputation }
 struct WebCatalog: Codable {
+    var hardware: [String:[HardwareRow]]?
+    var sellers: [String:CatalogSeller]?
+
     var models: [CatalogModel]; var categories: [CatalogChoice]; var conditions: [CatalogChoice]; var keyboard: [CatalogChoice]
     var radius: [Int]; var capacity: [Int]; var cycles: [Int]; var steps: [String:StepCopy]; var places: [CatalogPlace]; var listings: [WebListing]; var fixtures: [WizardFixture]
     static let shared: WebCatalog = {

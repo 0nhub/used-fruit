@@ -22,7 +22,7 @@ struct Offer: Identifiable, Codable, Hashable {
         }
     }
 }
-struct ChatMessage: Identifiable, Codable { var id = UUID(); var text: String; var mine: Bool }
+struct ChatMessage: Identifiable, Codable { var id = UUID(); var text: String; var mine: Bool; var sentAt: Date? = Date() }
 struct Conversation: Identifiable, Codable {
     var id: String { offer.id }
     var offer: Offer
@@ -89,7 +89,10 @@ struct LocalData: Codable {
                     [ChatMessage(text:"Hallo, ist die Originalverpackung dabei?",mine:true),ChatMessage(text:"Ja, die Verpackung und das Ladekabel sind dabei. Hast du noch Fragen?",mine:false)],
                     [ChatMessage(text:"Wäre eine Abholung am Wochenende möglich?",mine:true),ChatMessage(text:"Samstag ab 11 Uhr passt mir gut.",mine:false),ChatMessage(text:"Perfekt, danke! Ich melde mich vorher noch einmal.",mine:true)]
                 ]
-                data.chats.append(.init(offer:offer,messages:exchanges[index]))
+                let dated=exchanges[index].enumerated().map { offset,message in
+                    var value=message;value.sentAt=Date().addingTimeInterval(Double(-index*86400-(exchanges[index].count-offset)*300));return value
+                }
+                data.chats.append(.init(offer:offer,messages:dated))
             }
             data.demoChatsSeeded = true; save()
         }
@@ -133,4 +136,18 @@ struct LocalData: Codable {
         return SecItemAdd([kSecClass as String: kSecClassGenericPassword, kSecAttrService as String: service, kSecValueData as String: Data(id.utf8), kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly] as CFDictionary, nil) == errSecSuccess
     }
     private func clearIdentity() { SecItemDelete([kSecClass as String: kSecClassGenericPassword, kSecAttrService as String: service] as CFDictionary) }
+}
+
+// Explicit German dates; legacy messages without a timestamp remain undated.
+enum GermanDate {
+    static func date(_ raw: String) -> String {
+        let dateOnly=String(raw.prefix(10)).split(separator:"-")
+        guard dateOnly.count==3 else { return raw }
+        return "\(dateOnly[2]).\(dateOnly[1]).\(dateOnly[0])"
+    }
+    static func message(_ date: Date) -> String {
+        let formatter=DateFormatter();formatter.locale=Locale(identifier:"de_DE")
+        formatter.dateFormat=Calendar.current.isDateInToday(date) ? "HH:mm" : "dd.MM.yyyy"
+        return formatter.string(from:date)
+    }
 }

@@ -77,3 +77,11 @@ Die angefragte gemeinsame API konnte nicht gefunden werden: `/api/v1/catalog`, `
 Im geöffneten Chat ist die untere Tab-Leiste ausgeblendet; die Eingabe steht in einem eigenen umrandeten Bereich. Die Zurück-Navigation bleibt erreichbar. Die Avatar-Auswahl enthält zahlreiche Vorschläge und akzeptiert ein frei eingegebenes Emoji einschließlich zusammengesetzter Sequenzen und Hautfarben. Die iPhone-Emoji-Tastatur stellt die vollständige systemseitige Auswahl bereit.
 
 Filterbereiche sind standardmäßig geöffnet, mit Trennlinien und einspaltigen Auswahlflächen. Sie lassen sich animiert einklappen; reduzierte Bewegung wird berücksichtigt. Der Simulator-UI-Test prüft Einklappen, Nachrichteneingabe ohne Tab-Leiste sowie das Speichern eines zusammengesetzten Avatar-Emojis.
+
+## Inseratdetails und Nachrichtenübersicht
+
+Die native Detailansicht verwendet die exportierten Hardware- und Anbieterinformationen der Website, einschließlich Emoji, Mitgliedsdatum, Rang, Bewertungszahl, positivem Anteil und Auszeichnungen. Die Daten sind ein gemeinsamer Katalogexport, keine Live-Synchronisierung von Browser-Profilen. Anbieter lassen sich mit ihren Inseraten öffnen. Native MapKit-Karten zeigen den PLZ-/Stadtmittelpunkt mit Vollbild und Apple-Karten-Link; die Vorschau nimmt keine Scroll-Gesten entgegen.
+
+„Nachricht“ öffnet das Gespräch; „Kaufen“ fügt dort die lokale Nachricht „Kaufen“ hinzu. Es wird keine Zahlung oder Bestellung ausgelöst. Die Nachrichtenliste zeigt Name, Vorschau und Zeitpunkt ohne Gerätetitel; neue Nachrichten speichern `sentAt`. Alte Nachrichten ohne gespeicherten Zeitpunkt erhalten keine erfundene Uhrzeit. Datumsangaben verwenden Tag.Monat.Jahr, heutige Nachrichtenvorschauen HH:mm.
+
+Geprüft: Inserat öffnen, Teilen-/Herz-Aktionen vorhanden, Karte und Vollbild, Anbieterbereich und Kaufabsicht im Chat. Zusätzlich bestehen der bisherige Filter-/Wizard-/Konto-UI-Test und alle 249 Katalogvergleichsfälle.

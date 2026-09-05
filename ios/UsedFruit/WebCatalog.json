@@ -9936,5 +9936,4055 @@
         "shipping"
       ]
     }
-  ]
+  ],
+  "hardware": {
+    "macbook-neo|": [
+      {
+        "label": "Helligkeit",
+        "value": "500 Nits"
+      },
+      {
+        "label": "Farbraum",
+        "value": "P3 Wide Color"
+      },
+      {
+        "label": "Kamera",
+        "value": "1080p FaceTime‑HD‑Kamera"
+      },
+      {
+        "label": "Audio",
+        "value": "Vier Lautsprecher, drei Mikrofone"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Touch ID"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "MagSafe, zwei Thunderbolt / USB 4, 3,5‑mm‑Kopfhörer"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "WLAN 6E, Bluetooth 5.3"
+      },
+      {
+        "label": "Batterie",
+        "value": "Bis zu 18 Stunden Videowiedergabe"
+      }
+    ],
+    "macbook-neo|13\"": [
+      {
+        "label": "Größe und Gewicht",
+        "value": "304,1 × 212,4 × 15,6 mm / 1.400 g"
+      },
+      {
+        "label": "Display",
+        "value": "13,6‑Zoll‑Liquid‑Retina mit True Tone"
+      },
+      {
+        "label": "Auflösung",
+        "value": "2560 × 1664, 224 Pixel pro Zoll"
+      },
+      {
+        "label": "Helligkeit",
+        "value": "500 Nits"
+      },
+      {
+        "label": "Farbraum",
+        "value": "P3 Wide Color"
+      },
+      {
+        "label": "Kamera",
+        "value": "1080p FaceTime‑HD‑Kamera"
+      },
+      {
+        "label": "Audio",
+        "value": "Vier Lautsprecher, drei Mikrofone"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Touch ID"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "MagSafe, zwei Thunderbolt / USB 4, 3,5‑mm‑Kopfhörer"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "WLAN 6E, Bluetooth 5.3"
+      },
+      {
+        "label": "Batterie",
+        "value": "Bis zu 18 Stunden Videowiedergabe"
+      }
+    ],
+    "macbook-neo|15\"": [
+      {
+        "label": "Größe und Gewicht",
+        "value": "340,4 × 237,6 × 15,6 mm / 1.600 g"
+      },
+      {
+        "label": "Display",
+        "value": "15,3‑Zoll‑Liquid‑Retina mit True Tone"
+      },
+      {
+        "label": "Auflösung",
+        "value": "2880 × 1864, 224 Pixel pro Zoll"
+      },
+      {
+        "label": "Helligkeit",
+        "value": "500 Nits"
+      },
+      {
+        "label": "Farbraum",
+        "value": "P3 Wide Color"
+      },
+      {
+        "label": "Kamera",
+        "value": "1080p FaceTime‑HD‑Kamera"
+      },
+      {
+        "label": "Audio",
+        "value": "Vier Lautsprecher, drei Mikrofone"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Touch ID"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "MagSafe, zwei Thunderbolt / USB 4, 3,5‑mm‑Kopfhörer"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "WLAN 6E, Bluetooth 5.3"
+      },
+      {
+        "label": "Batterie",
+        "value": "Bis zu 18 Stunden Videowiedergabe"
+      }
+    ],
+    "macbook-air|": [
+      {
+        "label": "Helligkeit",
+        "value": "500 Nits"
+      },
+      {
+        "label": "Farbraum",
+        "value": "P3 Wide Color"
+      },
+      {
+        "label": "Kamera",
+        "value": "1080p FaceTime‑HD‑Kamera"
+      },
+      {
+        "label": "Audio",
+        "value": "Vier Lautsprecher, drei Mikrofone"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Touch ID"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "MagSafe, zwei Thunderbolt / USB 4, 3,5‑mm‑Kopfhörer"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "WLAN 6E, Bluetooth 5.3"
+      },
+      {
+        "label": "Batterie",
+        "value": "Bis zu 18 Stunden Videowiedergabe"
+      }
+    ],
+    "macbook-air|13\"": [
+      {
+        "label": "Größe und Gewicht",
+        "value": "304,1 × 215,0 × 11,3 mm / 1.240 g"
+      },
+      {
+        "label": "Display",
+        "value": "13,6‑Zoll‑Liquid‑Retina mit True Tone"
+      },
+      {
+        "label": "Auflösung",
+        "value": "2560 × 1664, 224 Pixel pro Zoll"
+      },
+      {
+        "label": "Helligkeit",
+        "value": "500 Nits"
+      },
+      {
+        "label": "Farbraum",
+        "value": "P3 Wide Color"
+      },
+      {
+        "label": "Kamera",
+        "value": "1080p FaceTime‑HD‑Kamera"
+      },
+      {
+        "label": "Audio",
+        "value": "Vier Lautsprecher, drei Mikrofone"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Touch ID"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "MagSafe, zwei Thunderbolt / USB 4, 3,5‑mm‑Kopfhörer"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "WLAN 6E, Bluetooth 5.3"
+      },
+      {
+        "label": "Batterie",
+        "value": "Bis zu 18 Stunden Videowiedergabe"
+      }
+    ],
+    "macbook-air|15\"": [
+      {
+        "label": "Größe und Gewicht",
+        "value": "340,4 × 237,6 × 11,5 mm / 1.510 g"
+      },
+      {
+        "label": "Display",
+        "value": "15,3‑Zoll‑Liquid‑Retina mit True Tone"
+      },
+      {
+        "label": "Auflösung",
+        "value": "2880 × 1864, 224 Pixel pro Zoll"
+      },
+      {
+        "label": "Helligkeit",
+        "value": "500 Nits"
+      },
+      {
+        "label": "Farbraum",
+        "value": "P3 Wide Color"
+      },
+      {
+        "label": "Kamera",
+        "value": "1080p FaceTime‑HD‑Kamera"
+      },
+      {
+        "label": "Audio",
+        "value": "Vier Lautsprecher, drei Mikrofone"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Touch ID"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "MagSafe, zwei Thunderbolt / USB 4, 3,5‑mm‑Kopfhörer"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "WLAN 6E, Bluetooth 5.3"
+      },
+      {
+        "label": "Batterie",
+        "value": "Bis zu 18 Stunden Videowiedergabe"
+      }
+    ],
+    "macbook-pro|": [
+      {
+        "label": "Helligkeit",
+        "value": "1000 Nits SDR, 1600 Nits HDR"
+      },
+      {
+        "label": "Kontrast",
+        "value": "1.000.000:1, True Tone"
+      },
+      {
+        "label": "Farbraum",
+        "value": "P3 Wide Color"
+      },
+      {
+        "label": "Kamera",
+        "value": "1080p FaceTime‑HD‑Kamera"
+      },
+      {
+        "label": "Audio",
+        "value": "Sechs Lautsprecher mit Force‑cancelling"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Touch ID"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "MagSafe, HDMI, SDXC, drei Thunderbolt 4, 3,5‑mm‑Kopfhörer"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "WLAN 6E, Bluetooth 5.3"
+      },
+      {
+        "label": "Batterie",
+        "value": "Bis zu 22 Stunden Videowiedergabe"
+      }
+    ],
+    "macbook-pro|13\"": [
+      {
+        "label": "Helligkeit",
+        "value": "1000 Nits SDR, 1600 Nits HDR"
+      },
+      {
+        "label": "Kontrast",
+        "value": "1.000.000:1, True Tone"
+      },
+      {
+        "label": "Farbraum",
+        "value": "P3 Wide Color"
+      },
+      {
+        "label": "Kamera",
+        "value": "1080p FaceTime‑HD‑Kamera"
+      },
+      {
+        "label": "Audio",
+        "value": "Sechs Lautsprecher mit Force‑cancelling"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Touch ID"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "MagSafe, HDMI, SDXC, drei Thunderbolt 4, 3,5‑mm‑Kopfhörer"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "WLAN 6E, Bluetooth 5.3"
+      },
+      {
+        "label": "Batterie",
+        "value": "Bis zu 22 Stunden Videowiedergabe"
+      }
+    ],
+    "macbook-pro|14\"": [
+      {
+        "label": "Größe und Gewicht",
+        "value": "312,6 × 221,2 × 15,5 mm / 1.550 g"
+      },
+      {
+        "label": "Display",
+        "value": "14,2‑Zoll‑Liquid‑Retina‑XDR mit ProMotion"
+      },
+      {
+        "label": "Auflösung",
+        "value": "3024 × 1964, 254 Pixel pro Zoll"
+      },
+      {
+        "label": "Helligkeit",
+        "value": "1000 Nits SDR, 1600 Nits HDR"
+      },
+      {
+        "label": "Kontrast",
+        "value": "1.000.000:1, True Tone"
+      },
+      {
+        "label": "Farbraum",
+        "value": "P3 Wide Color"
+      },
+      {
+        "label": "Kamera",
+        "value": "1080p FaceTime‑HD‑Kamera"
+      },
+      {
+        "label": "Audio",
+        "value": "Sechs Lautsprecher mit Force‑cancelling"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Touch ID"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "MagSafe, HDMI, SDXC, drei Thunderbolt 4, 3,5‑mm‑Kopfhörer"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "WLAN 6E, Bluetooth 5.3"
+      },
+      {
+        "label": "Batterie",
+        "value": "Bis zu 22 Stunden Videowiedergabe"
+      }
+    ],
+    "macbook-pro|15\"": [
+      {
+        "label": "Helligkeit",
+        "value": "1000 Nits SDR, 1600 Nits HDR"
+      },
+      {
+        "label": "Kontrast",
+        "value": "1.000.000:1, True Tone"
+      },
+      {
+        "label": "Farbraum",
+        "value": "P3 Wide Color"
+      },
+      {
+        "label": "Kamera",
+        "value": "1080p FaceTime‑HD‑Kamera"
+      },
+      {
+        "label": "Audio",
+        "value": "Sechs Lautsprecher mit Force‑cancelling"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Touch ID"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "MagSafe, HDMI, SDXC, drei Thunderbolt 4, 3,5‑mm‑Kopfhörer"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "WLAN 6E, Bluetooth 5.3"
+      },
+      {
+        "label": "Batterie",
+        "value": "Bis zu 22 Stunden Videowiedergabe"
+      }
+    ],
+    "macbook-pro|16\"": [
+      {
+        "label": "Größe und Gewicht",
+        "value": "355,7 × 248,1 × 16,8 mm / 2.140 g"
+      },
+      {
+        "label": "Display",
+        "value": "16,2‑Zoll‑Liquid‑Retina‑XDR mit ProMotion"
+      },
+      {
+        "label": "Auflösung",
+        "value": "3456 × 2234, 254 Pixel pro Zoll"
+      },
+      {
+        "label": "Helligkeit",
+        "value": "1000 Nits SDR, 1600 Nits HDR"
+      },
+      {
+        "label": "Kontrast",
+        "value": "1.000.000:1, True Tone"
+      },
+      {
+        "label": "Farbraum",
+        "value": "P3 Wide Color"
+      },
+      {
+        "label": "Kamera",
+        "value": "1080p FaceTime‑HD‑Kamera"
+      },
+      {
+        "label": "Audio",
+        "value": "Sechs Lautsprecher mit Force‑cancelling"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Touch ID"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "MagSafe, HDMI, SDXC, drei Thunderbolt 4, 3,5‑mm‑Kopfhörer"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "WLAN 6E, Bluetooth 5.3"
+      },
+      {
+        "label": "Batterie",
+        "value": "Bis zu 22 Stunden Videowiedergabe"
+      }
+    ],
+    "imac|": [
+      {
+        "label": "Helligkeit",
+        "value": "500 Nits"
+      },
+      {
+        "label": "Farbraum",
+        "value": "P3 Wide Color"
+      },
+      {
+        "label": "Kamera",
+        "value": "1080p FaceTime‑HD‑Kamera"
+      },
+      {
+        "label": "Audio",
+        "value": "Sechs Lautsprecher, Studioqualität‑Mikrofon"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Touch ID in der Magic Keyboard"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "Zwei Thunderbolt / USB 4, Gigabit Ethernet, 3,5‑mm‑Kopfhörer"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "WLAN 6E, Bluetooth 5.3"
+      }
+    ],
+    "imac|21,5\"": [
+      {
+        "label": "Helligkeit",
+        "value": "500 Nits"
+      },
+      {
+        "label": "Farbraum",
+        "value": "P3 Wide Color"
+      },
+      {
+        "label": "Kamera",
+        "value": "1080p FaceTime‑HD‑Kamera"
+      },
+      {
+        "label": "Audio",
+        "value": "Sechs Lautsprecher, Studioqualität‑Mikrofon"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Touch ID in der Magic Keyboard"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "Zwei Thunderbolt / USB 4, Gigabit Ethernet, 3,5‑mm‑Kopfhörer"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "WLAN 6E, Bluetooth 5.3"
+      }
+    ],
+    "imac|24\"": [
+      {
+        "label": "Größe und Gewicht",
+        "value": "547 × 461 × 147 mm / 4.430 g"
+      },
+      {
+        "label": "Display",
+        "value": "24‑Zoll‑4,5K‑Retina mit True Tone"
+      },
+      {
+        "label": "Auflösung",
+        "value": "4480 × 2520, 218 Pixel pro Zoll"
+      },
+      {
+        "label": "Helligkeit",
+        "value": "500 Nits"
+      },
+      {
+        "label": "Farbraum",
+        "value": "P3 Wide Color"
+      },
+      {
+        "label": "Kamera",
+        "value": "1080p FaceTime‑HD‑Kamera"
+      },
+      {
+        "label": "Audio",
+        "value": "Sechs Lautsprecher, Studioqualität‑Mikrofon"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Touch ID in der Magic Keyboard"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "Zwei Thunderbolt / USB 4, Gigabit Ethernet, 3,5‑mm‑Kopfhörer"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "WLAN 6E, Bluetooth 5.3"
+      }
+    ],
+    "imac|27\"": [
+      {
+        "label": "Helligkeit",
+        "value": "500 Nits"
+      },
+      {
+        "label": "Farbraum",
+        "value": "P3 Wide Color"
+      },
+      {
+        "label": "Kamera",
+        "value": "1080p FaceTime‑HD‑Kamera"
+      },
+      {
+        "label": "Audio",
+        "value": "Sechs Lautsprecher, Studioqualität‑Mikrofon"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Touch ID in der Magic Keyboard"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "Zwei Thunderbolt / USB 4, Gigabit Ethernet, 3,5‑mm‑Kopfhörer"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "WLAN 6E, Bluetooth 5.3"
+      }
+    ],
+    "mac-mini|": [
+      {
+        "label": "Größe und Gewicht",
+        "value": "127 × 127 × 50 mm / 670 g"
+      },
+      {
+        "label": "Anschlüsse vorne",
+        "value": "Zwei USB‑C, 3,5‑mm‑Kopfhörer"
+      },
+      {
+        "label": "Anschlüsse hinten",
+        "value": "Drei Thunderbolt, HDMI, zwei USB‑A, Gigabit Ethernet"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "WLAN 6E, Bluetooth 5.3"
+      },
+      {
+        "label": "Video",
+        "value": "Bis zu drei Displays"
+      }
+    ],
+    "mac-studio|": [
+      {
+        "label": "Größe und Gewicht",
+        "value": "197 × 197 × 95 mm / 2.740 g"
+      },
+      {
+        "label": "Anschlüsse vorne",
+        "value": "Zwei USB‑C, SDXC"
+      },
+      {
+        "label": "Anschlüsse hinten",
+        "value": "Vier Thunderbolt, HDMI, 10‑Gb‑Ethernet, zwei USB‑A, 3,5‑mm‑Kopfhörer"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "WLAN 6E, Bluetooth 5.3"
+      },
+      {
+        "label": "Video",
+        "value": "Bis zu fünf Displays"
+      }
+    ],
+    "ipad-pro|": [
+      {
+        "label": "Helligkeit",
+        "value": "1000 Nits SDR, 1600 Nits HDR"
+      },
+      {
+        "label": "Bildwiederholung",
+        "value": "10–120 Hz ProMotion, True Tone"
+      },
+      {
+        "label": "Kameras",
+        "value": "12‑MP‑Weitwinkel, 10‑MP‑Ultraweitwinkel, LiDAR"
+      },
+      {
+        "label": "Frontkamera",
+        "value": "12‑MP‑TrueDepth mit Center Stage"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Face ID"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "USB‑C mit Thunderbolt / USB 4"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "WLAN 6E, Bluetooth 5.3, optional 5G"
+      },
+      {
+        "label": "Apple Pencil",
+        "value": "Apple Pencil Pro"
+      }
+    ],
+    "ipad-pro|11\"": [
+      {
+        "label": "Größe und Gewicht",
+        "value": "249,7 × 177,5 × 5,3 mm / 444 g"
+      },
+      {
+        "label": "Display",
+        "value": "11‑Zoll‑Ultra‑Retina‑XDR mit ProMotion"
+      },
+      {
+        "label": "Auflösung",
+        "value": "2420 × 1668, 264 Pixel pro Zoll"
+      },
+      {
+        "label": "Helligkeit",
+        "value": "1000 Nits SDR, 1600 Nits HDR"
+      },
+      {
+        "label": "Bildwiederholung",
+        "value": "10–120 Hz ProMotion, True Tone"
+      },
+      {
+        "label": "Kameras",
+        "value": "12‑MP‑Weitwinkel, 10‑MP‑Ultraweitwinkel, LiDAR"
+      },
+      {
+        "label": "Frontkamera",
+        "value": "12‑MP‑TrueDepth mit Center Stage"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Face ID"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "USB‑C mit Thunderbolt / USB 4"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "WLAN 6E, Bluetooth 5.3, optional 5G"
+      },
+      {
+        "label": "Apple Pencil",
+        "value": "Apple Pencil Pro"
+      }
+    ],
+    "ipad-pro|13\"": [
+      {
+        "label": "Größe und Gewicht",
+        "value": "281,6 × 215,5 × 5,1 mm / 579 g"
+      },
+      {
+        "label": "Display",
+        "value": "13‑Zoll‑Ultra‑Retina‑XDR mit ProMotion"
+      },
+      {
+        "label": "Auflösung",
+        "value": "2752 × 2064, 264 Pixel pro Zoll"
+      },
+      {
+        "label": "Helligkeit",
+        "value": "1000 Nits SDR, 1600 Nits HDR"
+      },
+      {
+        "label": "Bildwiederholung",
+        "value": "10–120 Hz ProMotion, True Tone"
+      },
+      {
+        "label": "Kameras",
+        "value": "12‑MP‑Weitwinkel, 10‑MP‑Ultraweitwinkel, LiDAR"
+      },
+      {
+        "label": "Frontkamera",
+        "value": "12‑MP‑TrueDepth mit Center Stage"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Face ID"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "USB‑C mit Thunderbolt / USB 4"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "WLAN 6E, Bluetooth 5.3, optional 5G"
+      },
+      {
+        "label": "Apple Pencil",
+        "value": "Apple Pencil Pro"
+      }
+    ],
+    "ipad-air|": [
+      {
+        "label": "Helligkeit",
+        "value": "500 Nits"
+      },
+      {
+        "label": "Kamera",
+        "value": "12‑MP‑Weitwinkel"
+      },
+      {
+        "label": "Frontkamera",
+        "value": "12‑MP‑Ultraweitwinkel mit Center Stage"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Touch ID in der oberen Taste"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "USB‑C"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "WLAN 6E, Bluetooth 5.3, optional 5G"
+      },
+      {
+        "label": "Apple Pencil",
+        "value": "Apple Pencil Pro"
+      }
+    ],
+    "ipad-air|10.5\"": [
+      {
+        "label": "Helligkeit",
+        "value": "500 Nits"
+      },
+      {
+        "label": "Kamera",
+        "value": "12‑MP‑Weitwinkel"
+      },
+      {
+        "label": "Frontkamera",
+        "value": "12‑MP‑Ultraweitwinkel mit Center Stage"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Touch ID in der oberen Taste"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "USB‑C"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "WLAN 6E, Bluetooth 5.3, optional 5G"
+      },
+      {
+        "label": "Apple Pencil",
+        "value": "Apple Pencil Pro"
+      }
+    ],
+    "ipad-air|10.9\"": [
+      {
+        "label": "Helligkeit",
+        "value": "500 Nits"
+      },
+      {
+        "label": "Kamera",
+        "value": "12‑MP‑Weitwinkel"
+      },
+      {
+        "label": "Frontkamera",
+        "value": "12‑MP‑Ultraweitwinkel mit Center Stage"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Touch ID in der oberen Taste"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "USB‑C"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "WLAN 6E, Bluetooth 5.3, optional 5G"
+      },
+      {
+        "label": "Apple Pencil",
+        "value": "Apple Pencil Pro"
+      }
+    ],
+    "ipad-air|11\"": [
+      {
+        "label": "Größe und Gewicht",
+        "value": "247,6 × 178,5 × 6,1 mm / 462 g"
+      },
+      {
+        "label": "Display",
+        "value": "11‑Zoll‑Liquid‑Retina mit True Tone"
+      },
+      {
+        "label": "Auflösung",
+        "value": "2360 × 1640, 264 Pixel pro Zoll"
+      },
+      {
+        "label": "Helligkeit",
+        "value": "500 Nits"
+      },
+      {
+        "label": "Kamera",
+        "value": "12‑MP‑Weitwinkel"
+      },
+      {
+        "label": "Frontkamera",
+        "value": "12‑MP‑Ultraweitwinkel mit Center Stage"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Touch ID in der oberen Taste"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "USB‑C"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "WLAN 6E, Bluetooth 5.3, optional 5G"
+      },
+      {
+        "label": "Apple Pencil",
+        "value": "Apple Pencil Pro"
+      }
+    ],
+    "ipad-air|13\"": [
+      {
+        "label": "Größe und Gewicht",
+        "value": "280,6 × 214,9 × 6,1 mm / 617 g"
+      },
+      {
+        "label": "Display",
+        "value": "13‑Zoll‑Liquid‑Retina mit True Tone"
+      },
+      {
+        "label": "Auflösung",
+        "value": "2732 × 2048, 264 Pixel pro Zoll"
+      },
+      {
+        "label": "Helligkeit",
+        "value": "500 Nits"
+      },
+      {
+        "label": "Kamera",
+        "value": "12‑MP‑Weitwinkel"
+      },
+      {
+        "label": "Frontkamera",
+        "value": "12‑MP‑Ultraweitwinkel mit Center Stage"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Touch ID in der oberen Taste"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "USB‑C"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "WLAN 6E, Bluetooth 5.3, optional 5G"
+      },
+      {
+        "label": "Apple Pencil",
+        "value": "Apple Pencil Pro"
+      }
+    ],
+    "ipad|": [
+      {
+        "label": "Helligkeit",
+        "value": "500 Nits"
+      },
+      {
+        "label": "Kamera",
+        "value": "12‑MP‑Weitwinkel"
+      },
+      {
+        "label": "Frontkamera",
+        "value": "12‑MP‑Ultraweitwinkel mit Center Stage"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Touch ID in der oberen Taste"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "USB‑C"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "WLAN, Bluetooth, optional 5G"
+      }
+    ],
+    "ipad|10.9\"": [
+      {
+        "label": "Größe und Gewicht",
+        "value": "248,6 × 179,5 × 7,0 mm / 477 g"
+      },
+      {
+        "label": "Display",
+        "value": "10,9‑Zoll‑Liquid‑Retina mit True Tone"
+      },
+      {
+        "label": "Auflösung",
+        "value": "2360 × 1640, 264 Pixel pro Zoll"
+      },
+      {
+        "label": "Helligkeit",
+        "value": "500 Nits"
+      },
+      {
+        "label": "Kamera",
+        "value": "12‑MP‑Weitwinkel"
+      },
+      {
+        "label": "Frontkamera",
+        "value": "12‑MP‑Ultraweitwinkel mit Center Stage"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Touch ID in der oberen Taste"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "USB‑C"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "WLAN, Bluetooth, optional 5G"
+      }
+    ],
+    "ipad|11\"": [
+      {
+        "label": "Größe und Gewicht",
+        "value": "249,7 × 177,5 × 5,3 mm / 477 g"
+      },
+      {
+        "label": "Display",
+        "value": "11‑Zoll‑Liquid‑Retina mit True Tone"
+      },
+      {
+        "label": "Auflösung",
+        "value": "2360 × 1640, 264 Pixel pro Zoll"
+      },
+      {
+        "label": "Helligkeit",
+        "value": "500 Nits"
+      },
+      {
+        "label": "Kamera",
+        "value": "12‑MP‑Weitwinkel"
+      },
+      {
+        "label": "Frontkamera",
+        "value": "12‑MP‑Ultraweitwinkel mit Center Stage"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Touch ID in der oberen Taste"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "USB‑C"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "WLAN, Bluetooth, optional 5G"
+      }
+    ],
+    "ipad-mini|": [
+      {
+        "label": "Helligkeit",
+        "value": "500 Nits"
+      },
+      {
+        "label": "Kamera",
+        "value": "12‑MP‑Weitwinkel"
+      },
+      {
+        "label": "Frontkamera",
+        "value": "12‑MP‑Ultraweitwinkel mit Center Stage"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Touch ID in der oberen Taste"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "USB‑C"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "WLAN, Bluetooth, optional 5G"
+      }
+    ],
+    "ipad-mini|8.3\"": [
+      {
+        "label": "Größe und Gewicht",
+        "value": "195,4 × 134,8 × 6,3 mm / 293 g"
+      },
+      {
+        "label": "Display",
+        "value": "8,3‑Zoll‑Liquid‑Retina mit True Tone"
+      },
+      {
+        "label": "Auflösung",
+        "value": "2266 × 1488, 326 Pixel pro Zoll"
+      },
+      {
+        "label": "Helligkeit",
+        "value": "500 Nits"
+      },
+      {
+        "label": "Kamera",
+        "value": "12‑MP‑Weitwinkel"
+      },
+      {
+        "label": "Frontkamera",
+        "value": "12‑MP‑Ultraweitwinkel mit Center Stage"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Touch ID in der oberen Taste"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "USB‑C"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "WLAN, Bluetooth, optional 5G"
+      }
+    ],
+    "iphone-16-pro|": [
+      {
+        "label": "Bildwiederholung",
+        "value": "1–120 Hz ProMotion, Always On, True Tone"
+      },
+      {
+        "label": "Helligkeit",
+        "value": "1000 Nits SDR, 2000 Nits Peak"
+      },
+      {
+        "label": "Hauptkamera",
+        "value": "48‑MP‑Fusion mit 5x Tetraprism‑Tele"
+      },
+      {
+        "label": "Frontkamera",
+        "value": "12‑MP‑TrueDepth"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Face ID"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "5G, WLAN 7, Bluetooth 5.3"
+      },
+      {
+        "label": "SIM‑Karte",
+        "value": "Dual SIM: eSIM und/oder nano‑SIM"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "USB‑C"
+      },
+      {
+        "label": "Laden",
+        "value": "MagSafe, Qi2, kabelloses Laden"
+      },
+      {
+        "label": "Wasserdichtigkeit",
+        "value": "IP68 ab Werk; bei Gebrauchtgeräten nicht mehr garantiert."
+      }
+    ],
+    "iphone-16-pro|6,3\"": [
+      {
+        "label": "Größe und Gewicht",
+        "value": "149,6 × 71,5 × 8,25 mm / 199 g"
+      },
+      {
+        "label": "Display",
+        "value": "6,3‑Zoll‑Super‑Retina‑XDR‑OLED"
+      },
+      {
+        "label": "Auflösung",
+        "value": "2622 × 1206, 460 Pixel pro Zoll"
+      },
+      {
+        "label": "Bildwiederholung",
+        "value": "1–120 Hz ProMotion, Always On, True Tone"
+      },
+      {
+        "label": "Helligkeit",
+        "value": "1000 Nits SDR, 2000 Nits Peak"
+      },
+      {
+        "label": "Hauptkamera",
+        "value": "48‑MP‑Fusion mit 5x Tetraprism‑Tele"
+      },
+      {
+        "label": "Frontkamera",
+        "value": "12‑MP‑TrueDepth"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Face ID"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "5G, WLAN 7, Bluetooth 5.3"
+      },
+      {
+        "label": "SIM‑Karte",
+        "value": "Dual SIM: eSIM und/oder nano‑SIM"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "USB‑C"
+      },
+      {
+        "label": "Laden",
+        "value": "MagSafe, Qi2, kabelloses Laden"
+      },
+      {
+        "label": "Wasserdichtigkeit",
+        "value": "IP68 ab Werk; bei Gebrauchtgeräten nicht mehr garantiert."
+      }
+    ],
+    "iphone-16-pro|6,9\"": [
+      {
+        "label": "Größe und Gewicht",
+        "value": "163,0 × 77,6 × 8,25 mm / 227 g"
+      },
+      {
+        "label": "Display",
+        "value": "6,9‑Zoll‑Super‑Retina‑XDR‑OLED"
+      },
+      {
+        "label": "Auflösung",
+        "value": "2868 × 1320, 460 Pixel pro Zoll"
+      },
+      {
+        "label": "Bildwiederholung",
+        "value": "1–120 Hz ProMotion, Always On, True Tone"
+      },
+      {
+        "label": "Helligkeit",
+        "value": "1000 Nits SDR, 2000 Nits Peak"
+      },
+      {
+        "label": "Hauptkamera",
+        "value": "48‑MP‑Fusion mit 5x Tetraprism‑Tele"
+      },
+      {
+        "label": "Frontkamera",
+        "value": "12‑MP‑TrueDepth"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Face ID"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "5G, WLAN 7, Bluetooth 5.3"
+      },
+      {
+        "label": "SIM‑Karte",
+        "value": "Dual SIM: eSIM und/oder nano‑SIM"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "USB‑C"
+      },
+      {
+        "label": "Laden",
+        "value": "MagSafe, Qi2, kabelloses Laden"
+      },
+      {
+        "label": "Wasserdichtigkeit",
+        "value": "IP68 ab Werk; bei Gebrauchtgeräten nicht mehr garantiert."
+      }
+    ],
+    "iphone-16|": [
+      {
+        "label": "Helligkeit",
+        "value": "1000 Nits SDR, 2000 Nits Peak, True Tone"
+      },
+      {
+        "label": "Hauptkamera",
+        "value": "48‑MP‑Fusion‑Kamera"
+      },
+      {
+        "label": "Frontkamera",
+        "value": "12‑MP‑TrueDepth"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Face ID"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "5G, WLAN 7, Bluetooth 5.3"
+      },
+      {
+        "label": "SIM‑Karte",
+        "value": "Dual SIM: eSIM und/oder nano‑SIM"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "USB‑C"
+      },
+      {
+        "label": "Laden",
+        "value": "MagSafe, Qi2, kabelloses Laden"
+      },
+      {
+        "label": "Wasserdichtigkeit",
+        "value": "IP68 ab Werk; bei Gebrauchtgeräten nicht mehr garantiert."
+      }
+    ],
+    "iphone-16|6,1\"": [
+      {
+        "label": "Größe und Gewicht",
+        "value": "147,6 × 71,6 × 7,80 mm / 170 g"
+      },
+      {
+        "label": "Display",
+        "value": "6,1‑Zoll‑Super‑Retina‑XDR‑OLED"
+      },
+      {
+        "label": "Auflösung",
+        "value": "2556 × 1179, 460 Pixel pro Zoll"
+      },
+      {
+        "label": "Helligkeit",
+        "value": "1000 Nits SDR, 2000 Nits Peak, True Tone"
+      },
+      {
+        "label": "Hauptkamera",
+        "value": "48‑MP‑Fusion‑Kamera"
+      },
+      {
+        "label": "Frontkamera",
+        "value": "12‑MP‑TrueDepth"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Face ID"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "5G, WLAN 7, Bluetooth 5.3"
+      },
+      {
+        "label": "SIM‑Karte",
+        "value": "Dual SIM: eSIM und/oder nano‑SIM"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "USB‑C"
+      },
+      {
+        "label": "Laden",
+        "value": "MagSafe, Qi2, kabelloses Laden"
+      },
+      {
+        "label": "Wasserdichtigkeit",
+        "value": "IP68 ab Werk; bei Gebrauchtgeräten nicht mehr garantiert."
+      }
+    ],
+    "iphone-16|6,7\"": [
+      {
+        "label": "Größe und Gewicht",
+        "value": "160,9 × 77,8 × 7,80 mm / 199 g"
+      },
+      {
+        "label": "Display",
+        "value": "6,7‑Zoll‑Super‑Retina‑XDR‑OLED"
+      },
+      {
+        "label": "Auflösung",
+        "value": "2796 × 1290, 460 Pixel pro Zoll"
+      },
+      {
+        "label": "Helligkeit",
+        "value": "1000 Nits SDR, 2000 Nits Peak, True Tone"
+      },
+      {
+        "label": "Hauptkamera",
+        "value": "48‑MP‑Fusion‑Kamera"
+      },
+      {
+        "label": "Frontkamera",
+        "value": "12‑MP‑TrueDepth"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Face ID"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "5G, WLAN 7, Bluetooth 5.3"
+      },
+      {
+        "label": "SIM‑Karte",
+        "value": "Dual SIM: eSIM und/oder nano‑SIM"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "USB‑C"
+      },
+      {
+        "label": "Laden",
+        "value": "MagSafe, Qi2, kabelloses Laden"
+      },
+      {
+        "label": "Wasserdichtigkeit",
+        "value": "IP68 ab Werk; bei Gebrauchtgeräten nicht mehr garantiert."
+      }
+    ],
+    "iphone-15|": [
+      {
+        "label": "Helligkeit",
+        "value": "1000 Nits SDR, 2000 Nits Peak, True Tone"
+      },
+      {
+        "label": "Hauptkamera",
+        "value": "48‑MP‑Hauptkamera mit 2x Tele"
+      },
+      {
+        "label": "Frontkamera",
+        "value": "12‑MP‑TrueDepth"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Face ID"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "5G, WLAN 6, Bluetooth 5.3"
+      },
+      {
+        "label": "SIM‑Karte",
+        "value": "Dual SIM: eSIM und/oder nano‑SIM"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "USB‑C"
+      },
+      {
+        "label": "Laden",
+        "value": "MagSafe, Qi, kabelloses Laden"
+      },
+      {
+        "label": "Wasserdichtigkeit",
+        "value": "IP68 ab Werk; bei Gebrauchtgeräten nicht mehr garantiert."
+      }
+    ],
+    "iphone-15|6,1\"": [
+      {
+        "label": "Größe und Gewicht",
+        "value": "147,6 × 71,6 × 7,80 mm / 171 g"
+      },
+      {
+        "label": "Display",
+        "value": "6,1‑Zoll‑Super‑Retina‑XDR‑OLED"
+      },
+      {
+        "label": "Auflösung",
+        "value": "2556 × 1179, 460 Pixel pro Zoll"
+      },
+      {
+        "label": "Helligkeit",
+        "value": "1000 Nits SDR, 2000 Nits Peak, True Tone"
+      },
+      {
+        "label": "Hauptkamera",
+        "value": "48‑MP‑Hauptkamera mit 2x Tele"
+      },
+      {
+        "label": "Frontkamera",
+        "value": "12‑MP‑TrueDepth"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Face ID"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "5G, WLAN 6, Bluetooth 5.3"
+      },
+      {
+        "label": "SIM‑Karte",
+        "value": "Dual SIM: eSIM und/oder nano‑SIM"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "USB‑C"
+      },
+      {
+        "label": "Laden",
+        "value": "MagSafe, Qi, kabelloses Laden"
+      },
+      {
+        "label": "Wasserdichtigkeit",
+        "value": "IP68 ab Werk; bei Gebrauchtgeräten nicht mehr garantiert."
+      }
+    ],
+    "iphone-15|6,7\"": [
+      {
+        "label": "Größe und Gewicht",
+        "value": "160,9 × 77,8 × 7,80 mm / 201 g"
+      },
+      {
+        "label": "Display",
+        "value": "6,7‑Zoll‑Super‑Retina‑XDR‑OLED"
+      },
+      {
+        "label": "Auflösung",
+        "value": "2796 × 1290, 460 Pixel pro Zoll"
+      },
+      {
+        "label": "Helligkeit",
+        "value": "1000 Nits SDR, 2000 Nits Peak, True Tone"
+      },
+      {
+        "label": "Hauptkamera",
+        "value": "48‑MP‑Hauptkamera mit 2x Tele"
+      },
+      {
+        "label": "Frontkamera",
+        "value": "12‑MP‑TrueDepth"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Face ID"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "5G, WLAN 6, Bluetooth 5.3"
+      },
+      {
+        "label": "SIM‑Karte",
+        "value": "Dual SIM: eSIM und/oder nano‑SIM"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "USB‑C"
+      },
+      {
+        "label": "Laden",
+        "value": "MagSafe, Qi, kabelloses Laden"
+      },
+      {
+        "label": "Wasserdichtigkeit",
+        "value": "IP68 ab Werk; bei Gebrauchtgeräten nicht mehr garantiert."
+      }
+    ],
+    "iphone-14|": [
+      {
+        "label": "Helligkeit",
+        "value": "800 Nits SDR, 1200 Nits HDR, True Tone"
+      },
+      {
+        "label": "Hauptkamera",
+        "value": "12‑MP‑Dualkamera"
+      },
+      {
+        "label": "Frontkamera",
+        "value": "12‑MP‑TrueDepth"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Face ID"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "5G / LTE, WLAN 6, Bluetooth 5.3"
+      },
+      {
+        "label": "SIM‑Karte",
+        "value": "Dual SIM: nano‑SIM und/oder eSIM"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "Lightning"
+      },
+      {
+        "label": "Laden",
+        "value": "MagSafe, Qi, kabelloses Laden"
+      },
+      {
+        "label": "Wasserdichtigkeit",
+        "value": "IP68 ab Werk; bei Gebrauchtgeräten nicht mehr garantiert."
+      }
+    ],
+    "iphone-14|6,1\"": [
+      {
+        "label": "Größe und Gewicht",
+        "value": "146,7 × 71,5 × 7,80 mm / 172 g"
+      },
+      {
+        "label": "Display",
+        "value": "6,1‑Zoll‑Super‑Retina‑XDR‑OLED"
+      },
+      {
+        "label": "Auflösung",
+        "value": "2532 × 1170, 460 Pixel pro Zoll"
+      },
+      {
+        "label": "Helligkeit",
+        "value": "800 Nits SDR, 1200 Nits HDR, True Tone"
+      },
+      {
+        "label": "Hauptkamera",
+        "value": "12‑MP‑Dualkamera"
+      },
+      {
+        "label": "Frontkamera",
+        "value": "12‑MP‑TrueDepth"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Face ID"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "5G / LTE, WLAN 6, Bluetooth 5.3"
+      },
+      {
+        "label": "SIM‑Karte",
+        "value": "Dual SIM: nano‑SIM und/oder eSIM"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "Lightning"
+      },
+      {
+        "label": "Laden",
+        "value": "MagSafe, Qi, kabelloses Laden"
+      },
+      {
+        "label": "Wasserdichtigkeit",
+        "value": "IP68 ab Werk; bei Gebrauchtgeräten nicht mehr garantiert."
+      }
+    ],
+    "iphone-14|6,7\"": [
+      {
+        "label": "Größe und Gewicht",
+        "value": "160,7 × 78,1 × 7,80 mm / 203 g"
+      },
+      {
+        "label": "Display",
+        "value": "6,7‑Zoll‑Super‑Retina‑XDR‑OLED"
+      },
+      {
+        "label": "Auflösung",
+        "value": "2778 × 1284, 458 Pixel pro Zoll"
+      },
+      {
+        "label": "Helligkeit",
+        "value": "800 Nits SDR, 1200 Nits HDR, True Tone"
+      },
+      {
+        "label": "Hauptkamera",
+        "value": "12‑MP‑Dualkamera"
+      },
+      {
+        "label": "Frontkamera",
+        "value": "12‑MP‑TrueDepth"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Face ID"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "5G / LTE, WLAN 6, Bluetooth 5.3"
+      },
+      {
+        "label": "SIM‑Karte",
+        "value": "Dual SIM: nano‑SIM und/oder eSIM"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "Lightning"
+      },
+      {
+        "label": "Laden",
+        "value": "MagSafe, Qi, kabelloses Laden"
+      },
+      {
+        "label": "Wasserdichtigkeit",
+        "value": "IP68 ab Werk; bei Gebrauchtgeräten nicht mehr garantiert."
+      }
+    ],
+    "iphone-se|": [
+      {
+        "label": "Helligkeit",
+        "value": "625 Nits"
+      },
+      {
+        "label": "Hauptkamera",
+        "value": "12‑MP‑Weitwinkel"
+      },
+      {
+        "label": "Frontkamera",
+        "value": "7‑MP FaceTime‑HD"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Touch ID"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "5G / LTE, WLAN 6, Bluetooth 5.0"
+      },
+      {
+        "label": "SIM‑Karte",
+        "value": "Dual SIM: nano‑SIM und/oder eSIM"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "Lightning"
+      },
+      {
+        "label": "Laden",
+        "value": "Qi, kabelloses Laden"
+      },
+      {
+        "label": "Wasserdichtigkeit",
+        "value": "IP67 ab Werk; bei Gebrauchtgeräten nicht mehr garantiert."
+      }
+    ],
+    "iphone-se|4,7\"": [
+      {
+        "label": "Größe und Gewicht",
+        "value": "138,4 × 67,3 × 7,3 mm / 144 g"
+      },
+      {
+        "label": "Display",
+        "value": "4,7‑Zoll‑Retina‑HD mit True Tone"
+      },
+      {
+        "label": "Auflösung",
+        "value": "1334 × 750, 326 Pixel pro Zoll"
+      },
+      {
+        "label": "Helligkeit",
+        "value": "625 Nits"
+      },
+      {
+        "label": "Hauptkamera",
+        "value": "12‑MP‑Weitwinkel"
+      },
+      {
+        "label": "Frontkamera",
+        "value": "7‑MP FaceTime‑HD"
+      },
+      {
+        "label": "Authentifizierung",
+        "value": "Touch ID"
+      },
+      {
+        "label": "Netzwerk",
+        "value": "5G / LTE, WLAN 6, Bluetooth 5.0"
+      },
+      {
+        "label": "SIM‑Karte",
+        "value": "Dual SIM: nano‑SIM und/oder eSIM"
+      },
+      {
+        "label": "Anschlüsse",
+        "value": "Lightning"
+      },
+      {
+        "label": "Laden",
+        "value": "Qi, kabelloses Laden"
+      },
+      {
+        "label": "Wasserdichtigkeit",
+        "value": "IP67 ab Werk; bei Gebrauchtgeräten nicht mehr garantiert."
+      }
+    ]
+  },
+  "sellers": {
+    "Anna M.": {
+      "name": "Anna M.",
+      "emoji": "🌸",
+      "bio": "Ich verkaufe nur Geräte, die ich selbst genutzt und gepflegt habe.",
+      "joinedAt": "2026-08-28T10:00:00.000Z",
+      "reputation": {
+        "key": "anna m.",
+        "stats": {
+          "listings": 1,
+          "categories": 1,
+          "sales": 0,
+          "purchases": 0,
+          "positive": 11,
+          "negative": 0
+        },
+        "rank": {
+          "id": "grosshaendler",
+          "label": "Großhändler",
+          "tone": "#c44b3a",
+          "blurb": "Vertraut im Handel. Zwölf sehr gute Bewertungen und ein paar Abschlüsse führen zum Handelsmagnaten."
+        },
+        "nextRank": {
+          "id": "handelsmagnat",
+          "label": "Handelsmagnat",
+          "tone": "#6b3d6a",
+          "blurb": "Weit oben. Zwanzig sehr gute Bewertungen und mehr Abschlüsse machen den Mogul."
+        },
+        "nextSteps": [
+          {
+            "label": "Zwölf Bewertungen, davon mindestens 95 % positiv",
+            "done": false
+          },
+          {
+            "label": "Mindestens drei Abschlüsse — oder 18 Bewertungen",
+            "done": false
+          }
+        ],
+        "medals": [
+          {
+            "id": "erstes-inserat",
+            "label": "Erster Apfel",
+            "how": "Lege dein erstes Inserat in den Korb.",
+            "earned": true
+          },
+          {
+            "id": "anbieter",
+            "label": "Voller Korb",
+            "how": "Halte fünf Inserate im Angebot.",
+            "earned": false
+          },
+          {
+            "id": "vielseitig",
+            "label": "Mixkiste",
+            "how": "Inseriere in mindestens zwei Kategorien.",
+            "earned": false
+          },
+          {
+            "id": "erster-verkauf",
+            "label": "Erster Handel",
+            "how": "Verkaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "haendler",
+            "label": "Standbesitzer",
+            "how": "Schließe fünf Verkäufe ab.",
+            "earned": false
+          },
+          {
+            "id": "erster-kauf",
+            "label": "Erster Bissen",
+            "how": "Kaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "stammkaeufer",
+            "label": "Stammkunde",
+            "how": "Schließe drei Käufe ab.",
+            "earned": false
+          },
+          {
+            "id": "gut-bewertet",
+            "label": "Süß",
+            "how": "Erhalte deine erste positive Bewertung.",
+            "earned": true
+          },
+          {
+            "id": "vertrauenswuerdig",
+            "label": "Reif",
+            "how": "Erhalte fünf positive Bewertungen.",
+            "earned": true
+          },
+          {
+            "id": "makellos",
+            "label": "Ohne Druckstelle",
+            "how": "Zehn Bewertungen, alle positiv.",
+            "earned": true
+          }
+        ],
+        "ratingCount": 11,
+        "percentPositive": 100,
+        "ratingLabel": "11 Bewertungen · 100 % positiv"
+      }
+    },
+    "Jonas K.": {
+      "name": "Jonas K.",
+      "emoji": "🎧",
+      "bio": "",
+      "joinedAt": "2026-08-27T14:20:00.000Z",
+      "reputation": {
+        "key": "jonas k.",
+        "stats": {
+          "listings": 1,
+          "categories": 1,
+          "sales": 0,
+          "purchases": 0,
+          "positive": 6,
+          "negative": 1
+        },
+        "rank": {
+          "id": "kaufmann",
+          "label": "Kaufmann",
+          "tone": "#3f7d4e",
+          "blurb": "Fest im Geschäft. Sechs überwiegend gute Bewertungen — oder fünf Abschlüsse — machen dich zum Großhändler."
+        },
+        "nextRank": {
+          "id": "grosshaendler",
+          "label": "Großhändler",
+          "tone": "#c44b3a",
+          "blurb": "Vertraut im Handel. Zwölf sehr gute Bewertungen und ein paar Abschlüsse führen zum Handelsmagnaten."
+        },
+        "nextSteps": [
+          {
+            "label": "Sechs Bewertungen, davon mindestens 90 % positiv",
+            "done": false
+          },
+          {
+            "label": "Oder fünf Abschlüsse und vier gute Bewertungen",
+            "done": false
+          }
+        ],
+        "medals": [
+          {
+            "id": "erstes-inserat",
+            "label": "Erster Apfel",
+            "how": "Lege dein erstes Inserat in den Korb.",
+            "earned": true
+          },
+          {
+            "id": "anbieter",
+            "label": "Voller Korb",
+            "how": "Halte fünf Inserate im Angebot.",
+            "earned": false
+          },
+          {
+            "id": "vielseitig",
+            "label": "Mixkiste",
+            "how": "Inseriere in mindestens zwei Kategorien.",
+            "earned": false
+          },
+          {
+            "id": "erster-verkauf",
+            "label": "Erster Handel",
+            "how": "Verkaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "haendler",
+            "label": "Standbesitzer",
+            "how": "Schließe fünf Verkäufe ab.",
+            "earned": false
+          },
+          {
+            "id": "erster-kauf",
+            "label": "Erster Bissen",
+            "how": "Kaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "stammkaeufer",
+            "label": "Stammkunde",
+            "how": "Schließe drei Käufe ab.",
+            "earned": false
+          },
+          {
+            "id": "gut-bewertet",
+            "label": "Süß",
+            "how": "Erhalte deine erste positive Bewertung.",
+            "earned": true
+          },
+          {
+            "id": "vertrauenswuerdig",
+            "label": "Reif",
+            "how": "Erhalte fünf positive Bewertungen.",
+            "earned": true
+          },
+          {
+            "id": "makellos",
+            "label": "Ohne Druckstelle",
+            "how": "Zehn Bewertungen, alle positiv.",
+            "earned": false
+          }
+        ],
+        "ratingCount": 7,
+        "percentPositive": 86,
+        "ratingLabel": "7 Bewertungen · 86 % positiv"
+      }
+    },
+    "Lea S.": {
+      "name": "Lea S.",
+      "emoji": "🌿",
+      "bio": "",
+      "joinedAt": "2026-08-26T09:10:00.000Z",
+      "reputation": {
+        "key": "lea s.",
+        "stats": {
+          "listings": 1,
+          "categories": 1,
+          "sales": 0,
+          "purchases": 0,
+          "positive": 2,
+          "negative": 0
+        },
+        "rank": {
+          "id": "haendler",
+          "label": "Händler",
+          "tone": "#c4783a",
+          "blurb": "Du handelst schon. Drei Aktivitäten oder drei gute Bewertungen machen daraus einen Kaufmann."
+        },
+        "nextRank": {
+          "id": "kaufmann",
+          "label": "Kaufmann",
+          "tone": "#3f7d4e",
+          "blurb": "Fest im Geschäft. Sechs überwiegend gute Bewertungen — oder fünf Abschlüsse — machen dich zum Großhändler."
+        },
+        "nextSteps": [
+          {
+            "label": "Drei Aktivitäten (Inserate plus Abschlüsse)",
+            "done": false
+          },
+          {
+            "label": "Oder drei Bewertungen, davon mindestens 80 % positiv",
+            "done": false
+          }
+        ],
+        "medals": [
+          {
+            "id": "erstes-inserat",
+            "label": "Erster Apfel",
+            "how": "Lege dein erstes Inserat in den Korb.",
+            "earned": true
+          },
+          {
+            "id": "anbieter",
+            "label": "Voller Korb",
+            "how": "Halte fünf Inserate im Angebot.",
+            "earned": false
+          },
+          {
+            "id": "vielseitig",
+            "label": "Mixkiste",
+            "how": "Inseriere in mindestens zwei Kategorien.",
+            "earned": false
+          },
+          {
+            "id": "erster-verkauf",
+            "label": "Erster Handel",
+            "how": "Verkaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "haendler",
+            "label": "Standbesitzer",
+            "how": "Schließe fünf Verkäufe ab.",
+            "earned": false
+          },
+          {
+            "id": "erster-kauf",
+            "label": "Erster Bissen",
+            "how": "Kaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "stammkaeufer",
+            "label": "Stammkunde",
+            "how": "Schließe drei Käufe ab.",
+            "earned": false
+          },
+          {
+            "id": "gut-bewertet",
+            "label": "Süß",
+            "how": "Erhalte deine erste positive Bewertung.",
+            "earned": true
+          },
+          {
+            "id": "vertrauenswuerdig",
+            "label": "Reif",
+            "how": "Erhalte fünf positive Bewertungen.",
+            "earned": false
+          },
+          {
+            "id": "makellos",
+            "label": "Ohne Druckstelle",
+            "how": "Zehn Bewertungen, alle positiv.",
+            "earned": false
+          }
+        ],
+        "ratingCount": 2,
+        "percentPositive": 100,
+        "ratingLabel": "2 Bewertungen · 100 % positiv"
+      }
+    },
+    "Tom R.": {
+      "name": "Tom R.",
+      "emoji": "⚽️",
+      "bio": "",
+      "joinedAt": "2026-08-25T16:45:00.000Z",
+      "reputation": {
+        "key": "tom r.",
+        "stats": {
+          "listings": 1,
+          "categories": 1,
+          "sales": 0,
+          "purchases": 0,
+          "positive": 8,
+          "negative": 0
+        },
+        "rank": {
+          "id": "grosshaendler",
+          "label": "Großhändler",
+          "tone": "#c44b3a",
+          "blurb": "Vertraut im Handel. Zwölf sehr gute Bewertungen und ein paar Abschlüsse führen zum Handelsmagnaten."
+        },
+        "nextRank": {
+          "id": "handelsmagnat",
+          "label": "Handelsmagnat",
+          "tone": "#6b3d6a",
+          "blurb": "Weit oben. Zwanzig sehr gute Bewertungen und mehr Abschlüsse machen den Mogul."
+        },
+        "nextSteps": [
+          {
+            "label": "Zwölf Bewertungen, davon mindestens 95 % positiv",
+            "done": false
+          },
+          {
+            "label": "Mindestens drei Abschlüsse — oder 18 Bewertungen",
+            "done": false
+          }
+        ],
+        "medals": [
+          {
+            "id": "erstes-inserat",
+            "label": "Erster Apfel",
+            "how": "Lege dein erstes Inserat in den Korb.",
+            "earned": true
+          },
+          {
+            "id": "anbieter",
+            "label": "Voller Korb",
+            "how": "Halte fünf Inserate im Angebot.",
+            "earned": false
+          },
+          {
+            "id": "vielseitig",
+            "label": "Mixkiste",
+            "how": "Inseriere in mindestens zwei Kategorien.",
+            "earned": false
+          },
+          {
+            "id": "erster-verkauf",
+            "label": "Erster Handel",
+            "how": "Verkaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "haendler",
+            "label": "Standbesitzer",
+            "how": "Schließe fünf Verkäufe ab.",
+            "earned": false
+          },
+          {
+            "id": "erster-kauf",
+            "label": "Erster Bissen",
+            "how": "Kaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "stammkaeufer",
+            "label": "Stammkunde",
+            "how": "Schließe drei Käufe ab.",
+            "earned": false
+          },
+          {
+            "id": "gut-bewertet",
+            "label": "Süß",
+            "how": "Erhalte deine erste positive Bewertung.",
+            "earned": true
+          },
+          {
+            "id": "vertrauenswuerdig",
+            "label": "Reif",
+            "how": "Erhalte fünf positive Bewertungen.",
+            "earned": true
+          },
+          {
+            "id": "makellos",
+            "label": "Ohne Druckstelle",
+            "how": "Zehn Bewertungen, alle positiv.",
+            "earned": false
+          }
+        ],
+        "ratingCount": 8,
+        "percentPositive": 100,
+        "ratingLabel": "8 Bewertungen · 100 % positiv"
+      }
+    },
+    "Nina B.": {
+      "name": "Nina B.",
+      "emoji": "🌙",
+      "bio": "",
+      "joinedAt": "2026-08-24T11:30:00.000Z",
+      "reputation": {
+        "key": "nina b.",
+        "stats": {
+          "listings": 1,
+          "categories": 1,
+          "sales": 0,
+          "purchases": 0,
+          "positive": 14,
+          "negative": 1
+        },
+        "rank": {
+          "id": "grosshaendler",
+          "label": "Großhändler",
+          "tone": "#c44b3a",
+          "blurb": "Vertraut im Handel. Zwölf sehr gute Bewertungen und ein paar Abschlüsse führen zum Handelsmagnaten."
+        },
+        "nextRank": {
+          "id": "handelsmagnat",
+          "label": "Handelsmagnat",
+          "tone": "#6b3d6a",
+          "blurb": "Weit oben. Zwanzig sehr gute Bewertungen und mehr Abschlüsse machen den Mogul."
+        },
+        "nextSteps": [
+          {
+            "label": "Zwölf Bewertungen, davon mindestens 95 % positiv",
+            "done": false
+          },
+          {
+            "label": "Mindestens drei Abschlüsse — oder 18 Bewertungen",
+            "done": false
+          }
+        ],
+        "medals": [
+          {
+            "id": "erstes-inserat",
+            "label": "Erster Apfel",
+            "how": "Lege dein erstes Inserat in den Korb.",
+            "earned": true
+          },
+          {
+            "id": "anbieter",
+            "label": "Voller Korb",
+            "how": "Halte fünf Inserate im Angebot.",
+            "earned": false
+          },
+          {
+            "id": "vielseitig",
+            "label": "Mixkiste",
+            "how": "Inseriere in mindestens zwei Kategorien.",
+            "earned": false
+          },
+          {
+            "id": "erster-verkauf",
+            "label": "Erster Handel",
+            "how": "Verkaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "haendler",
+            "label": "Standbesitzer",
+            "how": "Schließe fünf Verkäufe ab.",
+            "earned": false
+          },
+          {
+            "id": "erster-kauf",
+            "label": "Erster Bissen",
+            "how": "Kaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "stammkaeufer",
+            "label": "Stammkunde",
+            "how": "Schließe drei Käufe ab.",
+            "earned": false
+          },
+          {
+            "id": "gut-bewertet",
+            "label": "Süß",
+            "how": "Erhalte deine erste positive Bewertung.",
+            "earned": true
+          },
+          {
+            "id": "vertrauenswuerdig",
+            "label": "Reif",
+            "how": "Erhalte fünf positive Bewertungen.",
+            "earned": true
+          },
+          {
+            "id": "makellos",
+            "label": "Ohne Druckstelle",
+            "how": "Zehn Bewertungen, alle positiv.",
+            "earned": false
+          }
+        ],
+        "ratingCount": 15,
+        "percentPositive": 93,
+        "ratingLabel": "15 Bewertungen · 93 % positiv"
+      }
+    },
+    "Erik W.": {
+      "name": "Erik W.",
+      "emoji": "🦊",
+      "bio": "",
+      "joinedAt": "2026-08-23T08:00:00.000Z",
+      "reputation": {
+        "key": "erik w.",
+        "stats": {
+          "listings": 1,
+          "categories": 1,
+          "sales": 0,
+          "purchases": 0,
+          "positive": 4,
+          "negative": 0
+        },
+        "rank": {
+          "id": "kaufmann",
+          "label": "Kaufmann",
+          "tone": "#3f7d4e",
+          "blurb": "Fest im Geschäft. Sechs überwiegend gute Bewertungen — oder fünf Abschlüsse — machen dich zum Großhändler."
+        },
+        "nextRank": {
+          "id": "grosshaendler",
+          "label": "Großhändler",
+          "tone": "#c44b3a",
+          "blurb": "Vertraut im Handel. Zwölf sehr gute Bewertungen und ein paar Abschlüsse führen zum Handelsmagnaten."
+        },
+        "nextSteps": [
+          {
+            "label": "Sechs Bewertungen, davon mindestens 90 % positiv",
+            "done": false
+          },
+          {
+            "label": "Oder fünf Abschlüsse und vier gute Bewertungen",
+            "done": false
+          }
+        ],
+        "medals": [
+          {
+            "id": "erstes-inserat",
+            "label": "Erster Apfel",
+            "how": "Lege dein erstes Inserat in den Korb.",
+            "earned": true
+          },
+          {
+            "id": "anbieter",
+            "label": "Voller Korb",
+            "how": "Halte fünf Inserate im Angebot.",
+            "earned": false
+          },
+          {
+            "id": "vielseitig",
+            "label": "Mixkiste",
+            "how": "Inseriere in mindestens zwei Kategorien.",
+            "earned": false
+          },
+          {
+            "id": "erster-verkauf",
+            "label": "Erster Handel",
+            "how": "Verkaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "haendler",
+            "label": "Standbesitzer",
+            "how": "Schließe fünf Verkäufe ab.",
+            "earned": false
+          },
+          {
+            "id": "erster-kauf",
+            "label": "Erster Bissen",
+            "how": "Kaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "stammkaeufer",
+            "label": "Stammkunde",
+            "how": "Schließe drei Käufe ab.",
+            "earned": false
+          },
+          {
+            "id": "gut-bewertet",
+            "label": "Süß",
+            "how": "Erhalte deine erste positive Bewertung.",
+            "earned": true
+          },
+          {
+            "id": "vertrauenswuerdig",
+            "label": "Reif",
+            "how": "Erhalte fünf positive Bewertungen.",
+            "earned": false
+          },
+          {
+            "id": "makellos",
+            "label": "Ohne Druckstelle",
+            "how": "Zehn Bewertungen, alle positiv.",
+            "earned": false
+          }
+        ],
+        "ratingCount": 4,
+        "percentPositive": 100,
+        "ratingLabel": "4 Bewertungen · 100 % positiv"
+      }
+    },
+    "Studio Nord": {
+      "name": "Studio Nord",
+      "emoji": "🏢",
+      "bio": "Geprüfte Apple-Geräte aus Stuttgart. Ankauf, Verkauf und Abholung vor Ort.",
+      "joinedAt": "2026-08-22T12:00:00.000Z",
+      "reputation": {
+        "key": "studio nord",
+        "stats": {
+          "listings": 1,
+          "categories": 1,
+          "sales": 0,
+          "purchases": 0,
+          "positive": 20,
+          "negative": 1
+        },
+        "rank": {
+          "id": "handelsmagnat",
+          "label": "Handelsmagnat",
+          "tone": "#6b3d6a",
+          "blurb": "Weit oben. Zwanzig sehr gute Bewertungen und mehr Abschlüsse machen den Mogul."
+        },
+        "nextRank": {
+          "id": "mogul",
+          "label": "Mogul",
+          "tone": "#3d4a6b",
+          "blurb": "Höchster Rang. Andere handeln bei dir, als wärst du das Haus selbst."
+        },
+        "nextSteps": [
+          {
+            "label": "Zwanzig Bewertungen, davon mindestens 95 % positiv",
+            "done": true
+          },
+          {
+            "label": "Mindestens sechs Abschlüsse — oder 28 Bewertungen",
+            "done": false
+          }
+        ],
+        "medals": [
+          {
+            "id": "erstes-inserat",
+            "label": "Erster Apfel",
+            "how": "Lege dein erstes Inserat in den Korb.",
+            "earned": true
+          },
+          {
+            "id": "anbieter",
+            "label": "Voller Korb",
+            "how": "Halte fünf Inserate im Angebot.",
+            "earned": false
+          },
+          {
+            "id": "vielseitig",
+            "label": "Mixkiste",
+            "how": "Inseriere in mindestens zwei Kategorien.",
+            "earned": false
+          },
+          {
+            "id": "erster-verkauf",
+            "label": "Erster Handel",
+            "how": "Verkaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "haendler",
+            "label": "Standbesitzer",
+            "how": "Schließe fünf Verkäufe ab.",
+            "earned": false
+          },
+          {
+            "id": "erster-kauf",
+            "label": "Erster Bissen",
+            "how": "Kaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "stammkaeufer",
+            "label": "Stammkunde",
+            "how": "Schließe drei Käufe ab.",
+            "earned": false
+          },
+          {
+            "id": "gut-bewertet",
+            "label": "Süß",
+            "how": "Erhalte deine erste positive Bewertung.",
+            "earned": true
+          },
+          {
+            "id": "vertrauenswuerdig",
+            "label": "Reif",
+            "how": "Erhalte fünf positive Bewertungen.",
+            "earned": true
+          },
+          {
+            "id": "makellos",
+            "label": "Ohne Druckstelle",
+            "how": "Zehn Bewertungen, alle positiv.",
+            "earned": false
+          }
+        ],
+        "ratingCount": 21,
+        "percentPositive": 95,
+        "ratingLabel": "21 Bewertungen · 95 % positiv"
+      }
+    },
+    "Mira P.": {
+      "name": "Mira P.",
+      "emoji": "🍓",
+      "bio": "",
+      "joinedAt": "2026-08-21T15:00:00.000Z",
+      "reputation": {
+        "key": "mira p.",
+        "stats": {
+          "listings": 1,
+          "categories": 1,
+          "sales": 0,
+          "purchases": 0,
+          "positive": 5,
+          "negative": 0
+        },
+        "rank": {
+          "id": "kaufmann",
+          "label": "Kaufmann",
+          "tone": "#3f7d4e",
+          "blurb": "Fest im Geschäft. Sechs überwiegend gute Bewertungen — oder fünf Abschlüsse — machen dich zum Großhändler."
+        },
+        "nextRank": {
+          "id": "grosshaendler",
+          "label": "Großhändler",
+          "tone": "#c44b3a",
+          "blurb": "Vertraut im Handel. Zwölf sehr gute Bewertungen und ein paar Abschlüsse führen zum Handelsmagnaten."
+        },
+        "nextSteps": [
+          {
+            "label": "Sechs Bewertungen, davon mindestens 90 % positiv",
+            "done": false
+          },
+          {
+            "label": "Oder fünf Abschlüsse und vier gute Bewertungen",
+            "done": false
+          }
+        ],
+        "medals": [
+          {
+            "id": "erstes-inserat",
+            "label": "Erster Apfel",
+            "how": "Lege dein erstes Inserat in den Korb.",
+            "earned": true
+          },
+          {
+            "id": "anbieter",
+            "label": "Voller Korb",
+            "how": "Halte fünf Inserate im Angebot.",
+            "earned": false
+          },
+          {
+            "id": "vielseitig",
+            "label": "Mixkiste",
+            "how": "Inseriere in mindestens zwei Kategorien.",
+            "earned": false
+          },
+          {
+            "id": "erster-verkauf",
+            "label": "Erster Handel",
+            "how": "Verkaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "haendler",
+            "label": "Standbesitzer",
+            "how": "Schließe fünf Verkäufe ab.",
+            "earned": false
+          },
+          {
+            "id": "erster-kauf",
+            "label": "Erster Bissen",
+            "how": "Kaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "stammkaeufer",
+            "label": "Stammkunde",
+            "how": "Schließe drei Käufe ab.",
+            "earned": false
+          },
+          {
+            "id": "gut-bewertet",
+            "label": "Süß",
+            "how": "Erhalte deine erste positive Bewertung.",
+            "earned": true
+          },
+          {
+            "id": "vertrauenswuerdig",
+            "label": "Reif",
+            "how": "Erhalte fünf positive Bewertungen.",
+            "earned": true
+          },
+          {
+            "id": "makellos",
+            "label": "Ohne Druckstelle",
+            "how": "Zehn Bewertungen, alle positiv.",
+            "earned": false
+          }
+        ],
+        "ratingCount": 5,
+        "percentPositive": 100,
+        "ratingLabel": "5 Bewertungen · 100 % positiv"
+      }
+    },
+    "Felix D.": {
+      "name": "Felix D.",
+      "emoji": "🎸",
+      "bio": "",
+      "joinedAt": "2026-08-20T10:00:00.000Z",
+      "reputation": {
+        "key": "felix d.",
+        "stats": {
+          "listings": 1,
+          "categories": 1,
+          "sales": 0,
+          "purchases": 0,
+          "positive": 3,
+          "negative": 1
+        },
+        "rank": {
+          "id": "haendler",
+          "label": "Händler",
+          "tone": "#c4783a",
+          "blurb": "Du handelst schon. Drei Aktivitäten oder drei gute Bewertungen machen daraus einen Kaufmann."
+        },
+        "nextRank": {
+          "id": "kaufmann",
+          "label": "Kaufmann",
+          "tone": "#3f7d4e",
+          "blurb": "Fest im Geschäft. Sechs überwiegend gute Bewertungen — oder fünf Abschlüsse — machen dich zum Großhändler."
+        },
+        "nextSteps": [
+          {
+            "label": "Drei Aktivitäten (Inserate plus Abschlüsse)",
+            "done": false
+          },
+          {
+            "label": "Oder drei Bewertungen, davon mindestens 80 % positiv",
+            "done": false
+          }
+        ],
+        "medals": [
+          {
+            "id": "erstes-inserat",
+            "label": "Erster Apfel",
+            "how": "Lege dein erstes Inserat in den Korb.",
+            "earned": true
+          },
+          {
+            "id": "anbieter",
+            "label": "Voller Korb",
+            "how": "Halte fünf Inserate im Angebot.",
+            "earned": false
+          },
+          {
+            "id": "vielseitig",
+            "label": "Mixkiste",
+            "how": "Inseriere in mindestens zwei Kategorien.",
+            "earned": false
+          },
+          {
+            "id": "erster-verkauf",
+            "label": "Erster Handel",
+            "how": "Verkaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "haendler",
+            "label": "Standbesitzer",
+            "how": "Schließe fünf Verkäufe ab.",
+            "earned": false
+          },
+          {
+            "id": "erster-kauf",
+            "label": "Erster Bissen",
+            "how": "Kaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "stammkaeufer",
+            "label": "Stammkunde",
+            "how": "Schließe drei Käufe ab.",
+            "earned": false
+          },
+          {
+            "id": "gut-bewertet",
+            "label": "Süß",
+            "how": "Erhalte deine erste positive Bewertung.",
+            "earned": true
+          },
+          {
+            "id": "vertrauenswuerdig",
+            "label": "Reif",
+            "how": "Erhalte fünf positive Bewertungen.",
+            "earned": false
+          },
+          {
+            "id": "makellos",
+            "label": "Ohne Druckstelle",
+            "how": "Zehn Bewertungen, alle positiv.",
+            "earned": false
+          }
+        ],
+        "ratingCount": 4,
+        "percentPositive": 75,
+        "ratingLabel": "4 Bewertungen · 75 % positiv"
+      }
+    },
+    "Paul G.": {
+      "name": "Paul G.",
+      "emoji": "🚲",
+      "bio": "",
+      "joinedAt": "2026-08-19T09:00:00.000Z",
+      "reputation": {
+        "key": "paul g.",
+        "stats": {
+          "listings": 1,
+          "categories": 1,
+          "sales": 0,
+          "purchases": 0,
+          "positive": 1,
+          "negative": 0
+        },
+        "rank": {
+          "id": "haendler",
+          "label": "Händler",
+          "tone": "#c4783a",
+          "blurb": "Du handelst schon. Drei Aktivitäten oder drei gute Bewertungen machen daraus einen Kaufmann."
+        },
+        "nextRank": {
+          "id": "kaufmann",
+          "label": "Kaufmann",
+          "tone": "#3f7d4e",
+          "blurb": "Fest im Geschäft. Sechs überwiegend gute Bewertungen — oder fünf Abschlüsse — machen dich zum Großhändler."
+        },
+        "nextSteps": [
+          {
+            "label": "Drei Aktivitäten (Inserate plus Abschlüsse)",
+            "done": false
+          },
+          {
+            "label": "Oder drei Bewertungen, davon mindestens 80 % positiv",
+            "done": false
+          }
+        ],
+        "medals": [
+          {
+            "id": "erstes-inserat",
+            "label": "Erster Apfel",
+            "how": "Lege dein erstes Inserat in den Korb.",
+            "earned": true
+          },
+          {
+            "id": "anbieter",
+            "label": "Voller Korb",
+            "how": "Halte fünf Inserate im Angebot.",
+            "earned": false
+          },
+          {
+            "id": "vielseitig",
+            "label": "Mixkiste",
+            "how": "Inseriere in mindestens zwei Kategorien.",
+            "earned": false
+          },
+          {
+            "id": "erster-verkauf",
+            "label": "Erster Handel",
+            "how": "Verkaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "haendler",
+            "label": "Standbesitzer",
+            "how": "Schließe fünf Verkäufe ab.",
+            "earned": false
+          },
+          {
+            "id": "erster-kauf",
+            "label": "Erster Bissen",
+            "how": "Kaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "stammkaeufer",
+            "label": "Stammkunde",
+            "how": "Schließe drei Käufe ab.",
+            "earned": false
+          },
+          {
+            "id": "gut-bewertet",
+            "label": "Süß",
+            "how": "Erhalte deine erste positive Bewertung.",
+            "earned": true
+          },
+          {
+            "id": "vertrauenswuerdig",
+            "label": "Reif",
+            "how": "Erhalte fünf positive Bewertungen.",
+            "earned": false
+          },
+          {
+            "id": "makellos",
+            "label": "Ohne Druckstelle",
+            "how": "Zehn Bewertungen, alle positiv.",
+            "earned": false
+          }
+        ],
+        "ratingCount": 1,
+        "percentPositive": 100,
+        "ratingLabel": "1 Bewertung · 100 % positiv"
+      }
+    },
+    "Clara V.": {
+      "name": "Clara V.",
+      "emoji": "🦋",
+      "bio": "",
+      "joinedAt": "2026-08-18T18:00:00.000Z",
+      "reputation": {
+        "key": "clara v.",
+        "stats": {
+          "listings": 1,
+          "categories": 1,
+          "sales": 0,
+          "purchases": 0,
+          "positive": 7,
+          "negative": 0
+        },
+        "rank": {
+          "id": "grosshaendler",
+          "label": "Großhändler",
+          "tone": "#c44b3a",
+          "blurb": "Vertraut im Handel. Zwölf sehr gute Bewertungen und ein paar Abschlüsse führen zum Handelsmagnaten."
+        },
+        "nextRank": {
+          "id": "handelsmagnat",
+          "label": "Handelsmagnat",
+          "tone": "#6b3d6a",
+          "blurb": "Weit oben. Zwanzig sehr gute Bewertungen und mehr Abschlüsse machen den Mogul."
+        },
+        "nextSteps": [
+          {
+            "label": "Zwölf Bewertungen, davon mindestens 95 % positiv",
+            "done": false
+          },
+          {
+            "label": "Mindestens drei Abschlüsse — oder 18 Bewertungen",
+            "done": false
+          }
+        ],
+        "medals": [
+          {
+            "id": "erstes-inserat",
+            "label": "Erster Apfel",
+            "how": "Lege dein erstes Inserat in den Korb.",
+            "earned": true
+          },
+          {
+            "id": "anbieter",
+            "label": "Voller Korb",
+            "how": "Halte fünf Inserate im Angebot.",
+            "earned": false
+          },
+          {
+            "id": "vielseitig",
+            "label": "Mixkiste",
+            "how": "Inseriere in mindestens zwei Kategorien.",
+            "earned": false
+          },
+          {
+            "id": "erster-verkauf",
+            "label": "Erster Handel",
+            "how": "Verkaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "haendler",
+            "label": "Standbesitzer",
+            "how": "Schließe fünf Verkäufe ab.",
+            "earned": false
+          },
+          {
+            "id": "erster-kauf",
+            "label": "Erster Bissen",
+            "how": "Kaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "stammkaeufer",
+            "label": "Stammkunde",
+            "how": "Schließe drei Käufe ab.",
+            "earned": false
+          },
+          {
+            "id": "gut-bewertet",
+            "label": "Süß",
+            "how": "Erhalte deine erste positive Bewertung.",
+            "earned": true
+          },
+          {
+            "id": "vertrauenswuerdig",
+            "label": "Reif",
+            "how": "Erhalte fünf positive Bewertungen.",
+            "earned": true
+          },
+          {
+            "id": "makellos",
+            "label": "Ohne Druckstelle",
+            "how": "Zehn Bewertungen, alle positiv.",
+            "earned": false
+          }
+        ],
+        "ratingCount": 7,
+        "percentPositive": 100,
+        "ratingLabel": "7 Bewertungen · 100 % positiv"
+      }
+    },
+    "Omar T.": {
+      "name": "Omar T.",
+      "emoji": "☕",
+      "bio": "",
+      "joinedAt": "2026-08-17T13:00:00.000Z",
+      "reputation": {
+        "key": "omar t.",
+        "stats": {
+          "listings": 1,
+          "categories": 1,
+          "sales": 0,
+          "purchases": 0,
+          "positive": 0,
+          "negative": 0
+        },
+        "rank": {
+          "id": "haendler",
+          "label": "Händler",
+          "tone": "#c4783a",
+          "blurb": "Du handelst schon. Drei Aktivitäten oder drei gute Bewertungen machen daraus einen Kaufmann."
+        },
+        "nextRank": {
+          "id": "kaufmann",
+          "label": "Kaufmann",
+          "tone": "#3f7d4e",
+          "blurb": "Fest im Geschäft. Sechs überwiegend gute Bewertungen — oder fünf Abschlüsse — machen dich zum Großhändler."
+        },
+        "nextSteps": [
+          {
+            "label": "Drei Aktivitäten (Inserate plus Abschlüsse)",
+            "done": false
+          },
+          {
+            "label": "Oder drei Bewertungen, davon mindestens 80 % positiv",
+            "done": false
+          }
+        ],
+        "medals": [
+          {
+            "id": "erstes-inserat",
+            "label": "Erster Apfel",
+            "how": "Lege dein erstes Inserat in den Korb.",
+            "earned": true
+          },
+          {
+            "id": "anbieter",
+            "label": "Voller Korb",
+            "how": "Halte fünf Inserate im Angebot.",
+            "earned": false
+          },
+          {
+            "id": "vielseitig",
+            "label": "Mixkiste",
+            "how": "Inseriere in mindestens zwei Kategorien.",
+            "earned": false
+          },
+          {
+            "id": "erster-verkauf",
+            "label": "Erster Handel",
+            "how": "Verkaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "haendler",
+            "label": "Standbesitzer",
+            "how": "Schließe fünf Verkäufe ab.",
+            "earned": false
+          },
+          {
+            "id": "erster-kauf",
+            "label": "Erster Bissen",
+            "how": "Kaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "stammkaeufer",
+            "label": "Stammkunde",
+            "how": "Schließe drei Käufe ab.",
+            "earned": false
+          },
+          {
+            "id": "gut-bewertet",
+            "label": "Süß",
+            "how": "Erhalte deine erste positive Bewertung.",
+            "earned": false
+          },
+          {
+            "id": "vertrauenswuerdig",
+            "label": "Reif",
+            "how": "Erhalte fünf positive Bewertungen.",
+            "earned": false
+          },
+          {
+            "id": "makellos",
+            "label": "Ohne Druckstelle",
+            "how": "Zehn Bewertungen, alle positiv.",
+            "earned": false
+          }
+        ],
+        "ratingCount": 0,
+        "ratingLabel": "Noch keine Bewertungen"
+      }
+    },
+    "Helen A.": {
+      "name": "Helen A.",
+      "emoji": "🌻",
+      "bio": "",
+      "joinedAt": "2026-08-16T11:00:00.000Z",
+      "reputation": {
+        "key": "helen a.",
+        "stats": {
+          "listings": 1,
+          "categories": 1,
+          "sales": 0,
+          "purchases": 0,
+          "positive": 9,
+          "negative": 0
+        },
+        "rank": {
+          "id": "grosshaendler",
+          "label": "Großhändler",
+          "tone": "#c44b3a",
+          "blurb": "Vertraut im Handel. Zwölf sehr gute Bewertungen und ein paar Abschlüsse führen zum Handelsmagnaten."
+        },
+        "nextRank": {
+          "id": "handelsmagnat",
+          "label": "Handelsmagnat",
+          "tone": "#6b3d6a",
+          "blurb": "Weit oben. Zwanzig sehr gute Bewertungen und mehr Abschlüsse machen den Mogul."
+        },
+        "nextSteps": [
+          {
+            "label": "Zwölf Bewertungen, davon mindestens 95 % positiv",
+            "done": false
+          },
+          {
+            "label": "Mindestens drei Abschlüsse — oder 18 Bewertungen",
+            "done": false
+          }
+        ],
+        "medals": [
+          {
+            "id": "erstes-inserat",
+            "label": "Erster Apfel",
+            "how": "Lege dein erstes Inserat in den Korb.",
+            "earned": true
+          },
+          {
+            "id": "anbieter",
+            "label": "Voller Korb",
+            "how": "Halte fünf Inserate im Angebot.",
+            "earned": false
+          },
+          {
+            "id": "vielseitig",
+            "label": "Mixkiste",
+            "how": "Inseriere in mindestens zwei Kategorien.",
+            "earned": false
+          },
+          {
+            "id": "erster-verkauf",
+            "label": "Erster Handel",
+            "how": "Verkaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "haendler",
+            "label": "Standbesitzer",
+            "how": "Schließe fünf Verkäufe ab.",
+            "earned": false
+          },
+          {
+            "id": "erster-kauf",
+            "label": "Erster Bissen",
+            "how": "Kaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "stammkaeufer",
+            "label": "Stammkunde",
+            "how": "Schließe drei Käufe ab.",
+            "earned": false
+          },
+          {
+            "id": "gut-bewertet",
+            "label": "Süß",
+            "how": "Erhalte deine erste positive Bewertung.",
+            "earned": true
+          },
+          {
+            "id": "vertrauenswuerdig",
+            "label": "Reif",
+            "how": "Erhalte fünf positive Bewertungen.",
+            "earned": true
+          },
+          {
+            "id": "makellos",
+            "label": "Ohne Druckstelle",
+            "how": "Zehn Bewertungen, alle positiv.",
+            "earned": false
+          }
+        ],
+        "ratingCount": 9,
+        "percentPositive": 100,
+        "ratingLabel": "9 Bewertungen · 100 % positiv"
+      }
+    },
+    "Samira H.": {
+      "name": "Samira H.",
+      "emoji": "💫",
+      "bio": "",
+      "joinedAt": "2026-08-15T17:00:00.000Z",
+      "reputation": {
+        "key": "samira h.",
+        "stats": {
+          "listings": 1,
+          "categories": 1,
+          "sales": 0,
+          "purchases": 0,
+          "positive": 3,
+          "negative": 0
+        },
+        "rank": {
+          "id": "kaufmann",
+          "label": "Kaufmann",
+          "tone": "#3f7d4e",
+          "blurb": "Fest im Geschäft. Sechs überwiegend gute Bewertungen — oder fünf Abschlüsse — machen dich zum Großhändler."
+        },
+        "nextRank": {
+          "id": "grosshaendler",
+          "label": "Großhändler",
+          "tone": "#c44b3a",
+          "blurb": "Vertraut im Handel. Zwölf sehr gute Bewertungen und ein paar Abschlüsse führen zum Handelsmagnaten."
+        },
+        "nextSteps": [
+          {
+            "label": "Sechs Bewertungen, davon mindestens 90 % positiv",
+            "done": false
+          },
+          {
+            "label": "Oder fünf Abschlüsse und vier gute Bewertungen",
+            "done": false
+          }
+        ],
+        "medals": [
+          {
+            "id": "erstes-inserat",
+            "label": "Erster Apfel",
+            "how": "Lege dein erstes Inserat in den Korb.",
+            "earned": true
+          },
+          {
+            "id": "anbieter",
+            "label": "Voller Korb",
+            "how": "Halte fünf Inserate im Angebot.",
+            "earned": false
+          },
+          {
+            "id": "vielseitig",
+            "label": "Mixkiste",
+            "how": "Inseriere in mindestens zwei Kategorien.",
+            "earned": false
+          },
+          {
+            "id": "erster-verkauf",
+            "label": "Erster Handel",
+            "how": "Verkaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "haendler",
+            "label": "Standbesitzer",
+            "how": "Schließe fünf Verkäufe ab.",
+            "earned": false
+          },
+          {
+            "id": "erster-kauf",
+            "label": "Erster Bissen",
+            "how": "Kaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "stammkaeufer",
+            "label": "Stammkunde",
+            "how": "Schließe drei Käufe ab.",
+            "earned": false
+          },
+          {
+            "id": "gut-bewertet",
+            "label": "Süß",
+            "how": "Erhalte deine erste positive Bewertung.",
+            "earned": true
+          },
+          {
+            "id": "vertrauenswuerdig",
+            "label": "Reif",
+            "how": "Erhalte fünf positive Bewertungen.",
+            "earned": false
+          },
+          {
+            "id": "makellos",
+            "label": "Ohne Druckstelle",
+            "how": "Zehn Bewertungen, alle positiv.",
+            "earned": false
+          }
+        ],
+        "ratingCount": 3,
+        "percentPositive": 100,
+        "ratingLabel": "3 Bewertungen · 100 % positiv"
+      }
+    },
+    "Lina T.": {
+      "name": "Lina T.",
+      "emoji": "🧁",
+      "bio": "",
+      "joinedAt": "2026-08-28T08:30:00.000Z",
+      "reputation": {
+        "key": "lina t.",
+        "stats": {
+          "listings": 1,
+          "categories": 1,
+          "sales": 0,
+          "purchases": 0,
+          "positive": 12,
+          "negative": 0
+        },
+        "rank": {
+          "id": "grosshaendler",
+          "label": "Großhändler",
+          "tone": "#c44b3a",
+          "blurb": "Vertraut im Handel. Zwölf sehr gute Bewertungen und ein paar Abschlüsse führen zum Handelsmagnaten."
+        },
+        "nextRank": {
+          "id": "handelsmagnat",
+          "label": "Handelsmagnat",
+          "tone": "#6b3d6a",
+          "blurb": "Weit oben. Zwanzig sehr gute Bewertungen und mehr Abschlüsse machen den Mogul."
+        },
+        "nextSteps": [
+          {
+            "label": "Zwölf Bewertungen, davon mindestens 95 % positiv",
+            "done": true
+          },
+          {
+            "label": "Mindestens drei Abschlüsse — oder 18 Bewertungen",
+            "done": false
+          }
+        ],
+        "medals": [
+          {
+            "id": "erstes-inserat",
+            "label": "Erster Apfel",
+            "how": "Lege dein erstes Inserat in den Korb.",
+            "earned": true
+          },
+          {
+            "id": "anbieter",
+            "label": "Voller Korb",
+            "how": "Halte fünf Inserate im Angebot.",
+            "earned": false
+          },
+          {
+            "id": "vielseitig",
+            "label": "Mixkiste",
+            "how": "Inseriere in mindestens zwei Kategorien.",
+            "earned": false
+          },
+          {
+            "id": "erster-verkauf",
+            "label": "Erster Handel",
+            "how": "Verkaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "haendler",
+            "label": "Standbesitzer",
+            "how": "Schließe fünf Verkäufe ab.",
+            "earned": false
+          },
+          {
+            "id": "erster-kauf",
+            "label": "Erster Bissen",
+            "how": "Kaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "stammkaeufer",
+            "label": "Stammkunde",
+            "how": "Schließe drei Käufe ab.",
+            "earned": false
+          },
+          {
+            "id": "gut-bewertet",
+            "label": "Süß",
+            "how": "Erhalte deine erste positive Bewertung.",
+            "earned": true
+          },
+          {
+            "id": "vertrauenswuerdig",
+            "label": "Reif",
+            "how": "Erhalte fünf positive Bewertungen.",
+            "earned": true
+          },
+          {
+            "id": "makellos",
+            "label": "Ohne Druckstelle",
+            "how": "Zehn Bewertungen, alle positiv.",
+            "earned": true
+          }
+        ],
+        "ratingCount": 12,
+        "percentPositive": 100,
+        "ratingLabel": "12 Bewertungen · 100 % positiv"
+      }
+    },
+    "David R.": {
+      "name": "David R.",
+      "emoji": "📚",
+      "bio": "",
+      "joinedAt": "2026-08-27T19:00:00.000Z",
+      "reputation": {
+        "key": "david r.",
+        "stats": {
+          "listings": 1,
+          "categories": 1,
+          "sales": 0,
+          "purchases": 0,
+          "positive": 2,
+          "negative": 1
+        },
+        "rank": {
+          "id": "haendler",
+          "label": "Händler",
+          "tone": "#c4783a",
+          "blurb": "Du handelst schon. Drei Aktivitäten oder drei gute Bewertungen machen daraus einen Kaufmann."
+        },
+        "nextRank": {
+          "id": "kaufmann",
+          "label": "Kaufmann",
+          "tone": "#3f7d4e",
+          "blurb": "Fest im Geschäft. Sechs überwiegend gute Bewertungen — oder fünf Abschlüsse — machen dich zum Großhändler."
+        },
+        "nextSteps": [
+          {
+            "label": "Drei Aktivitäten (Inserate plus Abschlüsse)",
+            "done": false
+          },
+          {
+            "label": "Oder drei Bewertungen, davon mindestens 80 % positiv",
+            "done": false
+          }
+        ],
+        "medals": [
+          {
+            "id": "erstes-inserat",
+            "label": "Erster Apfel",
+            "how": "Lege dein erstes Inserat in den Korb.",
+            "earned": true
+          },
+          {
+            "id": "anbieter",
+            "label": "Voller Korb",
+            "how": "Halte fünf Inserate im Angebot.",
+            "earned": false
+          },
+          {
+            "id": "vielseitig",
+            "label": "Mixkiste",
+            "how": "Inseriere in mindestens zwei Kategorien.",
+            "earned": false
+          },
+          {
+            "id": "erster-verkauf",
+            "label": "Erster Handel",
+            "how": "Verkaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "haendler",
+            "label": "Standbesitzer",
+            "how": "Schließe fünf Verkäufe ab.",
+            "earned": false
+          },
+          {
+            "id": "erster-kauf",
+            "label": "Erster Bissen",
+            "how": "Kaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "stammkaeufer",
+            "label": "Stammkunde",
+            "how": "Schließe drei Käufe ab.",
+            "earned": false
+          },
+          {
+            "id": "gut-bewertet",
+            "label": "Süß",
+            "how": "Erhalte deine erste positive Bewertung.",
+            "earned": true
+          },
+          {
+            "id": "vertrauenswuerdig",
+            "label": "Reif",
+            "how": "Erhalte fünf positive Bewertungen.",
+            "earned": false
+          },
+          {
+            "id": "makellos",
+            "label": "Ohne Druckstelle",
+            "how": "Zehn Bewertungen, alle positiv.",
+            "earned": false
+          }
+        ],
+        "ratingCount": 3,
+        "percentPositive": 67,
+        "ratingLabel": "3 Bewertungen · 67 % positiv"
+      }
+    },
+    "Sofia N.": {
+      "name": "Sofia N.",
+      "emoji": "🌊",
+      "bio": "",
+      "joinedAt": "2026-08-26T12:40:00.000Z",
+      "reputation": {
+        "key": "sofia n.",
+        "stats": {
+          "listings": 1,
+          "categories": 1,
+          "sales": 0,
+          "purchases": 0,
+          "positive": 6,
+          "negative": 0
+        },
+        "rank": {
+          "id": "grosshaendler",
+          "label": "Großhändler",
+          "tone": "#c44b3a",
+          "blurb": "Vertraut im Handel. Zwölf sehr gute Bewertungen und ein paar Abschlüsse führen zum Handelsmagnaten."
+        },
+        "nextRank": {
+          "id": "handelsmagnat",
+          "label": "Handelsmagnat",
+          "tone": "#6b3d6a",
+          "blurb": "Weit oben. Zwanzig sehr gute Bewertungen und mehr Abschlüsse machen den Mogul."
+        },
+        "nextSteps": [
+          {
+            "label": "Zwölf Bewertungen, davon mindestens 95 % positiv",
+            "done": false
+          },
+          {
+            "label": "Mindestens drei Abschlüsse — oder 18 Bewertungen",
+            "done": false
+          }
+        ],
+        "medals": [
+          {
+            "id": "erstes-inserat",
+            "label": "Erster Apfel",
+            "how": "Lege dein erstes Inserat in den Korb.",
+            "earned": true
+          },
+          {
+            "id": "anbieter",
+            "label": "Voller Korb",
+            "how": "Halte fünf Inserate im Angebot.",
+            "earned": false
+          },
+          {
+            "id": "vielseitig",
+            "label": "Mixkiste",
+            "how": "Inseriere in mindestens zwei Kategorien.",
+            "earned": false
+          },
+          {
+            "id": "erster-verkauf",
+            "label": "Erster Handel",
+            "how": "Verkaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "haendler",
+            "label": "Standbesitzer",
+            "how": "Schließe fünf Verkäufe ab.",
+            "earned": false
+          },
+          {
+            "id": "erster-kauf",
+            "label": "Erster Bissen",
+            "how": "Kaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "stammkaeufer",
+            "label": "Stammkunde",
+            "how": "Schließe drei Käufe ab.",
+            "earned": false
+          },
+          {
+            "id": "gut-bewertet",
+            "label": "Süß",
+            "how": "Erhalte deine erste positive Bewertung.",
+            "earned": true
+          },
+          {
+            "id": "vertrauenswuerdig",
+            "label": "Reif",
+            "how": "Erhalte fünf positive Bewertungen.",
+            "earned": true
+          },
+          {
+            "id": "makellos",
+            "label": "Ohne Druckstelle",
+            "how": "Zehn Bewertungen, alle positiv.",
+            "earned": false
+          }
+        ],
+        "ratingCount": 6,
+        "percentPositive": 100,
+        "ratingLabel": "6 Bewertungen · 100 % positiv"
+      }
+    },
+    "Ben L.": {
+      "name": "Ben L.",
+      "emoji": "🎯",
+      "bio": "",
+      "joinedAt": "2026-08-25T07:15:00.000Z",
+      "reputation": {
+        "key": "ben l.",
+        "stats": {
+          "listings": 1,
+          "categories": 1,
+          "sales": 0,
+          "purchases": 0,
+          "positive": 1,
+          "negative": 0
+        },
+        "rank": {
+          "id": "haendler",
+          "label": "Händler",
+          "tone": "#c4783a",
+          "blurb": "Du handelst schon. Drei Aktivitäten oder drei gute Bewertungen machen daraus einen Kaufmann."
+        },
+        "nextRank": {
+          "id": "kaufmann",
+          "label": "Kaufmann",
+          "tone": "#3f7d4e",
+          "blurb": "Fest im Geschäft. Sechs überwiegend gute Bewertungen — oder fünf Abschlüsse — machen dich zum Großhändler."
+        },
+        "nextSteps": [
+          {
+            "label": "Drei Aktivitäten (Inserate plus Abschlüsse)",
+            "done": false
+          },
+          {
+            "label": "Oder drei Bewertungen, davon mindestens 80 % positiv",
+            "done": false
+          }
+        ],
+        "medals": [
+          {
+            "id": "erstes-inserat",
+            "label": "Erster Apfel",
+            "how": "Lege dein erstes Inserat in den Korb.",
+            "earned": true
+          },
+          {
+            "id": "anbieter",
+            "label": "Voller Korb",
+            "how": "Halte fünf Inserate im Angebot.",
+            "earned": false
+          },
+          {
+            "id": "vielseitig",
+            "label": "Mixkiste",
+            "how": "Inseriere in mindestens zwei Kategorien.",
+            "earned": false
+          },
+          {
+            "id": "erster-verkauf",
+            "label": "Erster Handel",
+            "how": "Verkaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "haendler",
+            "label": "Standbesitzer",
+            "how": "Schließe fünf Verkäufe ab.",
+            "earned": false
+          },
+          {
+            "id": "erster-kauf",
+            "label": "Erster Bissen",
+            "how": "Kaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "stammkaeufer",
+            "label": "Stammkunde",
+            "how": "Schließe drei Käufe ab.",
+            "earned": false
+          },
+          {
+            "id": "gut-bewertet",
+            "label": "Süß",
+            "how": "Erhalte deine erste positive Bewertung.",
+            "earned": true
+          },
+          {
+            "id": "vertrauenswuerdig",
+            "label": "Reif",
+            "how": "Erhalte fünf positive Bewertungen.",
+            "earned": false
+          },
+          {
+            "id": "makellos",
+            "label": "Ohne Druckstelle",
+            "how": "Zehn Bewertungen, alle positiv.",
+            "earned": false
+          }
+        ],
+        "ratingCount": 1,
+        "percentPositive": 100,
+        "ratingLabel": "1 Bewertung · 100 % positiv"
+      }
+    },
+    "Maya K.": {
+      "name": "Maya K.",
+      "emoji": "🎨",
+      "bio": "",
+      "joinedAt": "2026-08-24T16:20:00.000Z",
+      "reputation": {
+        "key": "maya k.",
+        "stats": {
+          "listings": 1,
+          "categories": 1,
+          "sales": 0,
+          "purchases": 0,
+          "positive": 8,
+          "negative": 0
+        },
+        "rank": {
+          "id": "grosshaendler",
+          "label": "Großhändler",
+          "tone": "#c44b3a",
+          "blurb": "Vertraut im Handel. Zwölf sehr gute Bewertungen und ein paar Abschlüsse führen zum Handelsmagnaten."
+        },
+        "nextRank": {
+          "id": "handelsmagnat",
+          "label": "Handelsmagnat",
+          "tone": "#6b3d6a",
+          "blurb": "Weit oben. Zwanzig sehr gute Bewertungen und mehr Abschlüsse machen den Mogul."
+        },
+        "nextSteps": [
+          {
+            "label": "Zwölf Bewertungen, davon mindestens 95 % positiv",
+            "done": false
+          },
+          {
+            "label": "Mindestens drei Abschlüsse — oder 18 Bewertungen",
+            "done": false
+          }
+        ],
+        "medals": [
+          {
+            "id": "erstes-inserat",
+            "label": "Erster Apfel",
+            "how": "Lege dein erstes Inserat in den Korb.",
+            "earned": true
+          },
+          {
+            "id": "anbieter",
+            "label": "Voller Korb",
+            "how": "Halte fünf Inserate im Angebot.",
+            "earned": false
+          },
+          {
+            "id": "vielseitig",
+            "label": "Mixkiste",
+            "how": "Inseriere in mindestens zwei Kategorien.",
+            "earned": false
+          },
+          {
+            "id": "erster-verkauf",
+            "label": "Erster Handel",
+            "how": "Verkaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "haendler",
+            "label": "Standbesitzer",
+            "how": "Schließe fünf Verkäufe ab.",
+            "earned": false
+          },
+          {
+            "id": "erster-kauf",
+            "label": "Erster Bissen",
+            "how": "Kaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "stammkaeufer",
+            "label": "Stammkunde",
+            "how": "Schließe drei Käufe ab.",
+            "earned": false
+          },
+          {
+            "id": "gut-bewertet",
+            "label": "Süß",
+            "how": "Erhalte deine erste positive Bewertung.",
+            "earned": true
+          },
+          {
+            "id": "vertrauenswuerdig",
+            "label": "Reif",
+            "how": "Erhalte fünf positive Bewertungen.",
+            "earned": true
+          },
+          {
+            "id": "makellos",
+            "label": "Ohne Druckstelle",
+            "how": "Zehn Bewertungen, alle positiv.",
+            "earned": false
+          }
+        ],
+        "ratingCount": 8,
+        "percentPositive": 100,
+        "ratingLabel": "8 Bewertungen · 100 % positiv"
+      }
+    },
+    "Jan P.": {
+      "name": "Jan P.",
+      "emoji": "🌲",
+      "bio": "",
+      "joinedAt": "2026-08-23T11:05:00.000Z",
+      "reputation": {
+        "key": "jan p.",
+        "stats": {
+          "listings": 1,
+          "categories": 1,
+          "sales": 0,
+          "purchases": 0,
+          "positive": 0,
+          "negative": 0
+        },
+        "rank": {
+          "id": "haendler",
+          "label": "Händler",
+          "tone": "#c4783a",
+          "blurb": "Du handelst schon. Drei Aktivitäten oder drei gute Bewertungen machen daraus einen Kaufmann."
+        },
+        "nextRank": {
+          "id": "kaufmann",
+          "label": "Kaufmann",
+          "tone": "#3f7d4e",
+          "blurb": "Fest im Geschäft. Sechs überwiegend gute Bewertungen — oder fünf Abschlüsse — machen dich zum Großhändler."
+        },
+        "nextSteps": [
+          {
+            "label": "Drei Aktivitäten (Inserate plus Abschlüsse)",
+            "done": false
+          },
+          {
+            "label": "Oder drei Bewertungen, davon mindestens 80 % positiv",
+            "done": false
+          }
+        ],
+        "medals": [
+          {
+            "id": "erstes-inserat",
+            "label": "Erster Apfel",
+            "how": "Lege dein erstes Inserat in den Korb.",
+            "earned": true
+          },
+          {
+            "id": "anbieter",
+            "label": "Voller Korb",
+            "how": "Halte fünf Inserate im Angebot.",
+            "earned": false
+          },
+          {
+            "id": "vielseitig",
+            "label": "Mixkiste",
+            "how": "Inseriere in mindestens zwei Kategorien.",
+            "earned": false
+          },
+          {
+            "id": "erster-verkauf",
+            "label": "Erster Handel",
+            "how": "Verkaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "haendler",
+            "label": "Standbesitzer",
+            "how": "Schließe fünf Verkäufe ab.",
+            "earned": false
+          },
+          {
+            "id": "erster-kauf",
+            "label": "Erster Bissen",
+            "how": "Kaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "stammkaeufer",
+            "label": "Stammkunde",
+            "how": "Schließe drei Käufe ab.",
+            "earned": false
+          },
+          {
+            "id": "gut-bewertet",
+            "label": "Süß",
+            "how": "Erhalte deine erste positive Bewertung.",
+            "earned": false
+          },
+          {
+            "id": "vertrauenswuerdig",
+            "label": "Reif",
+            "how": "Erhalte fünf positive Bewertungen.",
+            "earned": false
+          },
+          {
+            "id": "makellos",
+            "label": "Ohne Druckstelle",
+            "how": "Zehn Bewertungen, alle positiv.",
+            "earned": false
+          }
+        ],
+        "ratingCount": 0,
+        "ratingLabel": "Noch keine Bewertungen"
+      }
+    },
+    "Greta F.": {
+      "name": "Greta F.",
+      "emoji": "🌼",
+      "bio": "",
+      "joinedAt": "2026-08-22T09:50:00.000Z",
+      "reputation": {
+        "key": "greta f.",
+        "stats": {
+          "listings": 1,
+          "categories": 1,
+          "sales": 0,
+          "purchases": 0,
+          "positive": 4,
+          "negative": 0
+        },
+        "rank": {
+          "id": "kaufmann",
+          "label": "Kaufmann",
+          "tone": "#3f7d4e",
+          "blurb": "Fest im Geschäft. Sechs überwiegend gute Bewertungen — oder fünf Abschlüsse — machen dich zum Großhändler."
+        },
+        "nextRank": {
+          "id": "grosshaendler",
+          "label": "Großhändler",
+          "tone": "#c44b3a",
+          "blurb": "Vertraut im Handel. Zwölf sehr gute Bewertungen und ein paar Abschlüsse führen zum Handelsmagnaten."
+        },
+        "nextSteps": [
+          {
+            "label": "Sechs Bewertungen, davon mindestens 90 % positiv",
+            "done": false
+          },
+          {
+            "label": "Oder fünf Abschlüsse und vier gute Bewertungen",
+            "done": false
+          }
+        ],
+        "medals": [
+          {
+            "id": "erstes-inserat",
+            "label": "Erster Apfel",
+            "how": "Lege dein erstes Inserat in den Korb.",
+            "earned": true
+          },
+          {
+            "id": "anbieter",
+            "label": "Voller Korb",
+            "how": "Halte fünf Inserate im Angebot.",
+            "earned": false
+          },
+          {
+            "id": "vielseitig",
+            "label": "Mixkiste",
+            "how": "Inseriere in mindestens zwei Kategorien.",
+            "earned": false
+          },
+          {
+            "id": "erster-verkauf",
+            "label": "Erster Handel",
+            "how": "Verkaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "haendler",
+            "label": "Standbesitzer",
+            "how": "Schließe fünf Verkäufe ab.",
+            "earned": false
+          },
+          {
+            "id": "erster-kauf",
+            "label": "Erster Bissen",
+            "how": "Kaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "stammkaeufer",
+            "label": "Stammkunde",
+            "how": "Schließe drei Käufe ab.",
+            "earned": false
+          },
+          {
+            "id": "gut-bewertet",
+            "label": "Süß",
+            "how": "Erhalte deine erste positive Bewertung.",
+            "earned": true
+          },
+          {
+            "id": "vertrauenswuerdig",
+            "label": "Reif",
+            "how": "Erhalte fünf positive Bewertungen.",
+            "earned": false
+          },
+          {
+            "id": "makellos",
+            "label": "Ohne Druckstelle",
+            "how": "Zehn Bewertungen, alle positiv.",
+            "earned": false
+          }
+        ],
+        "ratingCount": 4,
+        "percentPositive": 100,
+        "ratingLabel": "4 Bewertungen · 100 % positiv"
+      }
+    },
+    "Nico S.": {
+      "name": "Nico S.",
+      "emoji": "🚀",
+      "bio": "",
+      "joinedAt": "2026-08-21T18:25:00.000Z",
+      "reputation": {
+        "key": "nico s.",
+        "stats": {
+          "listings": 1,
+          "categories": 1,
+          "sales": 0,
+          "purchases": 0,
+          "positive": 18,
+          "negative": 0
+        },
+        "rank": {
+          "id": "handelsmagnat",
+          "label": "Handelsmagnat",
+          "tone": "#6b3d6a",
+          "blurb": "Weit oben. Zwanzig sehr gute Bewertungen und mehr Abschlüsse machen den Mogul."
+        },
+        "nextRank": {
+          "id": "mogul",
+          "label": "Mogul",
+          "tone": "#3d4a6b",
+          "blurb": "Höchster Rang. Andere handeln bei dir, als wärst du das Haus selbst."
+        },
+        "nextSteps": [
+          {
+            "label": "Zwanzig Bewertungen, davon mindestens 95 % positiv",
+            "done": false
+          },
+          {
+            "label": "Mindestens sechs Abschlüsse — oder 28 Bewertungen",
+            "done": false
+          }
+        ],
+        "medals": [
+          {
+            "id": "erstes-inserat",
+            "label": "Erster Apfel",
+            "how": "Lege dein erstes Inserat in den Korb.",
+            "earned": true
+          },
+          {
+            "id": "anbieter",
+            "label": "Voller Korb",
+            "how": "Halte fünf Inserate im Angebot.",
+            "earned": false
+          },
+          {
+            "id": "vielseitig",
+            "label": "Mixkiste",
+            "how": "Inseriere in mindestens zwei Kategorien.",
+            "earned": false
+          },
+          {
+            "id": "erster-verkauf",
+            "label": "Erster Handel",
+            "how": "Verkaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "haendler",
+            "label": "Standbesitzer",
+            "how": "Schließe fünf Verkäufe ab.",
+            "earned": false
+          },
+          {
+            "id": "erster-kauf",
+            "label": "Erster Bissen",
+            "how": "Kaufe zum ersten Mal über Used Fruit.",
+            "earned": false
+          },
+          {
+            "id": "stammkaeufer",
+            "label": "Stammkunde",
+            "how": "Schließe drei Käufe ab.",
+            "earned": false
+          },
+          {
+            "id": "gut-bewertet",
+            "label": "Süß",
+            "how": "Erhalte deine erste positive Bewertung.",
+            "earned": true
+          },
+          {
+            "id": "vertrauenswuerdig",
+            "label": "Reif",
+            "how": "Erhalte fünf positive Bewertungen.",
+            "earned": true
+          },
+          {
+            "id": "makellos",
+            "label": "Ohne Druckstelle",
+            "how": "Zehn Bewertungen, alle positiv.",
+            "earned": true
+          }
+        ],
+        "ratingCount": 18,
+        "percentPositive": 100,
+        "ratingLabel": "18 Bewertungen · 100 % positiv"
+      }
+    }
+  }
 }

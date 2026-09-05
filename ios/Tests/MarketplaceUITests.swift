@@ -64,4 +64,29 @@ final class MarketplaceUITests: XCTestCase {
   app.buttons["Blockierte Profile"].tap()
   XCTAssertTrue(app.staticTexts["Keine blockierten Profile"].waitForExistence(timeout:3))
  }
+ @MainActor func testListingDetailsAndPurchaseIntent() {
+  let app=XCUIApplication();app.launchArguments=["--ui-testing"];app.launch()
+  if app.buttons["demo-login"].waitForExistence(timeout:8) { app.buttons["demo-login"].tap() }
+  let price=app.staticTexts.matching(NSPredicate(format:"label CONTAINS %@","759,00")).firstMatch
+  XCTAssertTrue(price.waitForExistence(timeout:5));price.tap()
+  XCTAssertTrue(app.buttons["Kaufen"].waitForExistence(timeout:5))
+  XCTAssertTrue(app.buttons["Nachricht"].exists)
+  XCTAssertTrue(app.buttons["Inserat teilen"].exists)
+  XCTAssertTrue(app.buttons["Favorit umschalten"].exists)
+  func capture(_ name:String) { let shot=XCTAttachment(screenshot:app.screenshot());shot.name=name;shot.lifetime = .keepAlways;add(shot) }
+  capture("Listing-header")
+  for _ in 0..<18 { if app.buttons["Vollbild"].isHittable { break };app.swipeUp() }
+  XCTAssertTrue(app.buttons["Vollbild"].isHittable)
+  capture("Listing-map")
+  app.buttons["Vollbild"].tap()
+  XCTAssertTrue(app.buttons["Schließen"].waitForExistence(timeout:3));app.buttons["Schließen"].tap()
+  for _ in 0..<5 { if app.buttons["Auszeichnungen anzeigen"].isHittable { break };app.swipeUp() }
+  XCTAssertTrue(app.buttons["Auszeichnungen anzeigen"].isHittable)
+  capture("Listing-seller")
+  app.buttons["Kaufen"].tap()
+  XCTAssertTrue(app.staticTexts["Kaufen"].waitForExistence(timeout:3))
+  XCTAssertFalse(app.tabBars.firstMatch.exists)
+  capture("Purchase-chat")
+ }
+
 }
