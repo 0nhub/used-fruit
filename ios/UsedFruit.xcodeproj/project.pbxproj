@@ -1,0 +1,46 @@
+// !$*UTF8*$!
+{ archiveVersion = 1; classes = {}; objectVersion = 56; objects = {
+CF07D9E0EE263E8B3E7936F8 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests/MarketplaceUITests.swift; sourceTree = "<group>"; };
+8168734DC656D6720A86549F = { isa = PBXBuildFile; fileRef = CF07D9E0EE263E8B3E7936F8; };
+B838B4D0315032B59B4A1CC9 = { isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = UsedFruitUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+72D01DD4203283D325C3611D = { isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (8168734DC656D6720A86549F); runOnlyForDeploymentPostprocessing = 0; };
+B799D8A6F7CA744ABC83654D = { isa = XCBuildConfiguration; name = Debug; buildSettings = { PRODUCT_BUNDLE_IDENTIFIER = de.usedfruit.app.uitests; PRODUCT_NAME = "$(TARGET_NAME)"; GENERATE_INFOPLIST_FILE = YES; TEST_TARGET_NAME = UsedFruit; TARGETED_DEVICE_FAMILY = 1; SWIFT_VERSION = 6.0; CODE_SIGN_STYLE = Automatic; }; };
+09C7CE0498A56FD938F335A8 = { isa = XCBuildConfiguration; name = Release; buildSettings = { PRODUCT_BUNDLE_IDENTIFIER = de.usedfruit.app.uitests; PRODUCT_NAME = "$(TARGET_NAME)"; GENERATE_INFOPLIST_FILE = YES; TEST_TARGET_NAME = UsedFruit; TARGETED_DEVICE_FAMILY = 1; SWIFT_VERSION = 6.0; CODE_SIGN_STYLE = Automatic; }; };
+E322D994C8536A8FB803910A = { isa = XCConfigurationList; buildConfigurations = (B799D8A6F7CA744ABC83654D,09C7CE0498A56FD938F335A8); defaultConfigurationIsVisible = 0; defaultConfigurationName = Debug; };
+E97FC8AC399623E8C84BB979 = { isa = PBXContainerItemProxy; containerPortal = 46F86FAA6BBF9AC94A7E4595; proxyType = 1; remoteGlobalIDString = 42AEFBAE01D2DFD981F7DA7D; remoteInfo = UsedFruit; };
+182F3ED78CC7AD2612F149DB = { isa = PBXTargetDependency; target = 42AEFBAE01D2DFD981F7DA7D; targetProxy = E97FC8AC399623E8C84BB979; };
+0C28F3E67EF128E4928C9ADF = { isa = PBXNativeTarget; buildConfigurationList = E322D994C8536A8FB803910A; buildPhases = (72D01DD4203283D325C3611D); buildRules = (); dependencies = (182F3ED78CC7AD2612F149DB); name = UsedFruitUITests; productName = UsedFruitUITests; productReference = B838B4D0315032B59B4A1CC9; productType = "com.apple.product-type.bundle.ui-testing"; };
+93B84ABA26FF0044112B1E6D = { isa = PBXFileReference; lastKnownFileType = text.json; path = WebCatalog.json; sourceTree = "<group>"; };
+EAAFD06F38DB40E5CD081AD0 = { isa = PBXBuildFile; fileRef = 93B84ABA26FF0044112B1E6D; };
+BDB4DBDEAF58F8341EF1934F = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListingWizardView.swift; sourceTree = "<group>"; };
+DC34B40376B08F6BCE8C8298 = { isa = PBXBuildFile; fileRef = BDB4DBDEAF58F8341EF1934F; };
+002296685CE8DA5F10D27142 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogFilters.swift; sourceTree = "<group>"; };
+B7A0B6BF29B3E56EC8E463EE = { isa = PBXBuildFile; fileRef = 002296685CE8DA5F10D27142; };
+AF8176A75571913F81FE3C1B = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebCatalog.swift; sourceTree = "<group>"; };
+9D580B147D18F1D35F917FCA = { isa = PBXBuildFile; fileRef = AF8176A75571913F81FE3C1B; };
+596CC302231016CCED301F04 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
+A87787FE59E2ED4069B086BB = { isa = PBXBuildFile; fileRef = 596CC302231016CCED301F04; };
+4413C5AF7965957235741D31 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsedFruitApp.swift; sourceTree = "<group>"; };
+6AB68F90D798935768B04530 = { isa = PBXBuildFile; fileRef = 4413C5AF7965957235741D31; };
+4E2CB50BA9AF29A75D352DE3 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketplaceViews.swift; sourceTree = "<group>"; };
+F05B1B71105BEA7C4FDB8B51 = { isa = PBXBuildFile; fileRef = 4E2CB50BA9AF29A75D352DE3; };
+C3CA69A2868668852B9E0A65 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountAndMessages.swift; sourceTree = "<group>"; };
+0BAD3A1AC22770250E707BC2 = { isa = PBXBuildFile; fileRef = C3CA69A2868668852B9E0A65; };
+E9C2B90A5DCA5D29F2BEC039 = { isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+73EC906678F06B0611143396 = { isa = PBXBuildFile; fileRef = E9C2B90A5DCA5D29F2BEC039; };
+F5BF48AA40CAD7891EB709FC = { isa = PBXFileReference; explicitFileType = wrapper.application; path = UsedFruit.app; sourceTree = BUILT_PRODUCTS_DIR; };
+F2AB5FB218DA8B84623F4557 = { isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (DC34B40376B08F6BCE8C8298,B7A0B6BF29B3E56EC8E463EE,9D580B147D18F1D35F917FCA,A87787FE59E2ED4069B086BB,6AB68F90D798935768B04530,F05B1B71105BEA7C4FDB8B51,0BAD3A1AC22770250E707BC2); runOnlyForDeploymentPostprocessing = 0; };
+55B558C7EF820E6E00E5993B = { isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (EAAFD06F38DB40E5CD081AD0,73EC906678F06B0611143396); runOnlyForDeploymentPostprocessing = 0; };
+4F6F5CC3FCCF73F75AE9CCF4 = { isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+B60F08E1B2CF35AEB2F1DE90 = { isa = PBXGroup; children = (93B84ABA26FF0044112B1E6D,BDB4DBDEAF58F8341EF1934F,002296685CE8DA5F10D27142,AF8176A75571913F81FE3C1B,596CC302231016CCED301F04,4413C5AF7965957235741D31,4E2CB50BA9AF29A75D352DE3,C3CA69A2868668852B9E0A65,E9C2B90A5DCA5D29F2BEC039); path = UsedFruit; sourceTree = "<group>"; };
+86024CAD1E83101D97359D73 = { isa = PBXGroup; children = (F5BF48AA40CAD7891EB709FC); name = Products; sourceTree = "<group>"; };
+1629A0BB4117BEFC577EF28D = { isa = PBXGroup; children = (CF07D9E0EE263E8B3E7936F8,B60F08E1B2CF35AEB2F1DE90,86024CAD1E83101D97359D73); sourceTree = "<group>"; };
+59233E4D684FB5A1A72525B8 = { isa = XCBuildConfiguration; name = Debug; buildSettings = { SDKROOT = iphoneos; IPHONEOS_DEPLOYMENT_TARGET = 26.0; SWIFT_VERSION = 6.0; CLANG_ENABLE_MODULES = YES; }; };
+D8579749783A718541606A67 = { isa = XCBuildConfiguration; name = Debug; buildSettings = { ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon; PRODUCT_BUNDLE_IDENTIFIER = de.usedfruit.app; PRODUCT_NAME = "$(TARGET_NAME)"; TARGETED_DEVICE_FAMILY = 1; SUPPORTS_MACCATALYST = NO; SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO; GENERATE_INFOPLIST_FILE = YES; INFOPLIST_KEY_CFBundleDisplayName = "Used Fruit"; INFOPLIST_KEY_UILaunchScreen_Generation = YES; INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES; INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait; CODE_SIGN_STYLE = Automatic; CODE_SIGN_ENTITLEMENTS = UsedFruit/UsedFruit.entitlements; DEVELOPMENT_TEAM = AUP84ZCD2B; CURRENT_PROJECT_VERSION = 1; MARKETING_VERSION = 0.1.0; SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG; SWIFT_OPTIMIZATION_LEVEL = "-Onone"; }; };
+8D5ED1041709BB7FC1DE2B10 = { isa = XCBuildConfiguration; name = Release; buildSettings = { SDKROOT = iphoneos; IPHONEOS_DEPLOYMENT_TARGET = 26.0; SWIFT_VERSION = 6.0; CLANG_ENABLE_MODULES = YES; }; };
+553194FECB7E1C4EBBAFB6CE = { isa = XCBuildConfiguration; name = Release; buildSettings = { ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon; PRODUCT_BUNDLE_IDENTIFIER = de.usedfruit.app; PRODUCT_NAME = "$(TARGET_NAME)"; TARGETED_DEVICE_FAMILY = 1; SUPPORTS_MACCATALYST = NO; SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO; GENERATE_INFOPLIST_FILE = YES; INFOPLIST_KEY_CFBundleDisplayName = "Used Fruit"; INFOPLIST_KEY_UILaunchScreen_Generation = YES; INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES; INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait; CODE_SIGN_STYLE = Automatic; CODE_SIGN_ENTITLEMENTS = UsedFruit/UsedFruit.entitlements; DEVELOPMENT_TEAM = AUP84ZCD2B; CURRENT_PROJECT_VERSION = 1; MARKETING_VERSION = 0.1.0; SWIFT_COMPILATION_MODE = wholemodule; SWIFT_OPTIMIZATION_LEVEL = "-O"; }; };
+927FED1AB2217D3B3EC771F8 = { isa = XCConfigurationList; buildConfigurations = (59233E4D684FB5A1A72525B8,8D5ED1041709BB7FC1DE2B10); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+7CFCAAA280ADA50A774EA8B7 = { isa = XCConfigurationList; buildConfigurations = (D8579749783A718541606A67,553194FECB7E1C4EBBAFB6CE); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+42AEFBAE01D2DFD981F7DA7D = { isa = PBXNativeTarget; buildConfigurationList = 7CFCAAA280ADA50A774EA8B7; buildPhases = (F2AB5FB218DA8B84623F4557,4F6F5CC3FCCF73F75AE9CCF4,55B558C7EF820E6E00E5993B); buildRules = (); dependencies = (); name = UsedFruit; productName = UsedFruit; productReference = F5BF48AA40CAD7891EB709FC; productType = "com.apple.product-type.application"; };
+46F86FAA6BBF9AC94A7E4595 = { isa = PBXProject; attributes = { LastUpgradeCheck = 2600; TargetAttributes = { 42AEFBAE01D2DFD981F7DA7D = { CreatedOnToolsVersion = 26.0; SystemCapabilities = { com.apple.SignInWithApple = { enabled = 1; }; }; }; }; }; buildConfigurationList = 927FED1AB2217D3B3EC771F8; compatibilityVersion = "Xcode 14.0"; developmentRegion = de; knownRegions = (de,Base); mainGroup = 1629A0BB4117BEFC577EF28D; productRefGroup = 86024CAD1E83101D97359D73; projectDirPath = ""; projectRoot = ""; targets = (42AEFBAE01D2DFD981F7DA7D,0C28F3E67EF128E4928C9ADF); };
+}; rootObject = 46F86FAA6BBF9AC94A7E4595; }

@@ -13,6 +13,10 @@ Wenn du den Code ändern oder eine KI darauf ansetzen willst, lies zuerst **[AGE
 
 ---
 
+## iPhone-App
+
+Der native SwiftUI-Prototyp liegt unter [ios/](./ios/README.md). Öffne `ios/UsedFruit.xcodeproj` in Xcode und starte den iPhone-Simulator mit ⌘R. Der Test-Account ist ausschließlich im Debug-Build verfügbar.
+
 ## Was die App heute kann
 
 - Katalog für **Mac**, **iPad** und **iPhone** (Watch, AirPods usw. sind noch nicht im Datenmodell)

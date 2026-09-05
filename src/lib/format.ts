@@ -59,7 +59,6 @@ export function formatListingMeta(listing: Listing): string {
     listing.year,
     listing.chip,
     listing.storage,
-    hasBuiltInKeyboard(listing.modelId) ? `Tastatur: ${formatKeyboardLayout(listing)}` : undefined,
     listing.connectivity === "cellular"
       ? "Cellular"
       : listing.connectivity === "wifi"
@@ -76,7 +75,6 @@ export function formatListingHeadline(listing: Listing, options?: { includeParts
     listing.year,
     listing.chip,
     listing.storage,
-    hasBuiltInKeyboard(listing.modelId) ? `Tastatur: ${formatKeyboardLayout(listing)}` : undefined,
     listing.connectivity === "cellular"
       ? "Cellular"
       : listing.connectivity === "wifi"

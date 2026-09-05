@@ -5,7 +5,8 @@ Deployed on the existing Hetzner server `bookmer` (`195.201.145.202`).
 - Domain: https://usedfruit.de/
 - www: redirects to https://usedfruit.de/ preserving path and query
 - Preview: http://195.201.145.202/
-- Active release: `/opt/used-fruit-releases/profile-20260905`
+- Active release: `/opt/used-fruit-releases/titles-20260905`
+- Previous profile release: `/opt/used-fruit-releases/profile-20260905`
 - Previous interaction release: `/opt/used-fruit-releases/smooth-20260905`
 - Previous consolidated release: `/opt/used-fruit-releases/public-20260905-final`
 - Previous release: `/opt/used-fruit-releases/mobile-navigation-Py98hf`
@@ -164,3 +165,7 @@ Release `/opt/used-fruit-releases/profile-20260905` removes provider filters and
 New/missing notification preferences default on; explicit opt-outs remain false. System notifications still require browser permission through the account control. Rank dialog opens without focusing the close button, places X at top left, and lists awards first. Rank stations are collapsed under “Zeige Stationen”. Listing links from a conversation carry its ID and inbox tab; “Nachricht” returns to that conversation, while normal catalog entry retains “Inserate”.
 
 Production build and 15 tests passed. Browser checked provider desktop/mobile, rank expansion and initial focus, normal back link and conversation-specific URL including archive tab. Authenticated cover-upload and actual system-notification delivery were not tested end-to-end. Only Used Fruit restarted. Rollback override: `/etc/used-fruit/pre-profile-20260905.conf` (restore, daemon-reload, restart only Used Fruit). Used Fruit, provider page, Bookmer and Bookmer ID health returned 200.
+
+## Listing titles — 2026-09-05
+
+Removed keyboard layout from both listing title formatters; keyboard information remains in technical details. All 15 keyboard tests and the production build passed. Activated the isolated `titles-20260905` release; Used Fruit and Bookmer ID health returned HTTP 200. Service override backup: `/etc/used-fruit/pre-titles-20260905.conf`. Only the Used Fruit service was restarted.

@@ -26,8 +26,8 @@ test('unknown or partial imported layouts never become German', () => {
     assert.equal(keyboard.hasValidKeyboard({keyboardLayout}), false);
     assert.equal(keyboard.formatKeyboardLayout({keyboardLayout}), 'Nicht angegeben');
   }
-  assert.match(formatListingMeta(base), /Tastatur: Nicht angegeben/);
-  assert.match(formatListingHeadline({...base, keyboardLayout:'ch'}), /CH.*QWERTZ/);
+  assert.doesNotMatch(formatListingMeta(base), /Tastatur|Nicht angegeben/);
+  assert.doesNotMatch(formatListingHeadline({...base, keyboardLayout:'ch'}), /Tastatur|CH|QWERTZ/);
   assert.doesNotMatch(formatListingMeta({...base, modelId:'iphone-16'}), /Tastatur/);
 });
 test('other layouts require a meaningful bounded description', () => {
