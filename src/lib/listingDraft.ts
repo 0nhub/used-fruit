@@ -3,6 +3,8 @@ import type {
   CategoryId,
   ConditionId,
   IpadConnectivity,
+  SimLockStatus,
+  KeyboardLayoutId,
   ShippingScope,
 } from "@/lib/types";
 
@@ -18,6 +20,9 @@ export interface ListingDraft {
   memory?: string;
   storage?: string;
   connectivity?: IpadConnectivity;
+  simLock?: SimLockStatus;
+  keyboardLayout?: KeyboardLayoutId;
+  keyboardLayoutDetails?: string;
   condition: ConditionId;
   originalBox: boolean;
   price: number;

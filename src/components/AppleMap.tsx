@@ -1,5 +1,7 @@
 "use client";
 
+import { usePrivacyConsent } from "@/components/PrivacyConsent";
+import { createPortal } from "react-dom";
 import { useEffect, useRef, useState } from "react";
 
 type MapkitMap = {
@@ -76,20 +78,44 @@ function loadMapKit(token: string) {
   return mapkitLoad;
 }
 
-export function AppleMap({
+export function AppleMap(props: { lat: number; lng: number; label: string; exactAddress?: boolean; expanded?: boolean }) {
+  const { maps, openSettings } = usePrivacyConsent();
+  if (!maps) return <div className="flex min-h-[220px] flex-col items-center justify-center gap-3 rounded-3xl bg-uf-bg-subtle p-5 text-center text-[14px]">
+    <p className="font-medium">{props.label}</p>
+    <p className="text-uf-text-secondary">Apple Karten sind deaktiviert. Erst mit deiner Zustimmung wird eine Verbindung zu Apple hergestellt.</p>
+    <button type="button" onClick={openSettings} className="rounded-full border border-uf-border bg-white px-4 py-2">Karten-Einstellungen</button>
+  </div>;
+  return <EnabledAppleMap {...props} />;
+}
+
+function EnabledAppleMap({
   lat,
   lng,
   label,
   exactAddress = false,
+  expanded = false,
 }: {
   lat: number;
   lng: number;
   label: string;
   exactAddress?: boolean;
+  expanded?: boolean;
 }) {
+  const [fullscreen, setFullscreen] = useState(false);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const fullscreenContentRef = useRef<HTMLDivElement>(null);
   const hostRef = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(false);
   const mapsHref = appleMapsUrl(lat, lng, label);
+
+  useEffect(() => {
+    if (!fullscreen) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    dialogRef.current?.showModal();
+    fullscreenContentRef.current?.focus({ preventScroll: true });
+    return () => { document.body.style.overflow = previous; };
+  }, [fullscreen]);
 
   useEffect(() => {
     let cancelled = false;
@@ -135,8 +161,9 @@ export function AppleMap({
   }, [lat, lng, label]);
 
   return (
-    <div className="overflow-hidden rounded-3xl bg-[#e8e8ed]">
-      <div className="relative h-[220px] w-full">
+    <>
+    <div className={expanded ? "flex min-h-0 flex-1 flex-col overflow-hidden bg-uf-bg-subtle" : "overflow-hidden rounded-3xl bg-uf-bg-subtle"}>
+      <div className={expanded ? "relative min-h-0 w-full flex-1" : "relative h-[220px] w-full"}>
         <div ref={hostRef} className="absolute inset-0" />
         {!ready && (
           <a
@@ -150,25 +177,32 @@ export function AppleMap({
             <span className="mt-1 text-[12px] text-uf-text-secondary">In Apple Maps öffnen</span>
           </a>
         )}
-        {ready && (
-          <a
-            href={mapsHref}
-            target="_blank"
-            rel="noreferrer"
-            className="absolute right-3 bottom-3 rounded-full bg-white/95 px-3 py-1.5 text-[12px] font-medium text-uf-text shadow-[0_1px_4px_rgba(0,0,0,0.12)] hover:bg-white"
-          >
-            In Apple Maps öffnen
-          </a>
-        )}
+
       </div>
-      <div className="space-y-1 px-4 py-2.5">
+      <div className="shrink-0 space-y-1 px-4 py-4">
         <p className="text-[13px] text-uf-text-secondary">{label}</p>
         <p className="text-[12px] leading-snug text-uf-text-tertiary">
           {exactAddress
             ? "Die Straße ist angegeben und wird veröffentlicht."
-            : "Der Punkt zeigt nur Stadt und PLZ, nie die genaue Adresse. Für den Treffpunkt nimm direkt Kontakt auf."}
+            : "Der Punkt zeigt nur Stadt und PLZ. Für den Treffpunkt nimm direkt Kontakt auf."}
         </p>
+        <div className="flex gap-2 pt-3">
+          {!expanded && <button type="button" onClick={() => setFullscreen(true)} className="uf-panel-action flex-1">Vollbild</button>}
+          <a href={mapsHref} target="_blank" rel="noreferrer" className="uf-panel-action flex-1">Apple Maps</a>
+        </div>
       </div>
     </div>
+    {fullscreen && createPortal(
+      <dialog ref={dialogRef} onCancel={() => setFullscreen(false)} onClose={() => setFullscreen(false)} aria-label="Karte im Vollbild"
+        className="fixed inset-0 m-0 h-dvh max-h-none w-screen max-w-none bg-white p-0 backdrop:bg-black/30">
+        <div ref={fullscreenContentRef} tabIndex={-1} className="relative flex h-full flex-col pb-[env(safe-area-inset-bottom)] outline-none">
+          <button type="button" aria-label="Karte schließen" onClick={() => setFullscreen(false)}
+            className="absolute left-[calc(env(safe-area-inset-left)+16px)] top-[calc(env(safe-area-inset-top)+16px)] z-10 flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-white/95 text-uf-text shadow-md backdrop-blur-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-uf-text focus-visible:ring-offset-2">
+            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="m6 6 12 12M18 6 6 18" /></svg>
+          </button>
+          <AppleMap lat={lat} lng={lng} label={label} exactAddress={exactAddress} expanded />
+        </div>
+      </dialog>, document.body)}
+    </>
   );
 }

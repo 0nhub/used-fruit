@@ -34,7 +34,7 @@ export function ProductCard({
         className={
           shop
             ? "flex h-full flex-col px-3 pt-3 pb-5 sm:px-4 sm:pt-4 sm:pb-6"
-            : "flex h-full flex-col px-2.5 pt-2.5 pb-5 transition-colors hover:bg-[#fafafa] sm:px-6 sm:pt-3 sm:pb-8"
+            : "flex h-full flex-col px-2.5 pt-2.5 pb-5 sm:px-6 sm:pt-3 sm:pb-8"
         }
       >
         <div className="flex min-h-7 items-center pr-8 sm:min-h-8 sm:pr-10">

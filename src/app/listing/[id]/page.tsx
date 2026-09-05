@@ -1,5 +1,11 @@
 "use client";
 
+import { catalogReturn } from "@/lib/catalogReturn";
+import { BlockSellerButton } from "@/components/BlockedProfiles";
+import { listingNumber } from "@/lib/listingNumber";
+import { LegalNav } from "@/components/LegalNav";
+import { ListingReport } from "@/components/ListingReport";
+import { needsSimLock, formatSimLock } from "@/lib/simLock";
 import { AppleMap } from "@/components/AppleMap";
 import { ConditionHint } from "@/components/ConditionHint";
 import { FavoriteButton } from "@/components/FavoriteButton";
@@ -18,18 +24,16 @@ import {
   formatWarrantyLabel,
 } from "@/lib/device";
 import { formatListingMeta, formatListingName, formatMemberSince, formatPrice } from "@/lib/format";
-import { findThreadForListing } from "@/lib/messages";
+import { formatKeyboardLayout, hasBuiltInKeyboard } from "@/lib/keyboard";
 import { listingJoinedAt, listingSellerEmoji } from "@/lib/seller";
 import { sellerHref } from "@/lib/sellerPage";
 import { useListings } from "@/lib/useListings";
-import { useMessages } from "@/lib/useMessages";
-import { useProfile } from "@/lib/useProfile";
 import { useReputation } from "@/lib/useReputation";
 import { useUserLocation } from "@/lib/useUserLocation";
 import type { Listing } from "@/lib/types";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useState, type ReactNode } from "react";
+import { type ReactNode } from "react";
 
 function SpecGrid({ children }: { children: ReactNode }) {
   return (
@@ -41,7 +45,7 @@ function SpecRow({ label, value }: { label: ReactNode; value: ReactNode }) {
   return (
     <>
       <dt className="inline-flex items-center text-uf-text-secondary">{label}</dt>
-      <dd>{value}</dd>
+      <dd className="min-w-0 [overflow-wrap:anywhere]">{value}</dd>
     </>
   );
 }
@@ -50,60 +54,26 @@ function SellerBox({
   listing,
   sellerEmoji,
   isOwn,
+  mobileFooter = false,
 }: {
   listing: Listing;
   sellerEmoji: string;
   isOwn: boolean;
+  mobileFooter?: boolean;
 }) {
   const router = useRouter();
-  const { profile, signedIn } = useProfile();
-  const { threads, ready: messagesReady, openThread, send } = useMessages();
   const { snapshot: sellerReputation } = useReputation(listing.sellerName);
-  const [contactOpen, setContactOpen] = useState(false);
-  const [note, setNote] = useState("");
-  const [error, setError] = useState("");
-  const existingThread = findThreadForListing(threads, listing);
   const shopHref = sellerHref(listing.sellerName);
-
-  const startConversation = (kind: "buy" | "contact") => {
-    setError("");
-    if (!signedIn) {
-      router.push(`/anmelden?next=/listing/${listing.id}`);
-      return;
-    }
-    if (!profile.name.trim()) {
-      setError("Bitte zuerst deinen Namen im Profil setzen.");
-      return;
-    }
-
-    const thread = openThread({
-      listing,
-      sellerEmoji,
-      buyerName: profile.name.trim(),
-      buyerEmoji: profile.emoji,
-    });
-
-    if (kind === "buy") {
-      send(
-        thread.id,
-        {
-          author: "buyer",
-          kind: "offer",
-          price: listing.price,
-          text: `Ich kaufe für ${formatPrice(listing.price)}.`,
-        },
-        { price: listing.price, status: "pending" },
-      );
-    } else if (note.trim()) {
-      send(thread.id, { author: "buyer", kind: "text", text: note.trim() });
-    }
-
-    router.push(`/nachrichten?id=${encodeURIComponent(thread.id)}`);
+  const startConversation = () => {
+    router.push(`/nachrichten/start?listing=${encodeURIComponent(listing.id)}`);
   };
 
   return (
-    <section className="rounded-3xl border border-uf-border-soft bg-uf-bg-subtle/70 px-4 py-4">
-      <div className="flex items-center gap-3">
+    <section className={mobileFooter
+      ? "fixed inset-x-0 bottom-0 z-50 max-h-[65dvh] overflow-y-auto border-t border-uf-border-soft bg-uf-bg-subtle px-4 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] lg:hidden"
+      : "rounded-3xl bg-uf-bg-subtle px-4 py-4"}>
+      {!mobileFooter && <>
+      <div className="flex items-start justify-between gap-3">
         {shopHref ? (
           <Link
             href={shopHref}
@@ -112,9 +82,10 @@ function SellerBox({
             <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white text-[28px] leading-none">
               {sellerEmoji}
             </span>
-            <p className="min-w-0 flex-1 truncate text-[15px] font-medium text-uf-text">
-              {listing.sellerName}
-            </p>
+            <span className="flex min-w-0 flex-1 items-center gap-1 text-[15px] font-medium text-uf-text">
+              <span className="truncate">{listing.sellerName}</span>
+              <svg aria-hidden="true" className="h-4 w-4 shrink-0 text-uf-text-secondary" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11 3h6v6M17 3l-8 8M8 4H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4" /></svg>
+            </span>
           </Link>
         ) : (
           <>
@@ -126,14 +97,14 @@ function SellerBox({
             </p>
           </>
         )}
-        <p className="shrink-0 text-right text-[13px] text-uf-text-secondary">
-          Mitglied seit {formatMemberSince(listingJoinedAt(listing))}
-        </p>
+        <p className="shrink-0 text-right text-[11px] text-uf-text-secondary">Mitglied seit {formatMemberSince(listingJoinedAt(listing))}</p>
       </div>
       {sellerReputation && (
-        <ReputationBadge reputation={sellerReputation} personName={listing.sellerName} own={isOwn} />
+        <div className="mt-5"><ReputationBadge reputation={sellerReputation} personName={listing.sellerName} own={isOwn} variant="summary" /></div>
       )}
 
+      </>}
+      <div>
       {isOwn ? (
         <p className="mt-3 text-[13px] text-uf-text-secondary">
           {listing.visibility === "reserved"
@@ -142,95 +113,19 @@ function SellerBox({
               ? "Deaktiviert. Das Inserat ist nicht öffentlich sichtbar."
               : "Anfragen erscheinen unter Nachrichten."}
         </p>
-      ) : !messagesReady ? (
-        <div className="mt-4 h-11" aria-hidden />
-      ) : existingThread ? (
-        <div className="mt-4">
-          <button
-            type="button"
-            onClick={() =>
-              router.push(`/nachrichten?id=${encodeURIComponent(existingThread.id)}`)
-            }
-            className="h-11 w-full rounded-full bg-uf-text px-4 text-[14px] font-medium text-white transition-colors hover:bg-[#424245] sm:h-10 sm:w-auto sm:text-[13px]"
-          >
-            Nachricht öffnen
-          </button>
-        </div>
       ) : (
-        <>
-          <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-            <button
-              type="button"
-              onClick={() => startConversation("buy")}
-              className="h-10 rounded-full bg-uf-text px-4 text-[13px] font-medium text-white transition-colors hover:bg-[#424245]"
-            >
-              Kaufen
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setContactOpen((open) => !open);
-                setError("");
-              }}
-              className="h-10 rounded-full border border-uf-border bg-white px-4 text-[13px] transition-colors hover:bg-[#f5f5f7]"
-            >
-              Kontakt aufnehmen
-            </button>
-          </div>
-
-          {error && !contactOpen && (
-            <div className="mt-3">
-              <p className="text-[13px] text-[#d80000]">{error}</p>
-              {!profile.name.trim() && (
-                <Link href="/profil" className="mt-1 inline-block text-[13px] text-uf-link hover:underline">
-                  Zum Account
-                </Link>
-              )}
-            </div>
-          )}
-
-          {contactOpen && (
-            <div className="mt-4 rounded-2xl bg-white px-3 py-3">
-              <label className="block text-[12px] tracking-wide text-uf-text-secondary uppercase">
-                Nachricht
-                <textarea
-                  className="mt-1.5 min-h-[72px] w-full rounded-xl border border-uf-border px-3 py-2 text-[14px] outline-none"
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  placeholder="Schreib dem Anbieter…"
-                />
-              </label>
-              {error && <p className="mt-2 text-[13px] text-[#d80000]">{error}</p>}
-              {!profile.name.trim() && (
-                <Link href="/profil" className="mt-2 inline-block text-[13px] text-uf-link hover:underline">
-                  Zum Account
-                </Link>
-              )}
-              <div className="mt-3 flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => startConversation("contact")}
-                  className="h-10 rounded-full bg-uf-text px-4 text-[13px] text-white transition-colors hover:bg-[#424245]"
-                >
-                  Senden
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setContactOpen(false)}
-                  className="h-10 rounded-full px-3 text-[13px] text-uf-text-secondary"
-                >
-                  Abbrechen
-                </button>
-              </div>
-            </div>
-          )}
-        </>
+        <div className={mobileFooter ? "grid grid-cols-2 gap-2" : "mt-4 flex items-center gap-2"}>
+          <button type="button" onClick={startConversation} className="uf-panel-action flex-1">Kaufen</button>
+          <button type="button" onClick={startConversation} className="uf-panel-action flex-1">Nachricht</button>
+        </div>
       )}
+      </div>
     </section>
   );
 }
 
 export default function ListingDetailPage() {
+  const router = useRouter();
   const params = useParams<{ id: string }>();
   const id = typeof params.id === "string" ? params.id : "";
   const { getListing, userListings, ready } = useListings();
@@ -283,12 +178,24 @@ export default function ListingDetailPage() {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col bg-white lg:h-dvh lg:overflow-hidden">
-      <SiteHeader />
+    <div className="flex min-h-dvh min-w-0 flex-col overflow-x-clip bg-white pb-24 lg:h-dvh lg:overflow-hidden lg:pb-0">
+      <SiteHeader listingId={listing.id} />
 
       <main className="mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col lg:grid lg:grid-cols-2 lg:overflow-hidden">
-        <div className="order-2 min-h-0 lg:order-1 lg:overflow-y-auto lg:overscroll-contain">
-          <div className="bg-uf-bg-subtle">
+        <div className="contents lg:order-1 lg:block lg:min-h-0 lg:min-w-0 lg:overflow-y-auto lg:overscroll-contain">
+          <div className="order-1 bg-uf-bg-subtle">
+            <div className="w-full shrink-0 bg-white px-1.5 py-3 sm:px-3 md:px-6">
+              <Link href={catalogReturn?.listingId === listing.id ? catalogReturn.url : "/"}
+                onClick={(event) => {
+                  if (catalogReturn?.listingId === listing.id && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
+                    event.preventDefault(); router.back();
+                  }
+                }}
+                className="group inline-flex items-center gap-1 text-[14px] text-uf-link underline-offset-4">
+                <svg aria-hidden="true" className="h-4 w-4 shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="m12 5-5 5 5 5" /></svg>
+                <span className="group-hover:underline group-focus-visible:underline">Inserate</span>
+              </Link>
+            </div>
             <ProductGallery
               modelId={listing.modelId}
               colorId={listing.colorId}
@@ -296,7 +203,7 @@ export default function ListingDetailPage() {
             />
           </div>
           {place && (
-            <div className="px-4 pt-4 sm:px-6">
+            <div className="order-3 px-4 pt-4 sm:px-6">
               <AppleMap
                 lat={place.lat}
                 lng={place.lng}
@@ -305,7 +212,7 @@ export default function ListingDetailPage() {
               />
             </div>
           )}
-          <div className="px-4 py-6 sm:px-6">
+          <div className="order-4 px-4 py-6 sm:px-6">
             <SellerBox listing={listing} sellerEmoji={sellerEmoji} isOwn={isOwn} />
             {isOwn ? (
               <div className="mt-4">
@@ -315,7 +222,7 @@ export default function ListingDetailPage() {
           </div>
         </div>
 
-        <div className="order-1 min-h-0 px-4 pb-6 pt-5 sm:px-6 lg:order-2 lg:overflow-y-auto lg:overscroll-contain lg:pt-6 lg:pb-10">
+        <div className="order-2 min-h-0 min-w-0 px-4 pb-6 pt-5 sm:px-6 lg:order-2 lg:overflow-y-auto lg:overscroll-contain lg:pt-6 lg:pb-10">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <h1 className="text-[28px] font-semibold tracking-tight text-uf-text sm:text-[36px]">
@@ -332,9 +239,16 @@ export default function ListingDetailPage() {
               <FavoriteButton listingId={listing.id} size="md" />
             </div>
           </div>
-          <p className="mt-5 text-[28px] font-semibold tracking-tight text-uf-text">
-            {formatPrice(listing.price)}
-          </p>
+          <div className="mt-5 flex items-center justify-between gap-4">
+            <p className="text-[28px] font-semibold tracking-tight text-uf-text">
+              {formatPrice(listing.price)}
+            </p>
+            {!isOwn && <button type="button"
+              onClick={() => router.push(`/nachrichten/start?listing=${encodeURIComponent(listing.id)}`)}
+              className="inline-flex h-9 shrink-0 cursor-pointer items-center justify-center rounded-full bg-uf-action px-3.5 text-[13px] font-medium leading-none text-white hover:bg-uf-link">
+              Kaufen
+            </button>}
+          </div>
           {listing.visibility === "reserved" ? (
             <p className="mt-1 text-[15px] font-medium text-[#c93400]">Reserviert</p>
           ) : listing.visibility === "inactive" ? (
@@ -343,6 +257,8 @@ export default function ListingDetailPage() {
 
           <div className="mt-8">
             <SpecGrid>
+              {hasBuiltInKeyboard(listing.modelId) && <SpecRow label="Tastaturlayout" value={formatKeyboardLayout(listing)} />}
+              {needsSimLock(listing.categoryId, listing.connectivity) && <SpecRow label="SIM-Lock" value={formatSimLock(listing.simLock)} />}
               {listing.memory && <SpecRow label="Arbeitsspeicher" value={listing.memory} />}
               {color && <SpecRow label="Farbe" value={color.label} />}
               {formatConnectivity(listing.connectivity) && (
@@ -385,8 +301,19 @@ export default function ListingDetailPage() {
               </SpecGrid>
             </div>
           )}
+          <div className="mt-8 border-t border-uf-border-soft pt-6">
+            <SpecGrid>
+              <SpecRow label="Anzeigen-ID" value={<span className="break-all">{listingNumber(listing.id)}</span>} />
+              <SpecRow label="Anzeige melden" value={<ListingReport listingId={listing.id} />} />
+              {!isOwn && <SpecRow label="Restriktion" value={<BlockSellerButton name={listing.sellerName} />} />}
+            </SpecGrid>
+          </div>
         </div>
       </main>
+      <footer className="w-full shrink-0 px-1.5 pb-[env(safe-area-inset-bottom)] sm:px-3 md:px-6">
+        <LegalNav includeListing fullWidth />
+      </footer>
+      {!isOwn && <SellerBox listing={listing} sellerEmoji={sellerEmoji} isOwn={false} mobileFooter />}
     </div>
   );
 }

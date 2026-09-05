@@ -1,7 +1,9 @@
 import { getModelById } from "@/data/catalog";
 import { chipsForModel, optionsForYear, yearsForChip } from "@/data/modelYears";
 import { getBatteryMetricForModel } from "@/lib/device";
-import type { ModelDefinition } from "@/lib/types";
+import { hasBuiltInKeyboard } from "@/lib/keyboard";
+import { needsSimLock } from "@/lib/simLock";
+import type { IpadConnectivity, ModelDefinition } from "@/lib/types";
 
 export type WizardStep =
   | "category"
@@ -12,6 +14,8 @@ export type WizardStep =
   | "year"
   | "memory"
   | "storage"
+  | "keyboard"
+  | "simLock"
   | "connectivity"
   | "condition"
   | "packaging"
@@ -54,6 +58,7 @@ export function buildWizardSteps(
   modelId: string | undefined,
   year?: number,
   chip?: string,
+  connectivity?: IpadConnectivity,
 ): WizardStep[] {
   const steps: WizardStep[] = ["category", "model"];
   const model = modelId ? getModelById(modelId) : undefined;
@@ -72,6 +77,10 @@ export function buildWizardSteps(
   if (needsChoice(options?.memory)) steps.push("memory");
   if (needsChoice(options?.storage)) steps.push("storage");
   if (model?.categoryId === "ipad") steps.push("connectivity");
+
+  if (needsSimLock(model?.categoryId, connectivity)) steps.push("simLock");
+
+  if (modelId && hasBuiltInKeyboard(modelId)) steps.push("keyboard");
 
   steps.push("condition", "packaging", "warranty");
   if (modelId && getBatteryMetricForModel(modelId)) steps.push("battery");
@@ -124,6 +133,16 @@ export const STEP_COPY: Record<
     title: "Verbindung",
     subtitle: "Hat das iPad nur WLAN oder auch Cellular?",
     tip: "Einstellungen → Allgemein → Info — oder auf der Rückseite: Cellular-Modelle haben eine SIM-/eSIM-Angabe.",
+  },
+  simLock: {
+    title: "SIM-Lock",
+    subtitle: "Ist das Gerät an einen Mobilfunkanbieter gebunden?",
+    tip: "Gemeint ist die Anbietersperre, nicht die SIM-PIN oder Aktivierungssperre. Beim iPhone: Einstellungen → Allgemein → Info → SIM-Lock. Beim iPad im Zweifel beim Mobilfunkanbieter nachfragen.",
+  },
+  keyboard: {
+    title: "Tastaturlayout",
+    subtitle: "Welche Tastatur ist fest eingebaut?",
+    tip: "Prüfe die aufgedruckten Buchstaben und Sonderzeichen. Die macOS-Sprache oder Eingabequelle ändert die physische Tastatur nicht. Deutsch und Österreichisch teilen dasselbe Layout; Schweizerisch ist eine eigene Variante.",
   },
   condition: {
     title: "Zustand",

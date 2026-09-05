@@ -45,7 +45,7 @@ export function formatWarrantyLabel(listing: Pick<Listing, "appleWarrantyUntil">
   if (isAppleWarrantyActive(listing.appleWarrantyUntil)) {
     return `Garantie bis ${formatDeDate(listing.appleWarrantyUntil!)}`;
   }
-  return "Keine Garantie";
+  return "Abgelaufen";
 }
 
 export function formatBatteryLabel(listing: Listing): string | null {

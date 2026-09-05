@@ -4,12 +4,10 @@ import {
   DEFAULT_PROFILE,
   PROFILE_EVENT,
   readProfile,
-  readSignedIn,
-  wipeAllUserData,
   writeProfile,
-  writeSignedIn,
   type UserProfile,
 } from "@/lib/profile";
+import { currentIdentity, endSession, refreshIdentity } from "@/lib/authClient";
 import { syncPublicSellerPage } from "@/lib/sellerPage";
 import { useCallback, useEffect, useState } from "react";
 
@@ -20,44 +18,43 @@ export function useProfile() {
 
   const refresh = useCallback(() => {
     setProfile(readProfile());
-    setSignedIn(readSignedIn());
-    setReady(true);
+    setSignedIn(Boolean(currentIdentity()));
   }, []);
 
   useEffect(() => {
-    refresh();
+    const verify = () => { void refreshIdentity().then(() => { refresh(); setReady(true); }); };
+    verify();
+    const interval = window.setInterval(verify, 60000);
+    window.addEventListener("focus", verify);
     window.addEventListener(PROFILE_EVENT, refresh);
-    window.addEventListener("storage", refresh);
+    window.addEventListener("storage", verify);
     return () => {
+      window.clearInterval(interval);
+      window.removeEventListener("focus", verify);
       window.removeEventListener(PROFILE_EVENT, refresh);
-      window.removeEventListener("storage", refresh);
+      window.removeEventListener("storage", verify);
     };
   }, [refresh]);
 
   const saveProfile = useCallback((next: UserProfile) => {
+    if (!currentIdentity()) { window.location.assign("/anmelden?next=/profil"); return; }
     const previousName = readProfile().name;
     const saved = writeProfile(next);
     if (saved.name) syncPublicSellerPage(saved, previousName);
     setProfile(saved);
-    writeSignedIn(true);
-    setSignedIn(true);
+
   }, []);
 
   const logout = useCallback(() => {
-    writeSignedIn(false);
-    setSignedIn(false);
+    void endSession().catch(() => window.alert("Abmeldung fehlgeschlagen. Bitte erneut versuchen."));
   }, []);
 
   const login = useCallback(() => {
-    writeSignedIn(true);
-    setSignedIn(true);
-    setProfile(readProfile());
+    window.location.assign("/anmelden");
   }, []);
 
   const deleteAccount = useCallback(() => {
-    wipeAllUserData();
-    setProfile(DEFAULT_PROFILE);
-    setSignedIn(false);
+    void endSession(true).catch(() => window.alert("Abmeldung fehlgeschlagen. Bitte erneut versuchen."));
   }, []);
 
   return {

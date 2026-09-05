@@ -33,7 +33,7 @@ export function CategoryNav({
   variant = "bar",
   onNavigate,
 }: {
-  variant?: "bar" | "menu";
+  variant?: "bar" | "menu" | "pills";
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
@@ -43,9 +43,12 @@ export function CategoryNav({
 
   return (
     <nav
+      aria-label="Gerätekategorien"
       className={
         variant === "menu"
           ? "flex flex-col"
+          : variant === "pills"
+            ? "flex items-center justify-start gap-2 whitespace-nowrap"
           : "flex items-center justify-center gap-2.5 whitespace-nowrap sm:gap-6 md:gap-10"
       }
     >
@@ -62,6 +65,8 @@ export function CategoryNav({
                 ? `flex h-11 items-center text-[15px] ${
                     selected ? "font-medium text-uf-link" : "text-uf-text"
                   }`
+                : variant === "pills"
+                  ? `inline-flex h-9 shrink-0 items-center justify-center rounded-full px-4 text-[14px] ${selected ? "bg-uf-bg-subtle font-medium text-uf-text ring-1 ring-inset ring-uf-border" : "bg-uf-bg-subtle text-uf-text-secondary"}`
                 : `uf-nav-link${selected ? " uf-nav-link-active" : ""}`
             }
           >

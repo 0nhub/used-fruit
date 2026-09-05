@@ -4,7 +4,7 @@ import { parseCategoryParam } from "@/components/CategoryNav";
 import { getModelById } from "@/data/catalog";
 import { filterListings, sortListings } from "@/lib/format";
 import { useUserLocation } from "@/lib/useUserLocation";
-import type { CategoryId, ConditionId, Listing, SortId } from "@/lib/types";
+import type { CategoryId, ConditionId, KeyboardLayoutId, Listing, SortId } from "@/lib/types";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
@@ -12,29 +12,38 @@ function toggleValue<T>(list: T[], value: T): T[] {
   return list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
 }
 
-export function useCatalogFilters(listings: Listing[]) {
+const filterSnapshots = new Map<string, Record<string, unknown>>();
+
+export function useCatalogFilters(listings: Listing[], { ignoreLocation = false }: { ignoreLocation?: boolean } = {}) {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const snapshotKey = pathname + "?" + searchParams.toString();
+  const saved = filterSnapshots.get(snapshotKey);
   const urlCategory = parseCategoryParam(searchParams.get("kategorie"));
   const urlCategoryRef = useRef(urlCategory);
   const [categoryId, setCategoryId] = useState<CategoryId | undefined>(urlCategory);
-  const [modelId, setModelId] = useState<string | undefined>(undefined);
-  const [sizes, setSizes] = useState<string[]>([]);
-  const [years, setYears] = useState<number[]>([]);
-  const [colors, setColors] = useState<string[]>([]);
-  const [memory, setMemory] = useState<string[]>([]);
-  const [storage, setStorage] = useState<string[]>([]);
-  const [conditions, setConditions] = useState<ConditionId[]>([]);
-  const [warrantyOnly, setWarrantyOnly] = useState(false);
-  const [minBatteryCapacity, setMinBatteryCapacity] = useState<number | undefined>();
-  const [maxBatteryCycles, setMaxBatteryCycles] = useState<number | undefined>();
-  const [sortId, setSortId] = useState<SortId>("newest");
-  const [minPrice, setMinPrice] = useState<number | undefined>();
-  const [maxPrice, setMaxPrice] = useState<number | undefined>();
-  const [shipping, setShipping] = useState<"yes" | "no" | undefined>();
-  const [originalBox, setOriginalBox] = useState<"yes" | "no" | undefined>();
+  const [modelId, setModelId] = useState<string | undefined>(() => saved && "modelId" in saved ? saved.modelId as string | undefined : undefined);
+  const [sizes, setSizes] = useState<string[]>(() => saved && "sizes" in saved ? saved.sizes as string[] : []);
+  const [years, setYears] = useState<number[]>(() => saved && "years" in saved ? saved.years as number[] : []);
+  const [colors, setColors] = useState<string[]>(() => saved && "colors" in saved ? saved.colors as string[] : []);
+  const [memory, setMemory] = useState<string[]>(() => saved && "memory" in saved ? saved.memory as string[] : []);
+  const [keyboardLayouts, setKeyboardLayouts] = useState<KeyboardLayoutId[]>(() => saved && "keyboardLayouts" in saved ? saved.keyboardLayouts as KeyboardLayoutId[] : []);
+  const [storage, setStorage] = useState<string[]>(() => saved && "storage" in saved ? saved.storage as string[] : []);
+  const [conditions, setConditions] = useState<ConditionId[]>(() => saved && "conditions" in saved ? saved.conditions as ConditionId[] : []);
+  const [warrantyOnly, setWarrantyOnly] = useState<boolean>(() => saved && "warrantyOnly" in saved ? saved.warrantyOnly as boolean : false);
+  const [minBatteryCapacity, setMinBatteryCapacity] = useState<number | undefined>(() => saved && "minBatteryCapacity" in saved ? saved.minBatteryCapacity as number | undefined : undefined);
+  const [maxBatteryCycles, setMaxBatteryCycles] = useState<number | undefined>(() => saved && "maxBatteryCycles" in saved ? saved.maxBatteryCycles as number | undefined : undefined);
+  const [sortId, setSortId] = useState<SortId>(() => saved && "sortId" in saved ? saved.sortId as SortId : "newest");
+  const [minPrice, setMinPrice] = useState<number | undefined>(() => saved && "minPrice" in saved ? saved.minPrice as number | undefined : undefined);
+  const [maxPrice, setMaxPrice] = useState<number | undefined>(() => saved && "maxPrice" in saved ? saved.maxPrice as number | undefined : undefined);
+  const [shipping, setShipping] = useState<"yes" | "no" | undefined>(() => saved && "shipping" in saved ? saved.shipping as "yes" | "no" | undefined : undefined);
+  const [originalBox, setOriginalBox] = useState<"yes" | "no" | undefined>(() => saved && "originalBox" in saved ? saved.originalBox as "yes" | "no" | undefined : undefined);
   const { location, setLocation, userPlace } = useUserLocation();
+
+  useEffect(() => {
+    filterSnapshots.set(snapshotKey, { modelId, sizes, years, colors, memory, keyboardLayouts, storage, conditions, warrantyOnly, minBatteryCapacity, maxBatteryCycles, sortId, minPrice, maxPrice, shipping, originalBox });
+  }, [snapshotKey, modelId, sizes, years, colors, memory, keyboardLayouts, storage, conditions, warrantyOnly, minBatteryCapacity, maxBatteryCycles, sortId, minPrice, maxPrice, shipping, originalBox]);
 
   useEffect(() => {
     if (sortId === "nearest" && !userPlace) {
@@ -49,6 +58,7 @@ export function useCatalogFilters(listings: Listing[]) {
     setColors([]);
     setMemory([]);
     setStorage([]);
+    setKeyboardLayouts([]);
     setConditions([]);
     setWarrantyOnly(false);
     setOriginalBox(undefined);
@@ -67,6 +77,7 @@ export function useCatalogFilters(listings: Listing[]) {
   }, [urlCategory]);
 
   const resetFilters = () => {
+    setKeyboardLayouts([]);
     setMinPrice(undefined);
     setMaxPrice(undefined);
     setShipping(undefined);
@@ -88,6 +99,7 @@ export function useCatalogFilters(listings: Listing[]) {
       colors,
       memory,
       storage,
+      keyboardLayouts,
       conditions,
       warrantyOnly,
       minBatteryCapacity,
@@ -96,13 +108,13 @@ export function useCatalogFilters(listings: Listing[]) {
       userPostalCode: location.postalCode,
       userLat: userPlace?.lat,
       userLng: userPlace?.lng,
-      maxRadiusKm: userPlace && location.radiusKm != null ? location.radiusKm : undefined,
+      maxRadiusKm: !ignoreLocation && userPlace && location.radiusKm != null ? location.radiusKm : undefined,
       minPrice,
       maxPrice,
       shipping,
       originalBox,
     });
-    return sortListings(matches, sortId, userPlace);
+    return sortListings(matches, ignoreLocation && sortId === "nearest" ? "newest" : sortId, userPlace);
   }, [
     listings,
     categoryId,
@@ -112,10 +124,12 @@ export function useCatalogFilters(listings: Listing[]) {
     colors,
     memory,
     storage,
+    keyboardLayouts,
     conditions,
     warrantyOnly,
     minBatteryCapacity,
     maxBatteryCycles,
+    ignoreLocation,
     location,
     sortId,
     userPlace,
@@ -133,6 +147,7 @@ export function useCatalogFilters(listings: Listing[]) {
     colors,
     memory,
     storage,
+    keyboardLayouts,
     conditions,
     warrantyOnly,
     minBatteryCapacity,
@@ -155,6 +170,7 @@ export function useCatalogFilters(listings: Listing[]) {
       setColors([]);
       setMemory([]);
       setStorage([]);
+      setKeyboardLayouts([]);
       setMinBatteryCapacity(undefined);
       setMaxBatteryCycles(undefined);
     },
@@ -162,6 +178,7 @@ export function useCatalogFilters(listings: Listing[]) {
     onToggleYear: (v: number) => setYears((s) => toggleValue(s, v)),
     onToggleColor: (v: string) => setColors((s) => toggleValue(s, v)),
     onToggleMemory: (v: string) => setMemory((s) => toggleValue(s, v)),
+    onToggleKeyboardLayout: (v: KeyboardLayoutId) => setKeyboardLayouts((s) => toggleValue(s, v)),
     onToggleStorage: (v: string) => setStorage((s) => toggleValue(s, v)),
     onToggleCondition: (v: ConditionId) => setConditions((s) => toggleValue(s, v)),
     onWarrantyOnlyChange: setWarrantyOnly,

@@ -9,7 +9,11 @@ export type ConditionId =
 
 export type ShippingScope = "local" | "deutschland";
 
+export type SimLockStatus = "unlocked" | "locked";
+
 export type IpadConnectivity = "wifi" | "cellular";
+
+export type KeyboardLayoutId = "de-at" | "ch" | "us" | "uk" | "international" | "fr" | "other";
 
 export type ListingVisibility = "public" | "reserved" | "inactive";
 
@@ -46,6 +50,10 @@ export interface Listing {
   storage?: string;
   /** iPad: WLAN oder WLAN + Cellular. */
   connectivity?: IpadConnectivity;
+  simLock?: SimLockStatus;
+  /** Physical built-in keyboard; missing means unknown, never DE by default. */
+  keyboardLayout?: KeyboardLayoutId;
+  keyboardLayoutDetails?: string;
   condition: ConditionId;
   /** Originalkarton / Originalverpackung vorhanden. */
   originalBox?: boolean;
@@ -80,6 +88,7 @@ export interface ListingFilters {
   colors: string[];
   memory: string[];
   storage: string[];
+  keyboardLayouts?: KeyboardLayoutId[];
   conditions: ConditionId[];
   warrantyOnly?: boolean;
   minBatteryCapacity?: number;

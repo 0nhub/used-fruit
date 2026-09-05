@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 export default function Error({
   reset,
 }: {
@@ -20,12 +22,12 @@ export default function Error({
         >
           Erneut versuchen
         </button>
-        <a
+        <Link
           href="/"
           className="inline-flex h-10 items-center rounded-full border border-uf-border px-5 text-[14px]"
         >
           Zur Übersicht
-        </a>
+        </Link>
       </div>
     </div>
   );

@@ -14,6 +14,8 @@ import {
 import { formatPlaceLabel } from "@/data/locations";
 import { chipsForModel, optionsForYear, yearsForChip } from "@/data/modelYears";
 import { getBatteryMetricForModel } from "@/lib/device";
+import { SIM_LOCK_OPTIONS, needsSimLock, isSimLockStatus } from "@/lib/simLock";
+import { KEYBOARD_LAYOUTS, hasBuiltInKeyboard, hasValidKeyboard } from "@/lib/keyboard";
 import { buildListingTitle, createId } from "@/lib/format";
 import {
   clearListingDraft,
@@ -29,7 +31,7 @@ import {
 } from "@/lib/listingWizard";
 import { useListings } from "@/lib/useListings";
 import { useProfile } from "@/lib/useProfile";
-import type { CategoryId, ConditionId, IpadConnectivity, ShippingScope } from "@/lib/types";
+import type { CategoryId, ConditionId, IpadConnectivity, SimLockStatus, KeyboardLayoutId, ShippingScope } from "@/lib/types";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -105,10 +107,11 @@ export function ListingWizard() {
   const searchParams = useSearchParams();
   const { addListing } = useListings();
   const { profile, signedIn, ready: profileReady } = useProfile();
+  const publicationId = useRef<string | null>(null);
   const [leavingForLogin, setLeavingForLogin] = useState(false);
 
   const [stepIndex, setStepIndex] = useState(0);
-  const [categoryId, setCategoryId] = useState<CategoryId | undefined>();
+  const [categoryId, setCategoryId] = useState<CategoryId | undefined>("iphone");
   const [modelId, setModelId] = useState("");
   const [colorId, setColorId] = useState("");
   const [chip, setChip] = useState("");
@@ -116,10 +119,13 @@ export function ListingWizard() {
   const [year, setYear] = useState<number | undefined>();
   const [memory, setMemory] = useState("");
   const [storage, setStorage] = useState("");
+  const [simLock, setSimLock] = useState<SimLockStatus | undefined>();
   const [connectivity, setConnectivity] = useState<IpadConnectivity | undefined>();
+  const [keyboardLayout, setKeyboardLayout] = useState<KeyboardLayoutId | undefined>();
+  const [keyboardLayoutDetails, setKeyboardLayoutDetails] = useState("");
   const [condition, setCondition] = useState<ConditionId | undefined>();
   const [originalBox, setOriginalBox] = useState<boolean | undefined>();
-  const [hasAppleWarranty, setHasAppleWarranty] = useState(false);
+  const [hasAppleWarranty, setHasAppleWarranty] = useState(true);
   const [warrantyUntil, setWarrantyUntil] = useState("");
   const [batteryCapacity, setBatteryCapacity] = useState("");
   const [batteryCycles, setBatteryCycles] = useState("");
@@ -133,42 +139,14 @@ export function ListingWizard() {
   const [error, setError] = useState("");
   const leaveRef = useRef<(go: () => void) => void>((go) => go());
 
-  const dirty =
-    !leavingForLogin &&
-    Boolean(
-      categoryId ||
-        modelId ||
-        colorId ||
-        chip ||
-        size ||
-        year != null ||
-        memory ||
-        storage ||
-        connectivity ||
-        condition ||
-        originalBox != null ||
-        hasAppleWarranty ||
-        warrantyUntil ||
-        batteryCapacity ||
-        batteryCycles ||
-        price ||
-        locationQuery ||
-        city ||
-        postalCode ||
-        locality ||
-        street ||
-        shippingScope ||
-        stepIndex > 0,
-    );
-
   const model = modelId ? getModelById(modelId) : undefined;
-  const models = categoryId
+  const models = useMemo(() => categoryId
     ? getModelsByCategory(categoryId).filter((item) => !item.disabled)
-    : [];
+    : [], [categoryId]);
   const batteryMetric = getBatteryMetricForModel(modelId);
   const steps = useMemo(
-    () => buildWizardSteps(modelId || undefined, year, chip),
-    [modelId, year, chip],
+    () => buildWizardSteps(modelId || undefined, year, chip, connectivity),
+    [modelId, year, chip, connectivity],
   );
   const step = steps[Math.min(stepIndex, steps.length - 1)];
   const copy = STEP_COPY[step];
@@ -203,6 +181,25 @@ export function ListingWizard() {
     if (sole.storage) setStorage(sole.storage);
   }, [model, year, chip]);
 
+  // Pick the first displayed choice only when this step has no selection yet.
+  useEffect(() => {
+    switch (step) {
+      case "model": if (!modelId && models[0]) setModelId(models[0].id); break;
+      case "chip": if (!chip && chipChoices[0]) setChip(chipChoices[0]); break;
+      case "year": if (year == null && yearChoices[0] != null) setYear(yearChoices[0]); break;
+      case "color": if (!colorId && yearOptions.colors[0]) setColorId(yearOptions.colors[0].id); break;
+      case "size": if (!size && yearOptions.sizes?.[0]) setSize(yearOptions.sizes[0]); break;
+      case "memory": if (!memory && yearOptions.memory?.[0]) setMemory(yearOptions.memory[0]); break;
+      case "storage": if (!storage && yearOptions.storage?.[0]) setStorage(yearOptions.storage[0]); break;
+      case "connectivity": if (!connectivity) setConnectivity(IPAD_CONNECTIVITY[0].id); break;
+      case "simLock": if (!isSimLockStatus(simLock)) setSimLock(SIM_LOCK_OPTIONS[0].id); break;
+      case "keyboard": if (!keyboardLayout) setKeyboardLayout(KEYBOARD_LAYOUTS[0].id); break;
+      case "condition": if (!condition) setCondition(CONDITIONS[0].id); break;
+      case "packaging": if (originalBox == null) setOriginalBox(true); break;
+      case "shipping": if (!shippingScope) setShippingScope("local"); break;
+    }
+  }, [step, modelId, models, chip, chipChoices, year, yearChoices, colorId, yearOptions.colors, yearOptions.sizes, yearOptions.memory, yearOptions.storage, size, memory, storage, connectivity, simLock, keyboardLayout, condition, originalBox, shippingScope]);
+
   const resetSpecs = () => {
     setColorId("");
     setChip("");
@@ -210,10 +207,13 @@ export function ListingWizard() {
     setYear(undefined);
     setMemory("");
     setStorage("");
+    setSimLock(undefined);
     setConnectivity(undefined);
+    setKeyboardLayout(undefined);
+    setKeyboardLayoutDetails("");
     setCondition(undefined);
     setOriginalBox(undefined);
-    setHasAppleWarranty(false);
+    setHasAppleWarranty(true);
     setWarrantyUntil("");
     setBatteryCapacity("");
     setBatteryCycles("");
@@ -237,8 +237,12 @@ export function ListingWizard() {
         return Boolean(memory);
       case "storage":
         return Boolean(storage);
+      case "simLock":
+        return isSimLockStatus(simLock);
       case "connectivity":
         return Boolean(connectivity);
+      case "keyboard":
+        return hasValidKeyboard({ keyboardLayout, keyboardLayoutDetails });
       case "condition":
         return Boolean(condition);
       case "packaging":
@@ -287,6 +291,15 @@ export function ListingWizard() {
 
   const commitListing = useCallback(
     (draft: ListingDraft) => {
+      if (needsSimLock(draft.categoryId, draft.connectivity) && !isSimLockStatus(draft.simLock)) {
+        setError("Bitte den SIM-Lock-Status angeben. Erstelle einen neuen Entwurf, falls diese Angabe fehlt.");
+        return;
+      }
+      if (hasBuiltInKeyboard(draft.modelId) && !hasValidKeyboard(draft)) {
+        setError("Bitte das Tastaturlayout des MacBooks angeben. Erstelle einen neuen Entwurf, falls dieser noch keine Tastaturangabe enthält.");
+        return;
+      }
+      if (publicationId.current) return;
       const id = createId("uf");
       addListing({
         id,
@@ -300,6 +313,9 @@ export function ListingWizard() {
         memory: draft.memory,
         storage: draft.storage,
         connectivity: draft.connectivity,
+        simLock: needsSimLock(draft.categoryId, draft.connectivity) ? draft.simLock : undefined,
+        keyboardLayout: hasBuiltInKeyboard(draft.modelId) ? draft.keyboardLayout : undefined,
+        keyboardLayoutDetails: hasBuiltInKeyboard(draft.modelId) && draft.keyboardLayout === "other" ? draft.keyboardLayoutDetails?.trim() : undefined,
         condition: draft.condition,
         originalBox: draft.originalBox,
         price: draft.price,
@@ -317,6 +333,7 @@ export function ListingWizard() {
         batteryMaxCapacityPercent: draft.batteryMaxCapacityPercent,
         batteryCycleCount: draft.batteryCycleCount,
       });
+      publicationId.current = id;
       clearListingDraft();
       router.push(`/listing/${id}`);
     },
@@ -330,6 +347,14 @@ export function ListingWizard() {
     }
     if (categoryId === "ipad" && !connectivity) {
       setError("Bitte angeben, ob das iPad WLAN oder WLAN + Cellular hat.");
+      return;
+    }
+    if (hasBuiltInKeyboard(modelId) && !hasValidKeyboard({ keyboardLayout, keyboardLayoutDetails })) {
+      setError("Bitte das Tastaturlayout des MacBooks vollständig angeben.");
+      return;
+    }
+    if (needsSimLock(categoryId, connectivity) && !isSimLockStatus(simLock)) {
+      setError("Bitte den SIM-Lock-Status auswählen.");
       return;
     }
     const parsedPrice = Number(price.replace(",", "."));
@@ -371,6 +396,9 @@ export function ListingWizard() {
       memory: memory || undefined,
       storage: storage || undefined,
       connectivity: categoryId === "ipad" ? connectivity : undefined,
+      simLock: needsSimLock(categoryId, connectivity) ? simLock : undefined,
+      keyboardLayout: hasBuiltInKeyboard(modelId) ? keyboardLayout : undefined,
+      keyboardLayoutDetails: hasBuiltInKeyboard(modelId) && keyboardLayout === "other" ? keyboardLayoutDetails.trim() : undefined,
       condition,
       originalBox,
       price: parsedPrice,
@@ -388,6 +416,7 @@ export function ListingWizard() {
   const publish = () => {
     const draft = collectDraft();
     if (!draft) return;
+    if (!profileReady) return;
     if (!signedIn) {
       writeListingDraft(draft);
       setLeavingForLogin(true);
@@ -411,15 +440,15 @@ export function ListingWizard() {
 
   return (
     <UnsavedGuard
-      dirty={dirty}
-      title="Seite verlassen?"
-      message="Hey, du willst gerade die Seite verlassen. Dabei gehen alle Daten verloren."
-      stayLabel="Hier bleiben"
-      leaveLabel="Verlassen"
+      dirty={!leavingForLogin}
+      title="Inserat abbrechen?"
+      message="Möchtest du den Vorgang abbrechen? Deine bisherigen Angaben werden verworfen."
+      stayLabel="Abbruch"
+      leaveLabel="Löschen"
     >
       <BindTryLeave leaveRef={leaveRef} />
     <div className="flex min-h-dvh flex-col bg-uf-bg-subtle">
-      <SiteHeader />
+      <SiteHeader minimal onLogoClick={() => leaveRef.current(() => { clearListingDraft(); router.push("/"); })} />
       <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col px-4 py-8">
         <div className="mb-8 flex items-center gap-4">
           <button
@@ -471,7 +500,7 @@ export function ListingWizard() {
 
           <div className="mt-6 space-y-2">
             {step === "category" &&
-              CATEGORIES.map((category) => (
+              [...CATEGORIES].sort((a, b) => ["iphone", "ipad", "mac"].indexOf(a.id) - ["iphone", "ipad", "mac"].indexOf(b.id)).map((category) => (
                 <OptionRow
                   key={category.id}
                   label={category.label}
@@ -578,9 +607,34 @@ export function ListingWizard() {
                   key={item.id}
                   label={item.label}
                   selected={connectivity === item.id}
-                  onSelect={() => setConnectivity(item.id)}
+                  onSelect={() => { setConnectivity(item.id); setSimLock(undefined); }}
                 />
               ))}
+
+            {step === "simLock" && SIM_LOCK_OPTIONS.map((item) => (
+              <OptionRow key={item.id} label={item.label} selected={simLock === item.id} onSelect={() => setSimLock(item.id)} />
+            ))}
+
+            {step === "keyboard" && (
+              <>
+                {KEYBOARD_LAYOUTS.map((item) => (
+                  <OptionRow key={item.id} label={item.label}
+                    selected={keyboardLayout === item.id}
+                    onSelect={() => { setKeyboardLayout(item.id); setKeyboardLayoutDetails(""); }} />
+                ))}
+                {keyboardLayout === "other" && (
+                  <label className="block text-[14px]">
+                    Land / Variante und Tastenanordnung
+                    <input className={fieldClass} value={keyboardLayoutDetails} maxLength={100}
+                      placeholder="z. B. Italienisch (IT), QWERTY"
+                      onChange={(event) => setKeyboardLayoutDetails(event.target.value)} />
+                  </label>
+                )}
+                <a className="block text-[13px] text-uf-link" href="https://support.apple.com/de-at/102743" target="_blank" rel="noreferrer">
+                  Tastaturlayout anhand der Tasten bestimmen
+                </a>
+              </>
+            )}
 
             {step === "condition" &&
               CONDITIONS.map((item) => (
@@ -776,10 +830,10 @@ export function ListingWizard() {
             <button
               type="button"
               onClick={goNext}
-              disabled={!canContinue()}
+              disabled={!canContinue() || (step === "shipping" && (!profileReady || leavingForLogin))}
               className="h-11 rounded-full bg-uf-text px-6 text-[14px] font-medium text-white hover:bg-black disabled:cursor-not-allowed disabled:opacity-40"
             >
-              {step === "shipping" ? "Veröffentlichen" : "Weiter"}
+              {step === "shipping" ? (signedIn ? "Veröffentlichen" : "Mit Apple anmelden & veröffentlichen") : "Weiter"}
             </button>
           </div>
         </section>

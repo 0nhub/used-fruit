@@ -225,7 +225,7 @@ function NachrichtenInner() {
             href="/anmelden?next=/nachrichten"
             className="mt-6 inline-flex h-10 items-center rounded-full bg-uf-text px-5 text-[14px] text-white"
           >
-            Anmelden
+            Mit Apple anmelden
           </a>
         </div>
       </Shell>
@@ -253,25 +253,22 @@ function NachrichtenInner() {
                   aria-label={item.label}
                   aria-current={active ? "page" : undefined}
                   onClick={() => openList(item.id)}
-                  className={
-                    active
-                      ? "inline-flex h-8 items-center gap-1.5 rounded-full bg-[#0071e3] px-3 text-[13px] font-medium text-white"
-                      : "inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#f2f2f7] text-[#3a3a3c] hover:bg-[#e8e8ed]"
-                  }
+                  className={`inline-flex h-8 shrink-0 items-center justify-center rounded-full text-[13px] font-medium transition-[background-color,color,padding] duration-300 ease-out motion-reduce:transition-none ${active ? "bg-[#0071e3] px-3 text-white" : "bg-[#f2f2f7] px-2 text-[#3a3a3c] hover:bg-[#e8e8ed]"}`}
                 >
-                  <Icon className="h-4 w-4" />
-                  {active ? <span>{item.label}</span> : null}
+                  <Icon className="h-4 w-4 shrink-0" />
+                  <span aria-hidden={!active} className={`overflow-hidden whitespace-nowrap transition-[max-width,opacity,margin] duration-300 ease-out motion-reduce:transition-none ${active ? "ml-1.5 max-w-[110px] opacity-100" : "ml-0 max-w-0 opacity-0"}`}>{item.label}</span>
                 </button>
               );
             })}
           </div>
+          <div key={tab} className="uf-inbox-enter">
           {visible.length === 0 && (tab !== "blockiert" || blockedOrphans.length === 0) ? (
             <p className="px-4 py-4 text-[13px] text-uf-text-secondary">
               {tab === "archiv"
                 ? "Keine archivierten Unterhaltungen."
                 : tab === "blockiert"
                   ? "Keine blockierten Nutzer."
-                  : "Noch keine Nachrichten. Öffne ein Inserat und tippe auf Kaufen oder Kontakt aufnehmen."}
+                  : "Noch keine Nachrichten. Öffne ein Inserat und tippe auf Kaufen oder Nachricht."}
             </p>
           ) : (
             <ul>
@@ -317,6 +314,7 @@ function NachrichtenInner() {
               ))}
             </ul>
           ) : null}
+          </div>
           <div
             role="separator"
             aria-orientation="vertical"

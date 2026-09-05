@@ -83,12 +83,15 @@ export default function DatenschutzPage() {
           erstellte Angebote auf diesem Gerät erhalten bleiben
         </li>
         <li>
-          Sitzungs- oder Sicherheitscookies des Web-Frameworks, soweit der
-          Server sie zur Auslieferung der Seite setzt
+          notwendige, signierte HttpOnly-Cookies bei der Apple-Anmeldung:
+          „__Host-used-fruit-apple-oauth“ für die Absicherung des Anmeldevorgangs
+          (bis zu 10 Minuten) und „__Host-used-fruit-apple-auth“ für die angemeldete
+          Sitzung (bis zu einer Stunde)
         </li>
         <li>
-          von Ihnen eingegebene Filterangaben (etwa Standort, Preis, Modell) im
-          Arbeitsspeicher der aktuellen Sitzung
+          von Ihnen eingegebene Filterangaben (etwa Preis und Modell) im
+          Arbeitsspeicher der aktuellen Sitzung; gewählte Ortsangaben und
+          Profil-, Favoriten- und Nachrichtenfunktionen lokal im Browser bis zur Löschung
         </li>
       </ul>
       <p>
@@ -103,6 +106,36 @@ export default function DatenschutzPage() {
         und kein Marketing-Pixel eingesetzt. Eine Einwilligung nach § 25 Abs. 1
         TDDDG ist daher für die genannten notwendigen Speicherungen nicht
         erforderlich.
+      </p>
+
+      <h2>Cookie-Einstellungen und optionale Apple Karten</h2>
+      <p>
+        Über „Cookie-Einstellungen“ im Footer können Sie optionale Apple Karten erlauben,
+        ablehnen oder Ihre Einwilligung jederzeit für die Zukunft widerrufen. Ablehnen und
+        Erlauben sind gleichwertig zugänglich; die Kartenoption ist zunächst deaktiviert.
+        Ihre Auswahl wird mit Versionsnummer und Zeitpunkt für 180 Tage unter
+        „uf-privacy-consent-v1“ im localStorage dieses Browsers gespeichert. Sie wird
+        nicht an ein Werbenetzwerk übermittelt. Nach Ablauf oder Löschen der Browserdaten
+        fragen wir erneut. Diese notwendige Speicherung dient der Beachtung Ihrer Auswahl
+        (§ 25 Abs. 2 TDDDG; Art. 6 Abs. 1 lit. c DSGVO).
+      </p>
+      <p>
+        Ohne Einwilligung laden wir weder die eingebettete Karte noch das MapKit-Skript
+        von Apple. Bei Zustimmung werden die IP-Adresse, technische Browserdaten und der
+        dargestellte Kartenort an Apple übermittelt, um die interaktive Karte bereitzustellen.
+        Die Aktivierung gilt für Karten auf dieser Website. Grundlage ist Ihre Einwilligung
+        (Art. 6 Abs. 1 lit. a DSGVO und, soweit Endgerätezugriffe erfolgen, § 25 Abs. 1 TDDDG).
+        Bei Widerruf werden aktive Karten entfernt und weitere Karteneinbindungen gesperrt.
+        Bereits erfolgte Übermittlungen werden dadurch nicht rückgängig gemacht.
+      </p>
+      <p>
+        Anbieter ist Apple, für den EWR insbesondere Apple Distribution International Ltd.,
+        Hollyhill Industrial Estate, Hollyhill, Cork, Irland. Eine Verarbeitung durch Apple
+        und verbundene Unternehmen außerhalb der EU/des EWR ist möglich. Angaben zu
+        Speicherdauer, Empfängern und internationalen Übermittlungen veröffentlicht Apple in
+        seinen <a href="https://www.apple.com/legal/privacy/data/de/apple-maps/" target="_blank" rel="noreferrer">Datenschutzhinweisen für Apple Karten</a>.
+        Die Einwilligung ersetzt nicht die erforderlichen Voraussetzungen für internationale
+        Datenübermittlungen nach Art. 44 ff. DSGVO.
       </p>
 
       <h2>5. Standortfilter</h2>
@@ -174,10 +207,9 @@ export default function DatenschutzPage() {
         </li>
       </ul>
       <p>
-        Eine Übermittlung zu Werbezwecken an Dritte findet nicht statt. Eine
-        Übermittlung in ein Drittland außerhalb der EU/des EWR ist nicht
-        beabsichtigt. Sollte sie im Rahmen der technischen Auslieferung
-        ausnahmsweise erforderlich werden, erfolgt sie nur bei Vorliegen eines
+        Eine Übermittlung zu Werbezwecken an Dritte findet nicht statt. Bei Apple-Diensten kann eine
+        Übermittlung in ein Drittland außerhalb der EU/des EWR stattfinden.
+        Sie bedarf eines
         Angemessenheitsbeschlusses oder geeigneter Garantien nach Art. 44 ff.
         DSGVO.
       </p>

@@ -1,0 +1,24 @@
+const { test } = require('node:test');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const ts = require('typescript');
+function storage() { const values = {}; return new Proxy({getItem:k=>values[k]??null,setItem:(k,v)=>{values[k]=v},removeItem:k=>{delete values[k]}},{ownKeys:()=>Object.keys(values),getOwnPropertyDescriptor:()=>({enumerable:true,configurable:true})}); }
+test('guest draft survives real session transition; account switch removes draft', async () => {
+ global.localStorage=storage(); global.sessionStorage=storage();
+ global.window={};
+ let identity={id:'account-a',name:'Anna'};
+ global.fetch=async()=>({ok:true,json:async()=>({user:identity})});
+ const module={exports:{}};
+ const code=ts.transpileModule(fs.readFileSync('src/lib/authClient.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText;
+ new Function('require','module','exports',code)(()=>({FAVORITES_STORAGE_KEY:'used-fruit-favorites',DEFAULT_PROFILE:{},PROFILE_EVENT:'test',readProfile:()=>({name:'Anna'}),writeProfile:()=>{},writeSignedIn:()=>{}}),module,module.exports);
+ sessionStorage.setItem('used-fruit-listing-draft','{"simLock":"locked","price":500}');
+ sessionStorage.setItem('used-fruit-pending-favorite','uf-s-21');
+ await module.exports.refreshIdentity();
+ assert.deepEqual(JSON.parse(localStorage.getItem('used-fruit-favorites')),['uf-s-21']);
+ assert.equal(sessionStorage.getItem('used-fruit-pending-favorite'),null);
+ assert.equal(sessionStorage.getItem('used-fruit-listing-draft'),'{"simLock":"locked","price":500}');
+ assert.equal(module.exports.currentIdentity().id,'account-a');
+ identity={id:'account-b',name:'Ben'};
+ await module.exports.refreshIdentity();
+ assert.equal(sessionStorage.getItem('used-fruit-listing-draft'),null);
+});

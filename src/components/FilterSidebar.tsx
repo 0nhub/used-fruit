@@ -11,8 +11,9 @@ import {
   BATTERY_CYCLE_FILTERS,
   getBatteryMetricForCategory,
 } from "@/lib/device";
+import { KEYBOARD_LAYOUTS, hasBuiltInKeyboard } from "@/lib/keyboard";
 import { SORT_OPTIONS } from "@/lib/format";
-import type { CategoryId, ConditionId, SortId } from "@/lib/types";
+import type { CategoryId, ConditionId, KeyboardLayoutId, SortId } from "@/lib/types";
 import { useMemo, useState, type ChangeEvent } from "react";
 
 const fieldClass =
@@ -32,6 +33,8 @@ interface FilterSidebarProps {
   colors: string[];
   memory: string[];
   storage: string[];
+  keyboardLayouts: KeyboardLayoutId[];
+  onToggleKeyboardLayout: (value: KeyboardLayoutId) => void;
   conditions: ConditionId[];
   warrantyOnly: boolean;
   minBatteryCapacity?: number;
@@ -61,6 +64,7 @@ interface FilterSidebarProps {
   originalBox?: "yes" | "no";
   onOriginalBoxChange: (value?: "yes" | "no") => void;
   hideLegal?: boolean;
+  hideLocation?: boolean;
 }
 
 function Section({
@@ -93,15 +97,18 @@ function CheckRow({
   checked,
   onChange,
   muted,
+  title,
 }: {
   label: string;
   checked: boolean;
   onChange: () => void;
   muted?: boolean;
+  title?: string;
 }) {
   return (
     <button
       type="button"
+      title={title}
       disabled={muted}
       onClick={onChange}
       className={`flex w-full items-center gap-2 py-1 text-left text-[13px] ${
@@ -185,17 +192,11 @@ export function FilterSidebar(props: FilterSidebarProps) {
       className={
         embedded
           ? "w-full"
-          : "flex min-h-0 w-full shrink-0 flex-col lg:h-full lg:w-[220px]"
+          : "flex w-full shrink-0 flex-col lg:w-[220px]"
       }
     >
-      <div
-        className={
-          embedded
-            ? undefined
-            : "uf-scroll-hidden min-h-0 flex-1 overflow-y-auto overscroll-contain"
-        }
-      >
-      <div className="border-b border-uf-border-soft pb-4">
+      <div>
+      <div className={`${props.hideLocation ? "" : "hidden lg:block"} border-b border-uf-border-soft pb-4`}>
         <div className="pt-2 pb-3.5 text-[12px] tracking-wide text-uf-text-secondary uppercase">
           Sortierung
         </div>
@@ -211,7 +212,7 @@ export function FilterSidebar(props: FilterSidebarProps) {
           }}
           className={selectClass}
         >
-          {SORT_OPTIONS.map((option) => (
+          {SORT_OPTIONS.filter(option => !props.hideLocation || !option.needsLocation).map((option) => (
             <option
               key={option.id}
               value={option.id}
@@ -225,7 +226,7 @@ export function FilterSidebar(props: FilterSidebarProps) {
         </select>
       </div>
 
-      <Section title="Standort">
+      {!props.hideLocation && <Section title="Standort">
         <label className="block text-[12px] text-uf-text-tertiary">PLZ / Ort</label>
         <LocationAutocomplete
           className="mt-1.5"
@@ -270,7 +271,7 @@ export function FilterSidebar(props: FilterSidebarProps) {
             </option>
           ))}
         </select>
-      </Section>
+      </Section>}
 
       <Section title="Preis">
         <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-1.5">
@@ -405,6 +406,16 @@ export function FilterSidebar(props: FilterSidebarProps) {
         </Section>
       )}
 
+      {(!props.categoryId || props.categoryId === "mac") && (!props.modelId || hasBuiltInKeyboard(props.modelId)) && (
+        <Section title="Tastaturlayout">
+          {KEYBOARD_LAYOUTS.map((item) => (
+            <CheckRow key={item.id} label={item.shortLabel} title={item.label}
+              checked={props.keyboardLayouts.includes(item.id)}
+              onChange={() => props.onToggleKeyboardLayout(item.id)} />
+          ))}
+        </Section>
+      )}
+
       {props.categoryId && memoryOptions.length > 0 && (
         <Section title="Arbeitsspeicher">
           {memoryOptions.map((mem) => (
@@ -527,23 +538,11 @@ export function FilterSidebar(props: FilterSidebarProps) {
       )}
 
       <Section title="Versand">
-        <label className="sr-only" htmlFor="uf-shipping">
-          Versand
-        </label>
-        <select
-          id="uf-shipping"
-          value={props.shipping ?? ""}
-          onChange={(e) => {
-            const next = e.target.value;
-            props.onShippingChange(next === "yes" || next === "no" ? next : undefined);
-            blurSelect(e);
-          }}
-          className={selectClass}
-        >
-          <option value="">Alle</option>
-          <option value="no">Nur Abholung</option>
-          <option value="yes">Abholung und Versand</option>
-        </select>
+        <CheckRow
+          label="Versand möglich"
+          checked={props.shipping === "yes"}
+          onChange={() => props.onShippingChange(props.shipping === "yes" ? undefined : "yes")}
+        />
       </Section>
       </div>
       {!props.hideLegal && (

@@ -19,8 +19,8 @@ export function LegalDocument({
         <p className="mt-2 text-[13px] text-uf-text-tertiary">Stand: {LEGAL.stand}</p>
         <div className="uf-legal mt-8">{children}</div>
       </main>
-      <footer className="mx-auto max-w-[680px] px-4 pb-16">
-        <LegalNav />
+      <footer className="w-full px-1.5 pb-16 sm:px-3 md:px-6">
+        <LegalNav fullWidth />
       </footer>
     </div>
   );

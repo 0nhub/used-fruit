@@ -2,6 +2,7 @@
 
 import { CATEGORIES, normalizeConditionId } from "@/data/catalog";
 import { SEED_LISTINGS } from "@/data/listings";
+import { readBlocked } from "@/lib/messages";
 import { readSoldAt } from "@/lib/listingSold";
 import { LISTINGS_STORAGE_KEY, PROFILE_EVENT } from "@/lib/profile";
 import type { Listing } from "@/lib/types";
@@ -28,12 +29,14 @@ function readUserListings(): Listing[] {
 }
 
 export function useListings() {
+  const [blocked, setBlocked] = useState<string[]>([]);
   const [userListings, setUserListings] = useState<Listing[]>([]);
   const [soldAt, setSoldAt] = useState<Record<string, string>>({});
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
     const refresh = () => {
+      setBlocked(readBlocked());
       setUserListings(readUserListings());
       setSoldAt(readSoldAt());
       setReady(true);
@@ -58,9 +61,9 @@ export function useListings() {
     () =>
       allListings.filter(
         (listing) =>
-          !listing.soldAt && (!listing.visibility || listing.visibility === "public"),
+          !blocked.includes(listing.sellerName.trim().toLowerCase()) && !listing.soldAt && (!listing.visibility || listing.visibility === "public"),
       ),
-    [allListings],
+    [allListings, blocked],
   );
 
   const persist = useCallback((next: Listing[]) => {
@@ -90,8 +93,8 @@ export function useListings() {
   }, [persist]);
 
   const getListing = useCallback(
-    (id: string) => allListings.find((l) => l.id === id),
-    [allListings],
+    (id: string) => allListings.find((l) => l.id === id && !blocked.includes(l.sellerName.trim().toLowerCase())),
+    [allListings, blocked],
   );
 
   const updateListing = useCallback((id: string, patch: Partial<Listing>) => {

@@ -1,13 +1,16 @@
 "use client";
 
 import { FilterSidebar } from "@/components/FilterSidebar";
+import { LegalNav } from "@/components/LegalNav";
 import { Header } from "@/components/Header";
 import { MobileFilterHost } from "@/components/MobileNav";
 import { ProductCard } from "@/components/ProductCard";
 import { useCatalogFilters } from "@/lib/useCatalogFilters";
-import type { Listing } from "@/lib/types";
+import { SORT_OPTIONS } from "@/lib/format";
+import type { Listing, SortId } from "@/lib/types";
 import { useListings } from "@/lib/useListings";
-import { Suspense, type ReactNode } from "react";
+import { catalogReturn, rememberCatalogReturn } from "@/lib/catalogReturn";
+import { Suspense, useEffect, type ReactNode } from "react";
 
 export function CatalogShell(props: {
   listings: Listing[];
@@ -37,6 +40,15 @@ function CatalogShellInner({
   banner?: ReactNode;
 }) {
   const { filtered, userPlace, resetFilters, sidebar } = useCatalogFilters(listings);
+  useEffect(() => {
+    const saved = catalogReturn;
+    if (!saved || saved.url !== location.pathname + location.search || listings.length === 0) return;
+    let frame = requestAnimationFrame(() => {
+      frame = requestAnimationFrame(() => window.scrollTo(0, saved.scrollY));
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [listings.length]);
+
   const activeFilterCount = [
     sidebar.modelId,
     sidebar.sizes.length,
@@ -56,7 +68,29 @@ function CatalogShellInner({
 
   return (
     <div className="flex min-h-dvh flex-col bg-white lg:h-dvh lg:overflow-hidden">
-      <Header onHome={resetOnLogo ? resetFilters : undefined} />
+      <Header onHome={resetOnLogo ? resetFilters : undefined} mobileSort={
+        <span className="relative inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-uf-bg-subtle px-2.5 text-[13px] font-medium text-uf-text focus-within:ring-1 focus-within:ring-uf-border">
+          <span aria-hidden="true">{SORT_OPTIONS.find((option) => option.id === sidebar.sortId)?.label}</span>
+          <svg aria-hidden="true" width="10" height="14" viewBox="0 0 10 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="m2 5 3-3 3 3M2 9l3 3 3-3" />
+          </svg>
+        <select
+          aria-label="Sortierung"
+          value={sidebar.sortId}
+          onChange={(event) => {
+            sidebar.onSortChange(event.target.value as SortId);
+            event.target.blur();
+          }}
+          className="absolute inset-0 h-full w-full cursor-pointer text-[16px] opacity-0"
+        >
+          {SORT_OPTIONS.map((option) => (
+            <option key={option.id} value={option.id} disabled={option.needsLocation && !sidebar.canSortByDistance}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+        </span>
+      } />
       <MobileFilterHost count={activeFilterCount}>
         <FilterSidebar {...sidebar} hideLegal />
       </MobileFilterHost>
@@ -66,7 +100,12 @@ function CatalogShellInner({
           <FilterSidebar {...sidebar} />
         </div>
 
-        <main className="uf-scroll-hidden min-h-0 min-w-0 flex-1 pb-6 pt-3 lg:overflow-y-auto lg:overscroll-contain lg:pt-0">
+        <main onClickCapture={(event) => {
+          const link = (event.target as HTMLElement).closest<HTMLAnchorElement>('a[href^="/listing/"]');
+          if (link && !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey) {
+            rememberCatalogReturn(decodeURIComponent(link.pathname.split("/").pop()!));
+          }
+        }} className="uf-scroll-hidden min-h-0 min-w-0 flex-1 pb-6 pt-3 lg:overflow-y-auto lg:overscroll-contain lg:pt-0">
           {banner ? <div className="px-4 pb-4 sm:px-6">{banner}</div> : null}
           {listings.length === 0 ? (
             <div className="px-2 py-16 text-center">
@@ -88,6 +127,9 @@ function CatalogShellInner({
           )}
         </main>
       </div>
+      <footer className="mt-auto px-1.5 pb-[env(safe-area-inset-bottom)] sm:px-3 md:px-6 lg:hidden">
+        <LegalNav includeListing />
+      </footer>
     </div>
   );
 }

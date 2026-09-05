@@ -1,10 +1,10 @@
 "use client";
 
-import { CloseIcon, ThumbDownIcon, ThumbUpIcon } from "@/components/icons";
+import { ThumbDownIcon, ThumbUpIcon } from "@/components/icons";
 import { RankIcon, StatusMedalIcon } from "@/components/StatusIcons";
 import { RANKS, type PendingRating, type PersonReputation, type RatingSentiment } from "@/lib/reputation";
 import type { Thread } from "@/lib/messages";
-import { useEffect } from "react";
+import { OverlayDialog } from "@/components/OverlayDialog";
 
 export function ReputationSheet({
   reputation,
@@ -21,83 +21,54 @@ export function ReputationSheet({
   const earnedCount = reputation.medals.filter((medal) => medal.earned).length;
   const title = own ? "Dein Rang" : personName ? `Rang von ${personName}` : "Rang";
 
-  useEffect(() => {
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [onClose]);
-
   return (
-    <div
-      className="fixed inset-0 z-[80] flex items-end justify-center bg-black/30 p-3 sm:items-center sm:p-4"
-      onClick={onClose}
-    >
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="uf-stand-title"
-        className="max-h-[min(88vh,720px)] w-full max-w-lg overflow-y-auto rounded-3xl bg-white p-5 shadow-[0_16px_48px_rgba(0,0,0,0.18)] sm:p-6"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <h2 id="uf-stand-title" className="text-[19px] font-semibold text-uf-text">
-              {title}
-            </h2>
-            <p className="mt-1 text-[13px] text-uf-text-secondary">
-              Vom Bauern zum Mogul. Inserate, Abschlüsse und anonyme Bewertungen
-              heben den Rang.
-            </p>
+    <OverlayDialog titleId="uf-stand-title" onClose={onClose} wide>
+        <header className="text-center">
+          <p id="uf-stand-title" className="text-[14px] font-medium text-uf-text-secondary">{title}</p>
+          <div className="mx-auto mt-7 flex h-24 w-24 items-center justify-center rounded-full bg-uf-bg-subtle" style={{ color: reputation.rank.tone }}>
+            <RankIcon id={reputation.rank.id} className="h-14 w-14" />
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Schließen"
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-uf-text-secondary hover:bg-uf-bg-subtle hover:text-uf-text"
-          >
-            <CloseIcon className="h-4 w-4" />
-          </button>
-        </div>
+          <h2 className="mt-4 text-[36px] font-semibold tracking-tight sm:text-[44px]">{reputation.rank.label}</h2>
+          <p className="mx-auto mt-3 max-w-sm text-[15px] leading-relaxed text-uf-text-secondary">Vom Bauern zum Mogul. Inserate, Abschlüsse und anonyme Bewertungen heben den Rang.</p>
+        </header>
 
-        <p className="mt-5 text-[12px] tracking-wide text-uf-text-secondary uppercase">
+        <p className="mt-10 text-[21px] font-semibold tracking-tight text-uf-text">
           Stationen
         </p>
-        <ol className="mt-2 space-y-2">
+        <ol className="mt-4 space-y-3">
           {RANKS.map((rank, index) => {
             const reached = index <= currentIndex;
             const current = rank.id === reputation.rank.id;
             return (
               <li
                 key={rank.id}
-                className={`rounded-2xl border px-3 py-3 ${
+                className={`rounded-2xl border border-transparent px-5 py-5 ${
                   current
-                    ? "border-uf-border bg-uf-bg-subtle/80"
+                    ? "border-uf-border-soft bg-uf-bg-subtle"
                     : reached
-                      ? "border-uf-border-soft bg-white"
-                      : "border-uf-border-soft bg-uf-bg-subtle/40"
+                      ? "border-transparent bg-white"
+                      : "border-transparent bg-uf-bg-subtle/50"
                 }`}
               >
                 <div className="flex items-start gap-3">
                   <span
-                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${
+                    className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${
                       reached ? "bg-white" : "bg-transparent"
                     }`}
                     style={{ color: reached ? rank.tone : "#a1a1a6" }}
                   >
-                    <RankIcon id={rank.id} className="h-5 w-5" />
+                    <RankIcon id={rank.id} className="h-7 w-7" />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="flex flex-wrap items-baseline gap-x-2 text-[14px] font-medium text-uf-text">
+                    <p className="flex flex-wrap items-baseline gap-x-3 text-[17px] font-semibold text-uf-text">
                       <span style={{ color: reached ? rank.tone : undefined }}>{rank.label}</span>
-                      <span className="text-[12px] font-normal text-uf-text-tertiary">
+                      <span className="text-[12px] font-normal text-uf-text-secondary">
                         {current ? "aktuell" : reached ? "erreicht" : "noch offen"}
                       </span>
                     </p>
                     <p
-                      className={`mt-0.5 text-[13px] ${
-                        reached ? "text-uf-text-secondary" : "text-uf-text-tertiary"
+                      className={`mt-2 text-[14px] leading-relaxed ${
+                        reached ? "text-uf-text-secondary" : "text-uf-text-secondary"
                       }`}
                     >
                       {rank.blurb}
@@ -105,7 +76,7 @@ export function ReputationSheet({
                   </div>
                 </div>
                 {current && reputation.nextRank && reputation.nextSteps.length > 0 ? (
-                  <div className="mt-3 border-t border-uf-border-soft pt-3">
+                  <div className="mt-5 border-t border-uf-border-soft pt-4">
                     <p className="text-[12px] text-uf-text-secondary">
                       So wird daraus {reputation.nextRank.label}:
                     </p>
@@ -113,10 +84,10 @@ export function ReputationSheet({
                       {reputation.nextSteps.map((step) => (
                         <li key={step.label} className="flex items-start gap-2 text-[13px] text-uf-text">
                           <span
-                            className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[10px] ${
+                            className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] ${
                               step.done
                                 ? "bg-uf-text text-white"
-                                : "border border-uf-border text-uf-text-tertiary"
+                                : "border border-uf-border text-uf-text-secondary"
                             }`}
                             aria-hidden
                           >
@@ -133,36 +104,35 @@ export function ReputationSheet({
           })}
         </ol>
 
-        <p className="mt-6 text-[12px] tracking-wide text-uf-text-secondary uppercase">
+        <p className="mt-10 text-[21px] font-semibold tracking-tight text-uf-text">
           Auszeichnungen · {earnedCount} von {reputation.medals.length}
         </p>
-        <ul className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <ul className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
           {reputation.medals.map((medal) => (
             <li
               key={medal.id}
-              className={`rounded-2xl border px-3 py-3 ${
+              className={`rounded-2xl border border-transparent px-5 py-5 ${
                 medal.earned
-                  ? "border-uf-border-soft bg-white"
+                  ? "border-transparent bg-uf-bg-subtle"
                   : "border-uf-border-soft bg-uf-bg-subtle/50"
               }`}
             >
               <p
                 className={`flex items-center gap-2 text-[14px] font-medium ${
-                  medal.earned ? "text-uf-text" : "text-uf-text-tertiary"
+                  medal.earned ? "text-uf-text" : "text-uf-text-secondary"
                 }`}
               >
-                <StatusMedalIcon id={medal.id} className="h-4 w-4 shrink-0" />
+                <StatusMedalIcon id={medal.id} className="h-6 w-6 shrink-0" />
                 {medal.label}
               </p>
               <p className="mt-1 text-[12px] text-uf-text-secondary">{medal.how}</p>
-              <p className="mt-1 text-[11px] text-uf-text-tertiary">
+              <p className="mt-1 text-[11px] text-uf-text-secondary">
                 {medal.earned ? "Im Korb" : "Noch offen"}
               </p>
             </li>
           ))}
         </ul>
-      </div>
-    </div>
+    </OverlayDialog>
   );
 }
 
@@ -182,7 +152,7 @@ export function PendingRatings({
         {pending.map((item) => (
           <li key={item.thread.id} className="rounded-2xl border border-uf-border-soft px-4 py-3">
             <p className="text-[14px] text-uf-text">Handel mit {item.counterpart}</p>
-            <p className="mt-0.5 text-[13px] text-uf-text-secondary">
+            <p className="mt-2 text-[14px] leading-relaxed text-uf-text-secondary">
               {item.thread.listingTitle.replace(/^Refurbished\s+/, "").replace(/\s+Apple$/, "")}
             </p>
             {item.ready && onRate ? (
@@ -205,7 +175,7 @@ export function PendingRatings({
                 </button>
               </div>
             ) : (
-              <p className="mt-2 text-[13px] text-uf-text-tertiary">
+              <p className="mt-2 text-[13px] text-uf-text-secondary">
                 Bewertung in {item.daysLeft === 1 ? "1 Tag" : `${item.daysLeft} Tagen`} möglich.
                 So bleibt Zeit für Übergabe und Klärung.
               </p>

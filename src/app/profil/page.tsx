@@ -1,5 +1,7 @@
 "use client";
 
+import { BlockedProfiles } from "@/components/BlockedProfiles";
+
 import { EmojiPicker } from "@/components/EmojiPicker";
 import { PendingRatings } from "@/components/ReputationSheet";
 import { ReputationBadge } from "@/components/ReputationBadge";
@@ -75,7 +77,7 @@ export default function ProfilPage() {
           href="/anmelden?next=/profil"
           className="mt-6 inline-flex h-10 items-center rounded-full bg-uf-text px-5 text-[14px] text-white"
         >
-          Anmelden
+          Mit Apple anmelden
         </a>
       </Shell>
     );
@@ -327,7 +329,8 @@ export default function ProfilPage() {
         </section>
 
         <section className="mt-14 border-t border-uf-border-soft pt-8">
-          <h2 className="text-[17px] font-semibold text-uf-text">Konto auflösen</h2>
+          <BlockedProfiles />
+          <h2 className="mt-8 text-[17px] font-semibold text-uf-text">Konto auflösen</h2>
           <p className="mt-2 text-[14px] text-uf-text-secondary">
             Damit löschst du dein Konto und alle zugehörigen Daten sofort und
             unwiderruflich: Profil, Avatar, Name und deine Inserate. Die Plattform
@@ -345,14 +348,13 @@ export default function ProfilPage() {
           ) : (
             <div className="mt-4 rounded-2xl bg-uf-bg-subtle px-4 py-4">
               <p className="text-[14px] text-uf-text">
-                Wirklich jetzt alles löschen? Das kann nicht rückgängig gemacht werden.
+                Wirklich die lokalen Used-Fruit-Daten dieses Kontos löschen? Das kann nicht rückgängig gemacht werden. Dein Apple Account bleibt bestehen.
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
                 <button
                   type="button"
                   onClick={() => {
                     deleteAccount();
-                    router.replace("/");
                   }}
                   className="h-10 rounded-full bg-[#d80000] px-5 text-[14px] text-white transition-colors duration-150 hover:bg-[#b40000]"
                 >

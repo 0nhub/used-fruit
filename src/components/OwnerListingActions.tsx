@@ -1,5 +1,7 @@
 "use client";
 
+import { KeyboardLayoutEditor } from "@/components/KeyboardLayoutEditor";
+import { hasBuiltInKeyboard } from "@/lib/keyboard";
 import { useListings } from "@/lib/useListings";
 import type { Listing, ListingVisibility } from "@/lib/types";
 import { useRouter } from "next/navigation";
@@ -65,6 +67,8 @@ export function OwnerListingActions({
           Löschen
         </button>
       </div>
+
+      {hasBuiltInKeyboard(listing.modelId) && <KeyboardLayoutEditor listing={listing} />}
 
       {confirmDelete ? (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/30 p-4 sm:items-center">

@@ -157,9 +157,6 @@ export function ProfileMenu() {
                   const go = () => {
                     logout();
                     setOpen(false);
-                    if (window.location.pathname.startsWith("/profil")) {
-                      window.location.assign("/");
-                    }
                   };
                   if (tryLeave) tryLeave(go);
                   else go();
@@ -191,7 +188,7 @@ export function ProfileMenu() {
                 <MenuIconWrap>
                   <LoginIcon className="h-4 w-4" />
                 </MenuIconWrap>
-                Anmelden
+                Mit Apple anmelden
               </button>
             </>
           )}

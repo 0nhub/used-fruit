@@ -13,6 +13,8 @@ export const LEGAL = {
 } as const;
 
 export const LEGAL_LINKS = [
+  { href: "/ueber-uns", label: "Über uns" },
+  { href: "/faq", label: "FAQ" },
   { href: "/impressum", label: "Impressum" },
   { href: "/agb", label: "AGB" },
   { href: "/datenschutz", label: "Datenschutz" },

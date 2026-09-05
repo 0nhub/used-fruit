@@ -1,7 +1,7 @@
 "use client";
 
-import { LegalNav } from "@/components/LegalNav";
-import { CloseIcon, MenuIcon } from "@/components/icons";
+import { usePathname } from "next/navigation";
+import { CloseIcon } from "@/components/icons";
 import {
   createContext,
   useCallback,
@@ -83,16 +83,21 @@ export function MobileFilterHost({
   return createPortal(children, filterTarget);
 }
 
-export function MobileMenuButton() {
-  const { setOpen, filterCount } = useMobileNav();
+export function MobileFilterButton({ allSizes = false }: { allSizes?: boolean }) {
+  const { open, setOpen, filterCount } = useMobileNav();
   return (
     <button
       type="button"
-      aria-label="Menü"
+      aria-label="Filter öffnen"
+      aria-expanded={open}
+      aria-controls="mobile-filters"
       onClick={() => setOpen(true)}
-      className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-uf-text lg:hidden"
+      className={`relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-uf-bg-subtle text-uf-text ${allSizes ? "" : "lg:hidden"}`}
     >
-      <MenuIcon className="h-6 w-6" />
+      <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
+        <path d="M4 7h4m4 0h8M4 17h8m4 0h4" />
+        <circle cx="10" cy="7" r="2" /><circle cx="14" cy="17" r="2" />
+      </svg>
       {filterCount > 0 ? (
         <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-uf-link" />
       ) : null}
@@ -101,7 +106,8 @@ export function MobileMenuButton() {
 }
 
 function MobileDrawer() {
-  const { open, setOpen, setFilterTarget, filterCount, hasFilters } = useMobileNav();
+  const onSellerPage = usePathname().startsWith("/anbieter/");
+  const { open, setOpen, setFilterTarget, hasFilters } = useMobileNav();
   const close = useCallback(() => setOpen(false), [setOpen]);
 
   useEffect(() => {
@@ -119,21 +125,21 @@ function MobileDrawer() {
   }, [open, close]);
 
   return (
-    <div className={open ? "fixed inset-0 z-[70] lg:hidden" : "hidden"}>
+    <div className={open ? `fixed inset-0 z-[70] ${onSellerPage ? "" : "lg:hidden"}` : "hidden"}>
       <button
         type="button"
-        aria-label="Menü schließen"
+        aria-label="Filter schließen"
         className="absolute inset-0 bg-black/35"
         onClick={close}
       />
       <aside
+        id="mobile-filters"
         role="dialog"
         aria-modal={open}
-        aria-label="Menü"
+        aria-label="Filter"
         className="absolute inset-y-0 left-0 flex w-[min(22rem,86vw)] flex-col overflow-hidden bg-white pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] shadow-[8px_0_32px_rgba(0,0,0,0.12)]"
       >
-        <div className="flex h-12 shrink-0 items-center justify-between border-b border-uf-border-soft px-3">
-          <p className="pl-1 text-[17px] font-semibold tracking-tight">Menü</p>
+        <div className="flex h-12 shrink-0 items-center justify-end border-b border-uf-border-soft px-3">
           <button
             type="button"
             aria-label="Schließen"
@@ -146,14 +152,8 @@ function MobileDrawer() {
 
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-4 [-webkit-overflow-scrolling:touch]">
           <section className={hasFilters ? "py-1" : "hidden"}>
-            <p className="pt-3 pb-1 text-[12px] tracking-wide text-uf-text-secondary uppercase">
-              Filter{filterCount > 0 ? ` · ${filterCount}` : ""}
-            </p>
             <div ref={setFilterTarget} />
           </section>
-        </div>
-        <div className="shrink-0 px-4">
-          <LegalNav compact />
         </div>
       </aside>
     </div>

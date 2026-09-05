@@ -27,11 +27,11 @@ export function FavoriteButton({
         event.stopPropagation();
         toggleFavorite(listingId);
       }}
-      className={`flex items-center justify-center rounded-full bg-white/90 text-uf-text-secondary backdrop-blur-sm hover:text-uf-text ${
+      className={`group/favorite flex items-center justify-center rounded-full bg-white/90 text-uf-text-secondary backdrop-blur-sm ${
         size === "md" ? "" : "shadow-[0_1px_4px_rgba(0,0,0,0.08)]"
       } ${box} ${className ?? ""}`}
     >
-      <HeartIcon className={`${icon} ${on ? "text-[#ff3b30]" : ""}`} filled={on} />
+      <HeartIcon className={`${icon} group-hover/favorite:fill-current group-hover/favorite:text-[#ff3b30] ${on ? "text-[#ff3b30]" : ""}`} filled={on} />
     </button>
   );
 }

@@ -1,5 +1,8 @@
 "use client";
 
+import { MobileFilterButton, MobileFilterHost } from "@/components/MobileNav";
+import { LegalNav } from "@/components/LegalNav";
+import { StoreLogo } from "@/components/icons";
 import { FilterSidebar } from "@/components/FilterSidebar";
 import { ProductCard } from "@/components/ProductCard";
 import { ReputationBadge } from "@/components/ReputationBadge";
@@ -11,7 +14,7 @@ import { useCatalogFilters } from "@/lib/useCatalogFilters";
 import { useReputation } from "@/lib/useReputation";
 import type { CategoryId, Listing } from "@/lib/types";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 
 function offerLabel(count: number) {
   return count === 1 ? "1 Angebot" : `${count} Angebote`;
@@ -26,9 +29,8 @@ export function SellerShop({
   listings: Listing[];
   isOwn: boolean;
 }) {
-  const { filtered, userPlace, applyCategory, sidebar } = useCatalogFilters(listings);
+  const { filtered, userPlace, applyCategory, sidebar } = useCatalogFilters(listings, { ignoreLocation: true });
   const { snapshot: reputation } = useReputation(seller.name);
-  const [filtersOpen, setFiltersOpen] = useState(false);
 
   useEffect(() => {
     document.title = `${seller.name} · Used Fruit`;
@@ -67,29 +69,19 @@ export function SellerShop({
   ];
 
   return (
-    <div className="min-h-dvh bg-[#f3f2ee] text-[#2c2c2a]">
-      <header className="px-4 pt-[calc(env(safe-area-inset-top)+14px)] pb-3 sm:px-6">
-        <div className="mx-auto flex max-w-5xl items-center justify-between gap-4">
-          <Link
-            href="/"
-            className="text-[12px] tracking-wide text-[#8a8984] transition-colors hover:text-[#2c2c2a]"
-          >
-            Used Fruit
-          </Link>
-          {isOwn ? (
-            <div className="flex items-center gap-4 text-[12px] text-[#6b6a66]">
-              <Link href="/profil" className="hover:text-[#2c2c2a]">
-                Konto
-              </Link>
-              <Link href="/meine-inserate" className="hover:text-[#2c2c2a]">
-                Inserate
-              </Link>
-            </div>
-          ) : null}
-        </div>
+    <div className="flex min-h-dvh flex-col bg-[#f3f2ee] text-[#2c2c2a]">
+      <header className="relative flex h-12 items-center justify-center bg-white pt-[env(safe-area-inset-top)]">
+        <div className="absolute left-3"><MobileFilterButton allSizes /></div>
+        <Link href="/" aria-label="Used Fruit – Startseite" className="flex items-center gap-1.5 text-[15px] font-medium tracking-tight text-uf-text">
+          <StoreLogo className="h-8 w-8 rounded-[8px]" /><span>Used Fruit</span>
+        </Link>
       </header>
+      <MobileFilterHost count={activeFilterCount}>
+        <FilterSidebar {...sidebar} hideLegal hideLocation />
+      </MobileFilterHost>
+      {isOwn && <div className="flex justify-end gap-4 px-4 pt-3 text-[12px]"><Link href="/profil">Konto</Link><Link href="/meine-inserate">Inserate</Link></div>}
 
-      <main className="mx-auto max-w-5xl px-4 pb-20 pt-8 sm:px-6 sm:pt-12">
+      <main className="mx-auto w-full max-w-5xl flex-1 px-4 pb-20 pt-8 sm:px-6 sm:pt-12">
         <section className="max-w-xl">
           <div className="flex h-[72px] w-[72px] items-center justify-center overflow-hidden rounded-full bg-white text-[40px] leading-none shadow-[0_1px_2px_rgba(0,0,0,0.06)]">
             {seller.emoji}
@@ -135,20 +127,7 @@ export function SellerShop({
               </button>
             );
           })}
-          <button
-            type="button"
-            onClick={() => setFiltersOpen((open) => !open)}
-            className="ml-1 h-8 rounded-full px-3.5 text-[13px] text-[#6b6a66] hover:text-[#2c2c2a]"
-          >
-            Filter{activeFilterCount > 0 ? ` · ${activeFilterCount}` : ""}
-          </button>
         </div>
-
-        {filtersOpen ? (
-          <div className="mt-5 max-w-sm rounded-2xl bg-white px-4 py-3 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
-            <FilterSidebar {...sidebar} hideLegal />
-          </div>
-        ) : null}
 
         {listings.length === 0 ? (
           <p className="mt-16 text-[15px] text-[#6b6a66]">
@@ -171,6 +150,9 @@ export function SellerShop({
           </div>
         )}
       </main>
+      <footer className="w-full px-1.5 pb-[env(safe-area-inset-bottom)] sm:px-3 md:px-6">
+        <LegalNav includeListing fullWidth />
+      </footer>
     </div>
   );
 }

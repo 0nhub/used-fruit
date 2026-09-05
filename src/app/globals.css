@@ -9,6 +9,7 @@
   --uf-border: #d2d2d7;
   --uf-border-soft: #e8e8ed;
   --uf-link: #0066cc;
+  --uf-action: #0071e3;
   --uf-link-hover: #0077ed;
   --uf-nav-height: 48px;
   --uf-font: "SF Pro Text", "SF Pro Display", -apple-system, BlinkMacSystemFont,
@@ -24,6 +25,7 @@
   --color-uf-border: var(--uf-border);
   --color-uf-border-soft: var(--uf-border-soft);
   --color-uf-link: var(--uf-link);
+  --color-uf-action: var(--uf-action);
   --font-sans: var(--uf-font);
 }
 
@@ -47,9 +49,11 @@ body {
   letter-spacing: -0.016em;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+@layer base {
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 }
 
 .uf-nav-link {
@@ -185,3 +189,43 @@ textarea {
     border-right: none;
   }
 }
+
+@keyframes uf-inbox-enter {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.uf-inbox-enter { animation: uf-inbox-enter 220ms ease-out; }
+@media (prefers-reduced-motion: reduce) {
+  .uf-inbox-enter { animation: none; }
+}
+
+/* Keep touch inputs at native reading size to prevent focus zoom on iOS. */
+@media (any-pointer: coarse) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Shared actions for map and seller panels. */
+.uf-panel-action {
+  display: inline-flex;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 0;
+  border-radius: 9999px;
+  background: var(--uf-bg);
+  padding: 0 12px;
+  color: var(--uf-text);
+  font-family: var(--uf-font);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.uf-panel-action:hover { background: #fff; box-shadow: inset 0 0 0 1px var(--uf-border); }
+.uf-panel-action:focus-visible { outline: 2px solid var(--uf-link); outline-offset: 2px; }

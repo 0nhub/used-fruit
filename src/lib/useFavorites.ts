@@ -1,5 +1,6 @@
 "use client";
 
+import { refreshIdentity } from "@/lib/authClient";
 import { FAVORITES_STORAGE_KEY, PROFILE_EVENT } from "@/lib/profile";
 import { useCallback, useEffect, useState } from "react";
 
@@ -36,7 +37,13 @@ export function useFavorites() {
 
   const isFavorite = useCallback((id: string) => ids.includes(id), [ids]);
 
-  const toggleFavorite = useCallback((id: string) => {
+  const toggleFavorite = useCallback(async (id: string) => {
+    const identity = await refreshIdentity();
+    if (!identity) {
+      sessionStorage.setItem("used-fruit-pending-favorite", id);
+      window.location.assign("/anmelden?next=/favoriten");
+      return;
+    }
     const prev = readFavorites();
     const next = prev.includes(id) ? prev.filter((item) => item !== id) : [id, ...prev];
     localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(next));
