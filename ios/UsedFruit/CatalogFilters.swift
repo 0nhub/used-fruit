@@ -48,10 +48,12 @@ struct FilterSelection: View {
     let items: [CatalogChoice]
     @Binding var selected: Set<String>
     var body: some View {
-        DisclosureGroup(title) {
+        FilterSection(title) {
             ForEach(items) { item in
                 Button {if selected.contains(item.id){selected.remove(item.id)}else{selected.insert(item.id)}} label: {
-                    HStack {Text(item.compactLabel).lineLimit(1).minimumScaleFactor(0.75).accessibilityLabel(item.label).foregroundStyle(.primary);Spacer();if selected.contains(item.id){Image(systemName:"checkmark").foregroundStyle(.blue)}}
+                    HStack {Text(item.compactLabel).lineLimit(1).minimumScaleFactor(0.75).accessibilityLabel(item.label);Spacer();if selected.contains(item.id){Image(systemName:"checkmark")}}
+                        .padding(.horizontal,20).frame(minHeight:48).foregroundStyle(selected.contains(item.id) ? Color.white : Color.primary)
+                        .background(selected.contains(item.id) ? Color.accentColor : Color(.systemBackground),in:Capsule())
                 }
             }
         }
@@ -69,18 +71,26 @@ struct CatalogFilterSheet: View {
     private func choices(_ strings:[String])->[CatalogChoice]{Array(Set(strings)).sorted().map{.init(id:$0,label:$0)}}
     var body: some View {
         NavigationStack {
-            Form {
-                Section {
-                    DisclosureGroup("Standort") {
+            ScrollView {
+                VStack(alignment:.leading,spacing:0) {
+                    FilterSection("Standort") {
                         TextField("PLZ oder Ort",text:$locationQuery)
                         if !locationQuery.isEmpty {ForEach(catalog.places.filter{$0.label.localizedCaseInsensitiveContains(locationQuery)}.prefix(8)){place in Button(place.label){filters.place=place;locationQuery=""}}}
                         if let place=filters.place {HStack{Text(place.label);Spacer();Button("Entfernen"){filters.place=nil;filters.radius=0;if filters.sort=="nearest"{filters.sort="newest"}}}}
                         Picker("Umkreis",selection:$filters.radius){Text("Keine Begrenzung").tag(0);ForEach(catalog.radius,id:\.self){Text("\($0) km").tag($0)}}.disabled(filters.place==nil)
                     }
-                    DisclosureGroup("Preis") {TextField("Von (€)",text:$filters.minimum).keyboardType(.decimalPad);TextField("Bis (€)",text:$filters.maximum).keyboardType(.decimalPad)}
-                    DisclosureGroup("Modelle") {
-                        Picker("Modell",selection:$filters.model){Text("Alle Modelle").tag("");ForEach(models){Text($0.name).tag($0.id)}}
-                            .onChange(of:filters.model){filters.selected=[:];filters.capacity=0;filters.cycles=0;if let m=catalog.model(filters.model){filters.category=m.categoryId}}
+                    FilterSection("Preis") {TextField("Von (€)",text:$filters.minimum).keyboardType(.decimalPad);TextField("Bis (€)",text:$filters.maximum).keyboardType(.decimalPad)}
+                    FilterSection("Modelle") {
+                        ForEach([CatalogChoice(id:"",label:"Alle Modelle")] + models.map { CatalogChoice(id:$0.id,label:$0.name) }) { item in
+                            Button {
+                                filters.model=item.id;filters.selected=[:];filters.capacity=0;filters.cycles=0
+                            } label: {
+                                HStack { Text(item.label);Spacer();if filters.model==item.id { Image(systemName:"checkmark") } }
+                                    .padding(.horizontal,20).frame(minHeight:48)
+                                    .foregroundStyle(filters.model==item.id ? Color.white : Color.primary)
+                                    .background(filters.model==item.id ? Color.accentColor : Color(.systemBackground),in:Capsule())
+                            }.buttonStyle(.plain)
+                        }
                     }
                     if !filters.category.isEmpty {
                         if !scoped.flatMap({$0.sizes ?? []}).isEmpty {FilterSelection(title:"Größen",items:choices(scoped.flatMap{$0.sizes ?? []}),selected:binding("size"))}
@@ -91,20 +101,43 @@ struct CatalogFilterSheet: View {
                     }
                     if (filters.category.isEmpty || filters.category=="mac") && (filters.model.isEmpty || catalog.model(filters.model)?.keyboard == true) {FilterSelection(title:"Tastaturlayout",items:catalog.keyboard,selected:binding("keyboard"))}
                     FilterSelection(title:"Zustand",items:catalog.conditions,selected:binding("condition"))
-                    DisclosureGroup("Originalverpackung"){Toggle("Nur mit Originalverpackung",isOn:$filters.packaging)}
-                    DisclosureGroup("Garantie"){Toggle("Nur mit gültiger Garantie",isOn:$filters.warranty)}
+                    FilterSection("Originalverpackung"){Toggle("Nur mit Originalverpackung",isOn:$filters.packaging)}
+                    FilterSection("Garantie"){Toggle("Nur mit gültiger Garantie",isOn:$filters.warranty)}
                     if scoped.contains(where:{$0.battery != nil}) {
-                        DisclosureGroup("Batterie") {
+                        FilterSection("Batterie") {
                             if scoped.contains(where:{$0.battery=="capacity"}){Picker("Kapazität",selection:$filters.capacity){Text("Alle").tag(0);ForEach(catalog.capacity,id:\.self){Text("Mind. \($0) %").tag($0)}}}
                             if scoped.contains(where:{$0.battery=="cycles"}){Picker("Ladezyklen",selection:$filters.cycles){Text("Alle").tag(0);ForEach(catalog.cycles,id:\.self){Text("Max. \($0) Zyklen").tag($0)}}}
                         }
                     }
-                    DisclosureGroup("Versand"){Toggle("Versand möglich",isOn:$filters.shipping)}
+                    FilterSection("Versand"){Toggle("Versand möglich",isOn:$filters.shipping)}
                 }
-                Button("Alle Filter zurücksetzen"){filters=CatalogFilterState()}
-            }.navigationTitle("Filter").navigationBarTitleDisplayMode(.inline)
-                .toolbar{ToolbarItem(placement:.topBarLeading){Button("Schließen",systemImage:"xmark"){dismiss()}}}
-                .safeAreaInset(edge:.bottom){Button("\(count) Angebote anzeigen"){dismiss()}.buttonStyle(.glassProminent).controlSize(.large).frame(maxWidth:.infinity).padding().background(.ultraThinMaterial)}
+
+            }.padding(.horizontal,20).background(Color(.systemGroupedBackground))
+                .textFieldStyle(.roundedBorder)
+                .navigationTitle("Filter").navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement:.topBarLeading){Button("Zurücksetzen",systemImage:"arrow.counterclockwise"){filters=CatalogFilterState();locationQuery=""}.labelStyle(.iconOnly)}
+                    ToolbarItem(placement:.topBarTrailing){Button("Schließen",systemImage:"checkmark"){dismiss()}.labelStyle(.iconOnly).buttonStyle(.borderedProminent).buttonBorderShape(.circle).accessibilityValue("\(count) Angebote")}
+                }
         }
+    }
+}
+
+struct FilterSection<Content: View>: View {
+    let title: String
+    @ViewBuilder let content: () -> Content
+    @State private var expanded = true
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    init(_ title: String, @ViewBuilder content: @escaping () -> Content) { self.title=title;self.content=content }
+    var body: some View {
+        VStack(alignment:.leading,spacing:18) {
+            Button {
+                withAnimation(reduceMotion ? nil : .easeInOut(duration:0.22)) { expanded.toggle() }
+            } label: {
+                HStack { Text(title).font(.title3.bold());Spacer();Image(systemName:"chevron.up").font(.body.weight(.medium)).rotationEffect(.degrees(expanded ? 0 : 180)).foregroundStyle(.secondary) }
+                    .foregroundStyle(.primary).frame(minHeight:44).contentShape(Rectangle())
+            }.buttonStyle(.plain).accessibilityValue(expanded ? "Ausgeklappt" : "Eingeklappt")
+            if expanded { VStack(alignment:.leading,spacing:12) { content() }.frame(maxWidth:.infinity,alignment:.leading).padding(.bottom,8) }
+        }.padding(.vertical,18).overlay(alignment:.bottom) { Divider() }
     }
 }

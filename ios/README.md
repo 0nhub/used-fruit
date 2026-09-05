@@ -71,3 +71,9 @@ Entdecken enthält keine Suchleiste und keinen Navigationstitel. Das zweispaltig
 Der Simulator-UI-Test prüft außerdem identische Preishöhen, fehlende Suche und Fortschrittsanzeige, drei Demo-Chats, Profil-Icon-Auswahl und Kontoeinstellungen. Testdaten sind mit `--ui-testing` vom normalen Testkonto getrennt.
 
 Die angefragte gemeinsame API konnte nicht gefunden werden: `/api/v1/catalog`, `/api/v1/me` und `/api/v1/listings` liefern auf usedfruit.de HTTP 404. Die vorhandene Backend-Dokumentation beschreibt einen Plan; SES-Einrichtung allein stellt keine Marktplatz-API bereit. Für die Integration wird der tatsächliche API-Vertrag samt erreichbarer Basis-URL benötigt. Es gibt keinen stillen Fallback, der lokale Speicherung als Serversynchronisierung ausgibt.
+
+## Chat, Avatare und Filter
+
+Im geöffneten Chat ist die untere Tab-Leiste ausgeblendet; die Eingabe steht in einem eigenen umrandeten Bereich. Die Zurück-Navigation bleibt erreichbar. Die Avatar-Auswahl enthält zahlreiche Vorschläge und akzeptiert ein frei eingegebenes Emoji einschließlich zusammengesetzter Sequenzen und Hautfarben. Die iPhone-Emoji-Tastatur stellt die vollständige systemseitige Auswahl bereit.
+
+Filterbereiche sind standardmäßig geöffnet, mit Trennlinien und einspaltigen Auswahlflächen. Sie lassen sich animiert einklappen; reduzierte Bewegung wird berücksichtigt. Der Simulator-UI-Test prüft Einklappen, Nachrichteneingabe ohne Tab-Leiste sowie das Speichern eines zusammengesetzten Avatar-Emojis.

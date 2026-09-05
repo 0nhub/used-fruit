@@ -36,6 +36,7 @@ struct ConversationView: View {
                 }.onChange(of: chat.messages.count) { if let last = chat.messages.last { withAnimation { proxy.scrollTo(last.id, anchor: .bottom) } } }
             }
             .navigationTitle(chat.offer.seller).navigationBarTitleDisplayMode(.inline)
+            .toolbar(.hidden, for: .tabBar)
             .toolbar { ToolbarItem(placement:.topBarTrailing) { Menu {
                 if store.isBlocked(chat.offer.seller) { Button("Blockierung aufheben") { store.unblock(chat.offer.seller) } }
                 else { Button("Profil blockieren",role:.destructive) { confirmBlock = true } }
@@ -44,11 +45,13 @@ struct ConversationView: View {
             .safeAreaInset(edge: .bottom) {
                 VStack {
                 if store.isBlocked(chat.offer.seller) { Text("Dieses Profil ist blockiert.").font(.footnote).foregroundStyle(.secondary) }
-                HStack {
-                    TextField("Nachricht", text: $text, axis: .vertical).lineLimit(1...5).padding(12).background(Color(.secondarySystemBackground), in: Capsule())
-                    Button("Senden", systemImage: "arrow.up") { store.send(String(text.prefix(4000)), to: id); text = "" }.labelStyle(.iconOnly).buttonStyle(.glassProminent).disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                }.disabled(store.isBlocked(chat.offer.seller))
-                }.padding().background(.ultraThinMaterial)
+                HStack(alignment: .bottom, spacing: 12) {
+                    TextField("Nachricht schreiben …", text: $text, axis: .vertical).lineLimit(1...5).padding(.vertical, 12).padding(.leading, 16).accessibilityIdentifier("message-composer")
+                    Button("Senden", systemImage: "arrow.up") { store.send(String(text.prefix(4000)), to: id); text = "" }.labelStyle(.iconOnly).buttonStyle(.borderedProminent).buttonBorderShape(.circle).padding(6).disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                }.background(Color(.systemBackground), in: .rect(cornerRadius: 24))
+                .overlay(RoundedRectangle(cornerRadius: 24).stroke(Color(.separator).opacity(0.45), lineWidth: 1))
+                .disabled(store.isBlocked(chat.offer.seller))
+                }.padding(.horizontal, 16).padding(.vertical, 10).background(Color(.systemGroupedBackground))
             }
         }
     }
@@ -91,16 +94,41 @@ struct AccountView: View {
                 Section { Button("Abmelden", role: .destructive) { confirmLogout = true } } footer: { Text("iPhone-Prototyp · Daten bleiben auf diesem Gerät. Noch keine gemeinsame Datenbank mit der Website.") }
             }.navigationTitle("Konto")
                 .sheet(isPresented:$emojiPicker) {
-                    NavigationStack {
-                        ScrollView { LazyVGrid(columns:Array(repeating:GridItem(.flexible()),count:5),spacing:18) {
-                            ForEach(["🍏","🍎","🍐","🍊","🍋","🍒","🍇","🥝","🌸","🌻","🌵","🍀","🦊","🐱","🐶","🐼","🐨","🦁","🐸","🐙","⭐️","🌈","🎯","🎨","🚀"],id:\.self) { emoji in
-                                Button {store.data.emoji=emoji;store.save();emojiPicker=false} label:{Text(emoji).font(.system(size:36)).frame(width:52,height:52).background(store.data.emoji==emoji ? Color(.secondarySystemBackground):.clear,in:Circle())}.accessibilityLabel("Icon \(emoji)")
-                            }
-                        }.padding() }.navigationTitle("Profil-Icon").navigationBarTitleDisplayMode(.inline).toolbar{Button("Fertig"){emojiPicker=false}}
-                    }.presentationDetents([.medium,.large])
+                    AvatarEmojiPicker(current: store.data.emoji) { emoji in
+                        store.data.emoji=emoji;store.save();emojiPicker=false
+                    }
+
                 }
                 .onChange(of: store.data.name) { store.save() }.onChange(of: store.data.emoji) { store.save() }.onChange(of: store.data.city) { store.save() }
                 .confirmationDialog("Abmelden?", isPresented: $confirmLogout, titleVisibility: .visible) { Button("Abmelden", role: .destructive) { store.logout() } }
         }
+    }
+}
+
+struct AvatarEmojiPicker: View {
+    let current: String
+    let choose: (String) -> Void
+    @State private var custom = ""
+    private let suggestions = Array("🍏🍎🍐🍊🍋🍒🍇🥝🌸🌻🌵🍀🦊🐱🐶🐼🐨🦁🐸🐙⭐️🌈🎯🎨🚀😀😃😄😁😆😅😂🙂🙃😉😊😎🤩🥳🤖👻👽🐯🐻🐰🐹🐮🐷🐵🐔🐧🦉🦋🐢🐬🐳🦄🐝🌷🌹🌺🌼🌴🌲🍄🌍🌙☀️⚡️🔥❄️🌊🍉🍓🍑🥑🍍🥥🍕🍔🍣🍩🍪☕️⚽️🏀🎾🏈🎱🏆🎸🎹🎮🎲📷💻💎🎈🎁❤️🧡💛💚💙💜🖤🤍🇩🇪🇦🇹🇨🇭")
+    private var valid: Bool {
+        custom.count == 1 && custom.unicodeScalars.contains { $0.properties.isEmojiPresentation || $0.value == 0xFE0F || $0.value == 0x20E3 }
+    }
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment:.leading,spacing:20) {
+                    Text("Wähle ein Emoji oder nutze die Emoji-Tastatur für die gesamte Auswahl deines iPhones.").font(.subheadline).foregroundStyle(.secondary)
+                    HStack {
+                        TextField("Eigenes Emoji",text:$custom).font(.title).autocorrectionDisabled().accessibilityIdentifier("custom-avatar-emoji")
+                        Button("Übernehmen") { choose(custom) }.disabled(!valid)
+                    }.padding().background(Color(.secondarySystemBackground),in:.rect(cornerRadius:16))
+                    LazyVGrid(columns:Array(repeating:GridItem(.flexible()),count:5),spacing:18) {
+                        ForEach(suggestions.map(String.init),id:\.self) { emoji in
+                            Button { choose(emoji) } label: { Text(emoji).font(.system(size:36)).frame(width:52,height:52).background(current == emoji ? Color(.secondarySystemBackground):.clear,in:Circle()) }.accessibilityLabel("Icon \(emoji)")
+                        }
+                    }
+                }.padding()
+            }.navigationTitle("Profil-Icon").navigationBarTitleDisplayMode(.inline)
+        }.presentationDetents([.large])
     }
 }
