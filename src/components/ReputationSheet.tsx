@@ -22,7 +22,7 @@ export function ReputationSheet({
   const title = own ? "Dein Rang" : personName ? `Rang von ${personName}` : "Rang";
 
   return (
-    <OverlayDialog titleId="uf-stand-title" onClose={onClose} wide>
+    <OverlayDialog titleId="uf-stand-title" onClose={onClose} wide closeLeft>
         <header className="text-center">
           <p id="uf-stand-title" className="text-[14px] font-medium text-uf-text-secondary">{title}</p>
           <div className="mx-auto mt-7 flex h-24 w-24 items-center justify-center rounded-full bg-uf-bg-subtle" style={{ color: reputation.rank.tone }}>
@@ -32,6 +32,38 @@ export function ReputationSheet({
           <p className="mx-auto mt-3 max-w-sm text-[15px] leading-relaxed text-uf-text-secondary">Vom Bauern zum Mogul. Inserate, Abschlüsse und anonyme Bewertungen heben den Rang.</p>
         </header>
 
+        <p className="mt-10 text-[21px] font-semibold tracking-tight text-uf-text">
+          Auszeichnungen · {earnedCount} von {reputation.medals.length}
+        </p>
+        <ul className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {reputation.medals.map((medal) => (
+            <li
+              key={medal.id}
+              className={`rounded-2xl border border-transparent px-5 py-5 ${
+                medal.earned
+                  ? "border-transparent bg-uf-bg-subtle"
+                  : "border-uf-border-soft bg-uf-bg-subtle/50"
+              }`}
+            >
+              <p
+                className={`flex items-center gap-2 text-[14px] font-medium ${
+                  medal.earned ? "text-uf-text" : "text-uf-text-secondary"
+                }`}
+              >
+                <StatusMedalIcon id={medal.id} className="h-6 w-6 shrink-0" />
+                {medal.label}
+              </p>
+              <p className="mt-1 text-[12px] text-uf-text-secondary">{medal.how}</p>
+              <p className="mt-1 text-[11px] text-uf-text-secondary">
+                {medal.earned ? "Im Korb" : "Noch offen"}
+              </p>
+            </li>
+          ))}
+        </ul>
+        <details className="group mt-8 border-t border-uf-border-soft pt-5">
+          <summary className="cursor-pointer list-none text-center text-[14px] text-uf-link hover:underline [&::-webkit-details-marker]:hidden">
+            <span className="group-open:hidden">Zeige Stationen</span><span className="hidden group-open:inline">Stationen ausblenden</span>
+          </summary>
         <p className="mt-10 text-[21px] font-semibold tracking-tight text-uf-text">
           Stationen
         </p>
@@ -104,34 +136,7 @@ export function ReputationSheet({
           })}
         </ol>
 
-        <p className="mt-10 text-[21px] font-semibold tracking-tight text-uf-text">
-          Auszeichnungen · {earnedCount} von {reputation.medals.length}
-        </p>
-        <ul className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
-          {reputation.medals.map((medal) => (
-            <li
-              key={medal.id}
-              className={`rounded-2xl border border-transparent px-5 py-5 ${
-                medal.earned
-                  ? "border-transparent bg-uf-bg-subtle"
-                  : "border-uf-border-soft bg-uf-bg-subtle/50"
-              }`}
-            >
-              <p
-                className={`flex items-center gap-2 text-[14px] font-medium ${
-                  medal.earned ? "text-uf-text" : "text-uf-text-secondary"
-                }`}
-              >
-                <StatusMedalIcon id={medal.id} className="h-6 w-6 shrink-0" />
-                {medal.label}
-              </p>
-              <p className="mt-1 text-[12px] text-uf-text-secondary">{medal.how}</p>
-              <p className="mt-1 text-[11px] text-uf-text-secondary">
-                {medal.earned ? "Im Korb" : "Noch offen"}
-              </p>
-            </li>
-          ))}
-        </ul>
+        </details>
     </OverlayDialog>
   );
 }

@@ -1,3 +1,4 @@
+import { safeProfileCover } from "@/lib/profileCover";
 import { parseRadiusKm } from "@/data/catalog";
 
 export const PROFILE_STORAGE_KEY = "used-fruit-profile";
@@ -53,6 +54,7 @@ export interface UserProfile {
   name: string;
   emoji: string;
   bio: string;
+  coverImage?: string;
   notifyOnMessage: boolean;
   city: string;
   postalCode: string;
@@ -68,7 +70,7 @@ export const DEFAULT_PROFILE: UserProfile = {
   name: "",
   emoji: DEFAULT_AVATAR,
   bio: "",
-  notifyOnMessage: false,
+  notifyOnMessage: true,
   city: "",
   postalCode: "",
   locationQuery: "",
@@ -93,7 +95,8 @@ export function readProfile(): UserProfile {
       name: typeof parsed.name === "string" ? parsed.name.trim().slice(0, 40) : "",
       emoji,
       bio: typeof parsed.bio === "string" ? parsed.bio.trim().slice(0, BIO_MAX_LENGTH) : "",
-      notifyOnMessage: parsed.notifyOnMessage === true,
+      notifyOnMessage: parsed.notifyOnMessage !== false,
+      coverImage: safeProfileCover(parsed.coverImage),
       city: typeof parsed.city === "string" ? parsed.city.trim().slice(0, 80) : "",
       postalCode:
         typeof parsed.postalCode === "string" ? parsed.postalCode.trim().slice(0, 10) : "",
@@ -111,7 +114,8 @@ export function writeProfile(profile: UserProfile) {
     name: profile.name.trim().slice(0, 40),
     emoji: extractAvatarEmoji(profile.emoji) ?? DEFAULT_AVATAR,
     bio: (profile.bio ?? "").trim().slice(0, BIO_MAX_LENGTH),
-    notifyOnMessage: profile.notifyOnMessage === true,
+    notifyOnMessage: profile.notifyOnMessage !== false,
+    coverImage: safeProfileCover(profile.coverImage),
     city: profile.city.trim().slice(0, 80),
     postalCode: profile.postalCode.trim().slice(0, 10),
     locationQuery: profile.locationQuery.trim().slice(0, 80),

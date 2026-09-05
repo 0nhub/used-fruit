@@ -353,7 +353,7 @@ function NachrichtenInner() {
                     </div>
                   ) : (
                     <Link
-                      href={`/listing/${selected.listingId}`}
+                      href={`/listing/${encodeURIComponent(selected.listingId)}?nachricht=${encodeURIComponent(selected.id)}&nachrichtenTab=${encodeURIComponent(tab)}`}
                       aria-label={`Inserat öffnen: ${title}`}
                       className="group flex min-w-0 items-center gap-3"
                     >

@@ -1,3 +1,4 @@
+import { safeProfileCover } from "@/lib/profileCover";
 import { BIO_MAX_LENGTH, DEFAULT_AVATAR, PROFILE_EVENT } from "@/lib/profile";
 import { listingSellerEmoji } from "@/lib/seller";
 import type { Listing } from "@/lib/types";
@@ -9,6 +10,7 @@ export interface PublicSeller {
   name: string;
   emoji: string;
   bio: string;
+  coverImage?: string;
 }
 
 const SEED_SELLER_PAGES: Record<string, PublicSeller> = {
@@ -65,6 +67,7 @@ function readStoredSellerPages(): Record<string, PublicSeller> {
       if (!name || sellerSlug(name) !== slug) continue;
       next[slug] = {
         name,
+        coverImage: safeProfileCover(value.coverImage),
         emoji:
           typeof value.emoji === "string" && value.emoji.trim()
             ? value.emoji
@@ -79,7 +82,7 @@ function readStoredSellerPages(): Record<string, PublicSeller> {
 }
 
 export function syncPublicSellerPage(
-  input: { name: string; emoji: string; bio?: string },
+  input: { name: string; emoji: string; bio?: string; coverImage?: string },
   previousName?: string,
 ) {
   if (typeof window === "undefined") return;
@@ -95,6 +98,7 @@ export function syncPublicSellerPage(
   }
   pages[slug] = {
     name,
+    coverImage: safeProfileCover(input.coverImage),
     emoji: input.emoji.trim() || DEFAULT_AVATAR,
     bio: (input.bio ?? "").trim().slice(0, BIO_MAX_LENGTH),
   };
@@ -105,7 +109,7 @@ export function syncPublicSellerPage(
 export function resolveSellerPage(
   slug: string,
   listings: Listing[],
-  viewer?: { name: string; emoji: string; bio?: string },
+  viewer?: { name: string; emoji: string; bio?: string; coverImage?: string },
 ): { seller: PublicSeller; listings: Listing[]; isOwn: boolean } | null {
   const normalized = sellerSlug(slug);
   if (!normalized) return null;
@@ -122,6 +126,7 @@ export function resolveSellerPage(
     isOwn && viewer
       ? {
           name: viewer.name.trim(),
+          coverImage: safeProfileCover(viewer.coverImage),
           emoji: viewer.emoji,
           bio: (viewer.bio ?? "").trim().slice(0, BIO_MAX_LENGTH),
         }

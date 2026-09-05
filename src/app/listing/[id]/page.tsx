@@ -32,7 +32,7 @@ import { useReputation } from "@/lib/useReputation";
 import { useUserLocation } from "@/lib/useUserLocation";
 import type { Listing } from "@/lib/types";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { type ReactNode } from "react";
 
 function SpecGrid({ children }: { children: ReactNode }) {
@@ -126,6 +126,10 @@ function SellerBox({
 
 export default function ListingDetailPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const messageId = searchParams.get("nachricht")?.slice(0, 200);
+  const messageTab = searchParams.get("nachrichtenTab");
+  const messageReturn = messageId ? `/nachrichten?id=${encodeURIComponent(messageId)}${messageTab && ["archiv", "blockiert"].includes(messageTab) ? `&tab=${messageTab}` : ""}` : undefined;
   const params = useParams<{ id: string }>();
   const id = typeof params.id === "string" ? params.id : "";
   const { getListing, userListings, ready } = useListings();
@@ -185,15 +189,15 @@ export default function ListingDetailPage() {
         <div className="contents lg:order-1 lg:block lg:min-h-0 lg:min-w-0 lg:overflow-y-auto lg:overscroll-contain">
           <div className="order-1 bg-uf-bg-subtle">
             <div className="w-full shrink-0 bg-white px-1.5 py-3 sm:px-3 md:px-6">
-              <Link href={catalogReturn?.listingId === listing.id ? catalogReturn.url : "/"}
+              <Link href={messageReturn ?? (catalogReturn?.listingId === listing.id ? catalogReturn.url : "/")}
                 onClick={(event) => {
-                  if (catalogReturn?.listingId === listing.id && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
+                  if (!messageReturn && catalogReturn?.listingId === listing.id && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
                     event.preventDefault(); router.back();
                   }
                 }}
                 className="group inline-flex items-center gap-1 text-[14px] text-uf-link underline-offset-4">
                 <svg aria-hidden="true" className="h-4 w-4 shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="m12 5-5 5 5 5" /></svg>
-                <span className="group-hover:underline group-focus-visible:underline">Inserate</span>
+                <span className="group-hover:underline group-focus-visible:underline">{messageReturn ? "Nachricht" : "Inserate"}</span>
               </Link>
             </div>
             <ProductGallery

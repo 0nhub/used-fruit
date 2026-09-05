@@ -3,7 +3,7 @@
 import {
   LoginIcon,
   LogoutIcon,
-  MacBookIcon,
+  ShopIcon,
   PlusIcon,
   ProfileIcon,
 } from "@/components/icons";
@@ -144,7 +144,7 @@ export function ProfileMenu() {
                 }}
               >
                 <MenuIconWrap>
-                  <MacBookIcon className="h-4 w-4" />
+                  <ShopIcon className="h-4 w-4" />
                 </MenuIconWrap>
                 Meine Inserate
               </Link>

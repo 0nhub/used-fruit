@@ -1,5 +1,6 @@
 "use client";
 
+import { prepareProfileCover } from "@/lib/profileCover";
 import { BlockedProfiles } from "@/components/BlockedProfiles";
 
 import { EmojiPicker } from "@/components/EmojiPicker";
@@ -10,7 +11,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { UnsavedGuard } from "@/components/UnsavedGuard";
 import { RADIUS_OPTIONS } from "@/data/catalog";
 import { formatPlaceLabel } from "@/data/locations";
-import { requestMessagePermission } from "@/lib/notify";
+import { canNotifyMessages, requestMessagePermission } from "@/lib/notify";
 import { BIO_MAX_LENGTH, extractAvatarEmoji } from "@/lib/profile";
 import { renameRatedPerson } from "@/lib/reputation";
 import { sellerHref } from "@/lib/sellerPage";
@@ -39,22 +40,26 @@ export default function ProfilPage() {
   const [saved, setSaved] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [notifyHint, setNotifyHint] = useState("");
+  const [coverImage, setCoverImage] = useState<string | undefined>(profile.coverImage);
+  const [coverBusy, setCoverBusy] = useState(false);
+  const [coverError, setCoverError] = useState("");
 
   useEffect(() => {
     if (!ready) return;
     setName(profile.name);
     setBio(profile.bio);
     setEmoji(profile.emoji);
+    setCoverImage(profile.coverImage);
     setFormReady(true);
-  }, [ready, profile.name, profile.bio, profile.emoji]);
+  }, [ready, profile.name, profile.bio, profile.emoji, profile.coverImage]);
 
   const dirty =
     formReady &&
     signedIn &&
     (name.trim() !== profile.name.trim() ||
       bio.trim() !== profile.bio.trim() ||
-      emoji !== profile.emoji);
-  const publicPage = sellerHref(name || profile.name);
+      emoji !== profile.emoji || coverImage !== profile.coverImage);
+  const publicPage = sellerHref(profile.name);
 
   if (!ready) {
     return (
@@ -94,10 +99,12 @@ export default function ProfilPage() {
           erscheinen auf deiner öffentlichen Seite.
         </p>
 
+        {publicPage && <Link href={publicPage} className="mt-4 inline-flex text-[14px] text-uf-link hover:underline">Öffentliche Seite ansehen ↗</Link>}
         <form
           className="mt-8 space-y-8"
           onSubmit={(e) => {
             e.preventDefault();
+            if (coverBusy) return;
             const nextEmoji = extractAvatarEmoji(emoji);
             if (!nextEmoji) return;
             const next = {
@@ -105,9 +112,11 @@ export default function ProfilPage() {
               name: name.trim(),
               emoji: nextEmoji,
               bio: bio.trim(),
+              coverImage,
             };
             setEmoji(nextEmoji);
-            saveProfile(next);
+            try { saveProfile(next); }
+            catch { setCoverError("Nicht genügend Browserspeicher. Bitte entferne das Titelbild oder wähle ein kleineres Bild."); return; }
             if (next.name) {
               if (profile.name.trim() && profile.name.trim() !== next.name) {
                 renameRatedPerson(profile.name, next.name);
@@ -149,6 +158,30 @@ export default function ProfilPage() {
                 <p className="mt-2 text-[13px] text-uf-text-tertiary">Emoji antippen zum Ändern</p>
               )}
             </div>
+          </div>
+
+          <div>
+            <p className="text-[14px] font-medium">Titelbild deiner öffentlichen Seite</p>
+            <div className="relative mt-3 h-36 overflow-hidden rounded-2xl bg-uf-bg-subtle">
+              {coverImage && <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={coverImage} alt="Vorschau deines Titelbilds" className="h-full w-full object-cover" />
+              </>}
+              <span className="absolute bottom-2 left-4 flex h-14 w-14 items-center justify-center rounded-full border-4 border-white bg-uf-bg-subtle text-[30px]">{emoji}</span>
+            </div>
+            <label className="mt-3 inline-flex cursor-pointer text-[14px] text-uf-link hover:underline">
+              {coverBusy ? "Bild wird vorbereitet…" : coverImage ? "Titelbild ändern" : "Titelbild auswählen"}
+              <input type="file" accept="image/jpeg,image/png,image/webp" disabled={coverBusy} className="sr-only" onChange={async event => {
+                const file = event.target.files?.[0]; event.target.value = "";
+                if (!file) return;
+                setCoverBusy(true); setCoverError("");
+                try { setCoverImage(await prepareProfileCover(file)); setSaved(false); }
+                catch (error) { setCoverError(error instanceof Error ? error.message : "Das Bild konnte nicht geladen werden."); }
+                finally { setCoverBusy(false); }
+              }} />
+            </label>
+            {coverImage && <button type="button" disabled={coverBusy} onClick={() => { setCoverImage(undefined); setSaved(false); }} className="ml-4 cursor-pointer text-[14px] text-uf-link hover:underline">Entfernen</button>}
+            {coverError && <p role="alert" className="mt-2 text-[13px] text-uf-text-secondary">{coverError}</p>}
           </div>
 
           <div>
@@ -323,6 +356,10 @@ export default function ProfilPage() {
               />
             </span>
           </button>
+          {profile.notifyOnMessage && !canNotifyMessages() && <button type="button" className="mt-3 cursor-pointer text-[14px] text-uf-link hover:underline" onClick={async () => {
+            const allowed = await requestMessagePermission();
+            setNotifyHint(allowed ? "Browser-Benachrichtigungen sind aktiviert." : "Bitte erlaube Benachrichtigungen für Used Fruit in deinem Browser.");
+          }}>Im Browser erlauben</button>}
           {notifyHint && (
             <p className="mt-2 text-[13px] text-uf-text-secondary">{notifyHint}</p>
           )}

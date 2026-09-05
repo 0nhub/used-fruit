@@ -347,3 +347,9 @@ export function ChevronIcon({ className, open }: { className?: string; open?: bo
     </svg>
   );
 }
+
+export function ShopIcon({ className }: { className?: string }) {
+  return <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <path d="M4 10v11h16V10M3 10l2-7h14l2 7M3 10a3 3 0 0 0 4.5 2.6A3 3 0 0 0 12 12a3 3 0 0 0 4.5.6A3 3 0 0 0 21 10M9 21v-6h6v6M8 3l-.5 7M16 3l.5 7" />
+  </svg>;
+}

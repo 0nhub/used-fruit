@@ -5,7 +5,8 @@ Deployed on the existing Hetzner server `bookmer` (`195.201.145.202`).
 - Domain: https://usedfruit.de/
 - www: redirects to https://usedfruit.de/ preserving path and query
 - Preview: http://195.201.145.202/
-- Active release: `/opt/used-fruit-releases/smooth-20260905`
+- Active release: `/opt/used-fruit-releases/profile-20260905`
+- Previous interaction release: `/opt/used-fruit-releases/smooth-20260905`
 - Previous consolidated release: `/opt/used-fruit-releases/public-20260905-final`
 - Previous release: `/opt/used-fruit-releases/mobile-navigation-Py98hf`
 - Previous about release: `/opt/used-fruit-releases/about-PAveL1`
@@ -155,3 +156,11 @@ Activated `/opt/used-fruit-releases/smooth-20260905`. Report link has pointer/ho
 New locally initialized authenticated accounts receive a dismissible welcome dialog for name, profile emoji and optional location. The `used-fruit-onboarding` marker is account-archived; saved or skipped setup does not recur on ordinary login. Existing local accounts are not prompted retroactively. This is browser-local onboarding, not server-side account creation detection across devices. Account archives are excluded from snapshots/removal so switching users preserves each account's welcome status and data.
 
 Production build and 13 tests passed, including new-account, return-login, account-switch and existing-account welcome checks. Local filter open/close and settled overflow verified in browser. Personal Apple login and authenticated welcome form were not tested end-to-end. Public Used Fruit, Bookmer and Bookmer ID health returned 200. Rollback service configuration: `/etc/used-fruit/pre-smooth-20260905.conf`; restore the override, daemon-reload and restart only Used Fruit. Apple and MapKit configuration is unchanged.
+
+## Public profile, rank disclosure and message return — 2026-09-05
+
+Release `/opt/used-fruit-releases/profile-20260905` removes provider filters and uses a white public-profile layout. Account settings link to the saved public profile and support selecting/removing a compressed JPG/PNG/WebP cover (maximum encoded storage size 450,000 characters). Profile emoji overlaps the cover. Cover data remains browser-local, including its seller-page copy; this does not add cross-device public storage. My Listings no longer contains the public-page banner and its menu item uses a storefront icon.
+
+New/missing notification preferences default on; explicit opt-outs remain false. System notifications still require browser permission through the account control. Rank dialog opens without focusing the close button, places X at top left, and lists awards first. Rank stations are collapsed under “Zeige Stationen”. Listing links from a conversation carry its ID and inbox tab; “Nachricht” returns to that conversation, while normal catalog entry retains “Inserate”.
+
+Production build and 15 tests passed. Browser checked provider desktop/mobile, rank expansion and initial focus, normal back link and conversation-specific URL including archive tab. Authenticated cover-upload and actual system-notification delivery were not tested end-to-end. Only Used Fruit restarted. Rollback override: `/etc/used-fruit/pre-profile-20260905.conf` (restore, daemon-reload, restart only Used Fruit). Used Fruit, provider page, Bookmer and Bookmer ID health returned 200.

@@ -10,7 +10,7 @@ import { Suspense } from "react";
 
 export default function AnbieterPage() {
   return (
-    <Suspense fallback={<div className="min-h-dvh bg-[#f3f2ee]" />}>
+    <Suspense fallback={<div className="min-h-dvh bg-white" />}>
       <AnbieterInner />
     </Suspense>
   );
@@ -23,18 +23,19 @@ function AnbieterInner() {
   const { profile, ready: profileReady } = useProfile();
 
   if (!listingsReady || !profileReady) {
-    return <div className="min-h-dvh bg-[#f3f2ee]" />;
+    return <div className="min-h-dvh bg-white" />;
   }
 
   const page = resolveSellerPage(slug, listings, {
     name: profile.name,
     emoji: profile.emoji,
     bio: profile.bio,
+    coverImage: profile.coverImage,
   });
 
   if (!page) {
     return (
-      <div className="flex min-h-dvh flex-col items-center justify-center bg-[#f3f2ee] px-4 text-center">
+      <div className="flex min-h-dvh flex-col items-center justify-center bg-white px-4 text-center">
         <p className="text-[18px] font-medium text-[#2c2c2a]">Anbieter nicht gefunden</p>
         <Link
           href="/"
