@@ -14,8 +14,10 @@ export function appleCredentials() {
   return { clientId, teamId, keyId, keyPath };
 }
 
-export function appleClientSecret() {
-  const { clientId, teamId, keyId, keyPath } = appleCredentials();
+export function appleClientSecret(audience?: string) {
+  const credentials = appleCredentials();
+  const { teamId, keyId, keyPath } = credentials;
+  const clientId = audience ?? credentials.clientId;
   const now = Math.floor(Date.now() / 1000);
   const header = Buffer.from(JSON.stringify({ alg: "ES256", kid: keyId })).toString("base64url");
   const payload = Buffer.from(JSON.stringify({ iss: teamId, iat: now, exp: now + 300, aud: APPLE_ORIGIN, sub: clientId })).toString("base64url");
@@ -39,7 +41,8 @@ export function verifyAppleToken(token: string, keys: AppleKey[], clientId: stri
   if (claims.iss !== APPLE_ORIGIN || claims.aud !== clientId || claims.nonce !== nonce ||
       !Number.isFinite(claims.exp) || claims.exp <= now || !Number.isFinite(claims.iat) || claims.iat > now + 60 ||
       typeof claims.sub !== "string" || !claims.sub || claims.sub.length > 255) throw new Error("Invalid token claims");
-  return { sub: claims.sub as string };
+  const verifiedEmail = (claims.email_verified === true || claims.email_verified === "true") && typeof claims.email === "string" && claims.email.length <= 320 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(claims.email);
+  return { sub: claims.sub as string, ...(verifiedEmail ? { email: claims.email as string } : {}) };
 }
 
 export async function applePublicKeys() {

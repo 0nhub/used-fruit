@@ -4,6 +4,7 @@ import { KEYBOARD_LAYOUTS, hasValidKeyboard } from "@/lib/keyboard";
 import type { KeyboardLayoutId, Listing } from "@/lib/types";
 import { useListings } from "@/lib/useListings";
 import { useState } from "react";
+import { showApiError } from "@/lib/apiClient";
 
 export function KeyboardLayoutEditor({ listing }: { listing: Listing }) {
   const { updateListing } = useListings();
@@ -17,11 +18,11 @@ export function KeyboardLayoutEditor({ listing }: { listing: Listing }) {
         Tastaturlayout bearbeiten
       </button>
       {open && (
-        <form className="mt-3 space-y-3 rounded-xl border border-uf-border p-3" onSubmit={(event) => {
+        <form className="mt-3 space-y-3 rounded-xl border border-uf-border p-3" onSubmit={async (event) => {
           event.preventDefault();
           if (!hasValidKeyboard({ keyboardLayout: layout || undefined, keyboardLayoutDetails: details })) return;
-          updateListing(listing.id, { keyboardLayout: layout || undefined, keyboardLayoutDetails: layout === "other" ? details.trim() : undefined });
-          setOpen(false);
+          try { await updateListing(listing.id, { keyboardLayout: layout || undefined, keyboardLayoutDetails: layout === "other" ? details.trim() : undefined });
+          setOpen(false); } catch(error) { showApiError(error); }
         }}>
           <label className="block text-[14px]">Tastaturlayout
             <select className="mt-1 block w-full rounded-lg border border-uf-border bg-uf-bg p-2" required value={layout}

@@ -1,0 +1,9 @@
+[Unit]
+Description=Used Fruit database backup
+After=postgresql@16-main.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/lib/used-fruit/backup-databases.sh
+UMask=0077
+PrivateTmp=true

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useMessages } from "@/lib/useMessages";
 import { refreshIdentity } from "@/lib/authClient";
 
-export function BlockSellerButton({ name }: { name: string }) {
+export function BlockSellerButton({ name, userId }: { name: string; userId: string }) {
   const { block } = useMessages();
   const router = useRouter();
   const dialog = useRef<HTMLDialogElement>(null);
@@ -27,8 +27,8 @@ export function BlockSellerButton({ name }: { name: string }) {
     </p>
     <div className="mt-5 flex justify-end gap-2">
       <button type="button" autoFocus onClick={() => dialog.current?.close()} className="min-h-11 rounded-full bg-uf-bg-subtle px-4 text-[13px] text-uf-text">Abbrechen</button>
-      <button type="button" onClick={() => {
-        block(name);
+      <button type="button" onClick={async () => {
+        if (!await block(userId)) return;
         dialog.current?.close();
         router.push("/");
       }} className="min-h-11 rounded-full bg-uf-text px-4 text-[13px] text-white">Blockieren</button>
@@ -38,7 +38,7 @@ export function BlockSellerButton({ name }: { name: string }) {
 }
 
 export function BlockedProfiles() {
-  const { blocked, unblock } = useMessages();
+  const { blocked, unblock, blockedName } = useMessages();
   const dialog = useRef<HTMLDialogElement>(null);
   return <>
     <button type="button" onClick={() => dialog.current?.showModal()} className="flex w-full items-center justify-between text-left text-[15px] text-uf-text">
@@ -49,9 +49,9 @@ export function BlockedProfiles() {
         <h2 id="blocked-profiles-title" className="text-[17px] font-semibold">Blockierte Profile</h2>
         <button type="button" onClick={() => dialog.current?.close()} className="rounded-full bg-uf-bg-subtle px-3 py-2 text-[13px]">Schließen</button>
       </div>
-      <p className="mt-3 text-[13px] text-uf-text-secondary">Diese Anbieter und ihre Inserate sind in diesem Browser ausgeblendet.</p>
+      <p className="mt-3 text-[13px] text-uf-text-secondary">Diese Anbieter und ihre Inserate sind auf allen deinen Geräten ausgeblendet.</p>
       {blocked.length ? <ul className="mt-4 divide-y divide-uf-border-soft">{blocked.map(name => <li key={name} className="flex items-center justify-between gap-3 py-3">
-        <span className="min-w-0 break-words capitalize">{name}</span>
+        <span className="min-w-0 break-words capitalize">{blockedName(name)}</span>
         <button type="button" onClick={() => unblock(name)} className="shrink-0 text-[13px] text-uf-link">Entblockieren</button>
       </li>)}</ul> : <p className="mt-5 text-[14px] text-uf-text-secondary">Keine blockierten Profile.</p>}
     </dialog>

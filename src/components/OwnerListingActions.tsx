@@ -6,6 +6,7 @@ import { useListings } from "@/lib/useListings";
 import type { Listing, ListingVisibility } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { showApiError } from "@/lib/apiClient";
 
 function actionClass(kind: "link" | "danger", variant: "links" | "pills") {
   if (variant === "pills") {
@@ -31,7 +32,7 @@ export function OwnerListingActions({
   const visibility: ListingVisibility = listing.visibility ?? "public";
 
   const setVisibility = (next: ListingVisibility) => {
-    updateListing(listing.id, { visibility: next === "public" ? undefined : next });
+    void updateListing(listing.id, { visibility: next === "public" ? undefined : next }).catch(showApiError);
     setConfirmDelete(false);
   };
 
@@ -87,9 +88,8 @@ export function OwnerListingActions({
             <div className="mt-5 flex flex-wrap gap-2">
               <button
                 type="button"
-                onClick={() => {
-                  removeListing(listing.id);
-                  router.push("/meine-inserate");
+                onClick={async () => {
+                  try { await removeListing(listing.id); router.push("/meine-inserate"); } catch(error) { showApiError(error); }
                 }}
                 className="h-10 rounded-full bg-[#d80000] px-5 text-[14px] text-white hover:bg-[#b40000]"
               >

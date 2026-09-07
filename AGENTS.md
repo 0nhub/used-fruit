@@ -5,6 +5,8 @@ Produktdoku und Start: [README.md](./README.md).
 
 Arbeitsverzeichnis: `/Users/gabriel/Used Fruit`. Mehrere Chats können denselben Tree bearbeiten.
 
+**Backend-Umstellung 05.09.2026:** Für den aktuellen Quellstand zuerst [docs/backend-implementation.md](docs/backend-implementation.md) und [docs/api/README.md](docs/api/README.md) lesen. `src/server`, `migrations` und `/api/v1` sind die zentrale Datenhaltung; Web-Hooks und iOS verwenden diese API. Die unten beschriebene lokale Marktplatzpersistenz ist der frühere Produktionsstand, nicht der neue Staging-Datenfluss. Produktion ist ausdrücklich bis zur gemeinsamen Abnahme gesperrt.
+
 ---
 
 ## Harte Regeln

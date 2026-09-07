@@ -17,7 +17,7 @@ export function WelcomeProfile() {
   return <WelcomeForm key={currentIdentity()?.id} profile={profile} onSave={saveProfile} />;
 }
 
-function WelcomeForm({ profile, onSave }: { profile: UserProfile; onSave: (profile: UserProfile) => void }) {
+function WelcomeForm({ profile, onSave }: { profile: UserProfile; onSave: (profile: UserProfile, completeOnboarding?: boolean) => Promise<void> }) {
   const [draft, setDraft] = useState(profile);
   const [error, setError] = useState("");
   const finish = () => {
@@ -27,13 +27,13 @@ function WelcomeForm({ profile, onSave }: { profile: UserProfile; onSave: (profi
   return <OverlayDialog titleId="welcome-title" onClose={finish}>
     <h2 id="welcome-title" className="pr-6 text-[28px] font-semibold tracking-tight">Willkommen bei Used Fruit</h2>
     <p className="mt-3 text-[15px] leading-relaxed text-uf-text-secondary">Mach dein Profil zu deinem. Du kannst alles später in deinem Profil ändern.</p>
-    <form className="mt-6 space-y-5" onSubmit={(event) => {
+    <form className="mt-6 space-y-5" onSubmit={async (event) => {
       event.preventDefault();
       if (!draft.name.trim()) { setError("Bitte gib einen Namen ein."); return; }
       if (draft.locationQuery.trim() && !draft.city) { setError("Wähle einen Ort aus den Vorschlägen oder lasse den Standort leer."); return; }
       if (!currentIdentity()) return;
-      localStorage.setItem(onboardingKey, "done");
-      onSave({ ...readProfile(), name: draft.name, emoji: draft.emoji, city: draft.city, postalCode: draft.postalCode, locationQuery: draft.locationQuery });
+      try { await onSave({ ...readProfile(), name: draft.name, emoji: draft.emoji, city: draft.city, postalCode: draft.postalCode, locationQuery: draft.locationQuery, notifyOnMessage: draft.notifyOnMessage }, true); }
+      catch (error) { setError(error instanceof Error ? error.message : "Speichern fehlgeschlagen."); }
     }}>
       <label className="block text-[14px] font-medium">Dein Name
         <input value={draft.name} maxLength={40} required autoComplete="nickname" onChange={event => setDraft({ ...draft, name: event.target.value })}
@@ -54,6 +54,7 @@ function WelcomeForm({ profile, onSave }: { profile: UserProfile; onSave: (profi
           onSelect={place => setDraft({ ...draft, city: place.city, postalCode: place.postalCode, locationQuery: formatPlaceLabel(place) })}
           inputClassName="h-11 w-full rounded-xl border border-uf-border bg-uf-bg-subtle px-3 text-[16px]" />
       </div>
+      <label className="flex items-start gap-3 text-[14px]"><input type="checkbox" checked={draft.notifyOnMessage} onChange={event => setDraft({ ...draft, notifyOnMessage: event.target.checked })} className="mt-1" /><span>E-Mail bei neuen Nachrichten erhalten<span className="mt-1 block text-[12px] text-uf-text-secondary">Wenn eine Nachricht nach zwei Minuten noch ungelesen ist. Jederzeit im Konto änderbar.</span></span></label>
       {error && <p role="alert" className="text-[14px] text-uf-text">{error}</p>}
       <div className="flex items-center justify-between gap-3 pt-2">
         <button type="button" onClick={finish} className="cursor-pointer text-[14px] text-uf-link hover:underline">Später</button>

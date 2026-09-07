@@ -23,27 +23,30 @@ final class MarketplaceUITests: XCTestCase {
   app.buttons["Standort"].tap()
   XCTAssertTrue(app.textFields["PLZ oder Ort"].exists)
   app.buttons["Schließen"].tap()
-  app.tabBars.buttons.element(boundBy:1).tap()
+  app.tabBars.buttons["Inserieren"].tap()
   XCTAssertTrue(app.staticTexts["Kategorie"].waitForExistence(timeout:3))
   XCTAssertFalse(app.buttons["Abbrechen"].exists)
   XCTAssertFalse(app.progressIndicators.firstMatch.exists)
   func next(){let button=app.buttons["Weiter"];for _ in 0..<8{if button.isHittable{break};app.swipeUp()};button.tap()}
   for _ in 0..<16 {
-   if app.textFields["Maximale Kapazität (%)"].exists {break}
+   if app.pickerWheels.firstMatch.exists {break}
    next()
   }
-  let battery=app.textFields["Maximale Kapazität (%)"]
-  XCTAssertTrue(battery.exists);battery.tap();battery.typeText("90")
+  let battery=app.pickerWheels.firstMatch
+  XCTAssertTrue(battery.exists);battery.adjust(toPickerWheelValue:"90%")
   next()
-  let price=app.textFields["0,00"];XCTAssertTrue(price.waitForExistence(timeout:3));price.tap();price.typeText("749")
+  let price=app.textFields["0,00"];XCTAssertTrue(price.waitForExistence(timeout:3));XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout:3));price.typeText("749")
   next()
+  let street=app.textFields["Straße und Hausnummer"];street.tap();street.typeText("Teststraße 1")
   let location=app.textFields["PLZ oder Stadt"];location.tap();location.typeText("70173")
   app.buttons["70173 Stuttgart"].tap()
   let district=app.textFields["Ortsteil"];district.tap();district.typeText("Mitte")
   next()
   XCTAssertTrue(app.buttons["Demo-Inserat speichern"].isEnabled)
-  app.tabBars.buttons.element(boundBy:2).tap()
+  app.buttons["Schließen"].tap()
+  app.tabBars.buttons["Nachrichten"].tap()
   XCTAssertGreaterThanOrEqual(app.cells.count,3)
+  XCTAssertTrue(app.staticTexts.matching(identifier:"last-message-time").firstMatch.exists)
   app.cells.firstMatch.tap()
   XCTAssertTrue(app.staticTexts["Hallo! Ist das Gerät noch verfügbar?"].waitForExistence(timeout:3))
   XCTAssertFalse(app.tabBars.firstMatch.exists)
@@ -53,7 +56,12 @@ final class MarketplaceUITests: XCTestCase {
   app.buttons["Senden"].tap()
   XCTAssertTrue(app.staticTexts["Testnachricht"].waitForExistence(timeout:3))
   app.navigationBars.buttons.element(boundBy:0).tap()
-  app.tabBars.buttons.element(boundBy:3).tap()
+  app.tabBars.buttons["Konto"].tap()
+  XCTAssertFalse(app.staticTexts["Test-Account"].exists)
+  XCTAssertFalse(app.buttons["Datenschutz"].exists)
+  app.buttons["Name ändern"].tap()
+  XCTAssertTrue(app.alerts["Name ändern"].waitForExistence(timeout:3))
+  app.alerts.buttons["Abbrechen"].tap()
   app.buttons["Profil-Icon ändern"].tap()
   let custom=app.textFields["custom-avatar-emoji"]
   XCTAssertTrue(custom.waitForExistence(timeout:3));custom.tap();custom.typeText("🧑🏽‍🚀")

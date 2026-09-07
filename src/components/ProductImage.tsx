@@ -1,5 +1,6 @@
 "use client";
 
+import { DemoListingMark } from "@/components/DemoListingMark";
 import { getColor, getModelById } from "@/data/catalog";
 import type { CategoryId } from "@/lib/types";
 
@@ -8,6 +9,8 @@ interface ProductImageProps {
   colorId: string;
   className?: string;
   alt?: string;
+  demo?: boolean;
+  compact?: boolean;
 }
 
 function wallpaper(seed: string) {
@@ -78,7 +81,7 @@ function IPadArt({ color, seed }: { color: string; seed: string }) {
   );
 }
 
-export function ProductImage({ modelId, colorId, className }: ProductImageProps) {
+export function ProductImage({ modelId, colorId, className, demo, compact }: ProductImageProps) {
   const model = getModelById(modelId);
   const color = getColor(modelId, colorId)?.hex ?? "#C0C0C5";
   const category = (model?.categoryId ?? "mac") as CategoryId;
@@ -109,6 +112,7 @@ export function ProductImage({ modelId, colorId, className }: ProductImageProps)
       >
         {art}
       </svg>
+      {demo ? <DemoListingMark compact={compact} /> : null}
     </div>
   );
 }

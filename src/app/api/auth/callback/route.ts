@@ -3,6 +3,9 @@ import { AUTH_ORIGIN, APPLE_ORIGIN, CALLBACK, COOKIE_OPTIONS, FLOW_COOKIE, SESSI
 
 import { appleCredentials, appleClientSecret, applePublicKeys, verifyAppleToken } from "@/lib/appleAuth";
 
+import { transaction } from "@/server/db";
+import { appleAccount, createSession } from "@/server/accounts";
+
 export async function POST(request: NextRequest) {
   const flow = unseal(request.cookies.get(FLOW_COOKIE)?.value);
   let response: NextResponse;
@@ -31,7 +34,12 @@ export async function POST(request: NextRequest) {
       name = [supplied?.name?.firstName, supplied?.name?.lastName].filter(value => typeof value === "string").join(" ").trim().slice(0, 40);
     } catch { /* Name is optional and never used as the identity. */ }
     response = NextResponse.redirect(new URL(safeAuthNext(flow.next), AUTH_ORIGIN), 303);
-    response.cookies.set(SESSION_COOKIE, seal({ kind: "session", sub: `apple:${user.sub}`, name, exp: Math.floor(Date.now() / 1000) + 3600 }), { ...COOKIE_OPTIONS, maxAge: 3600 });
+    const stored = await transaction(async client => {
+      const account = await appleAccount(client, user, name, tokens.refresh_token, clientId);
+      const session = await createSession(client, account.id, "web");
+      return { account, session };
+    });
+    response.cookies.set(SESSION_COOKIE, seal({ kind: "session", sub: stored.account.id, sid: stored.session.id, name: stored.account.name, exp: Math.floor(Date.now() / 1000) + 3600 }), { ...COOKIE_OPTIONS, maxAge: 3600 });
   } catch {
     response = NextResponse.redirect(`${AUTH_ORIGIN}/anmelden?error=signin&next=${encodeURIComponent(safeAuthNext(flow?.kind === "flow" ? flow.next : null))}`, 303);
   }

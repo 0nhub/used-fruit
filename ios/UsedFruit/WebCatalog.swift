@@ -46,7 +46,8 @@ struct WebCatalog: Codable {
 
     var models: [CatalogModel]; var categories: [CatalogChoice]; var conditions: [CatalogChoice]; var keyboard: [CatalogChoice]
     var radius: [Int]; var capacity: [Int]; var cycles: [Int]; var steps: [String:StepCopy]; var places: [CatalogPlace]; var listings: [WebListing]; var fixtures: [WizardFixture]
-    static let shared: WebCatalog = {
+    @MainActor static var shared: WebCatalog = {
+        if let cached=UserDefaults.standard.data(forKey:"backend.catalog.cache"),let value=try? JSONDecoder().decode(WebCatalog.self,from:cached) { return value }
         guard let url = Bundle.main.url(forResource: "WebCatalog", withExtension: "json"), let data = try? Data(contentsOf: url), let value = try? JSONDecoder().decode(WebCatalog.self, from: data) else { fatalError("WebCatalog.json missing or incompatible. Run the catalog exporter.") }
         return value
     }()

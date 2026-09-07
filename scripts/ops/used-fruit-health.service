@@ -1,0 +1,5 @@
+[Unit]
+Description=Used Fruit local health checks
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /usr/local/lib/used-fruit/check-health.py

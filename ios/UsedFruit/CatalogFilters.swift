@@ -12,7 +12,7 @@ struct CatalogFilterState {
     var sort = "newest"
     var activeCount: Int { selected.values.reduce(0) { $0 + $1.count } + [!model.isEmpty,!minimum.isEmpty,!maximum.isEmpty,radius>0,packaging,warranty,shipping,capacity>0,cycles>0].filter{$0}.count }
     mutating func changeCategory(_ id: String) { category=id; model=""; selected=[:];capacity=0;cycles=0 }
-    func results(_ offers: [Offer], query: String, catalog: WebCatalog = .shared) -> [Offer] {
+    @MainActor func results(_ offers: [Offer], query: String, catalog: WebCatalog = .shared) -> [Offer] {
         let found = offers.filter { offer in
             let s = offer.specs ?? [:]
             if !category.isEmpty && s["category"] != category { return false }
@@ -49,12 +49,14 @@ struct FilterSelection: View {
     @Binding var selected: Set<String>
     var body: some View {
         FilterSection(title) {
+            LazyVGrid(columns:[GridItem(.flexible()),GridItem(.flexible())],spacing:12) {
             ForEach(items) { item in
                 Button {if selected.contains(item.id){selected.remove(item.id)}else{selected.insert(item.id)}} label: {
-                    HStack {Text(item.compactLabel).lineLimit(1).minimumScaleFactor(0.75).accessibilityLabel(item.label);Spacer();if selected.contains(item.id){Image(systemName:"checkmark")}}
+                    Text(item.compactLabel).lineLimit(1).minimumScaleFactor(0.7).accessibilityLabel(item.label).frame(maxWidth:.infinity)
                         .padding(.horizontal,20).frame(minHeight:48).foregroundStyle(selected.contains(item.id) ? Color.white : Color.primary)
                         .background(selected.contains(item.id) ? Color.accentColor : Color(.systemBackground),in:Capsule())
                 }
+            }
             }
         }
     }
@@ -81,16 +83,18 @@ struct CatalogFilterSheet: View {
                     }
                     FilterSection("Preis") {TextField("Von (€)",text:$filters.minimum).keyboardType(.decimalPad);TextField("Bis (€)",text:$filters.maximum).keyboardType(.decimalPad)}
                     FilterSection("Modelle") {
+                        LazyVGrid(columns:[GridItem(.flexible()),GridItem(.flexible())],spacing:12) {
                         ForEach([CatalogChoice(id:"",label:"Alle Modelle")] + models.map { CatalogChoice(id:$0.id,label:$0.name) }) { item in
                             Button {
                                 filters.model=item.id;filters.selected=[:];filters.capacity=0;filters.cycles=0
                             } label: {
-                                HStack { Text(item.label);Spacer();if filters.model==item.id { Image(systemName:"checkmark") } }
+                                Text(item.label).lineLimit(1).minimumScaleFactor(0.7).frame(maxWidth:.infinity)
                                     .padding(.horizontal,20).frame(minHeight:48)
                                     .foregroundStyle(filters.model==item.id ? Color.white : Color.primary)
                                     .background(filters.model==item.id ? Color.accentColor : Color(.systemBackground),in:Capsule())
                             }.buttonStyle(.plain)
                         }
+                    }
                     }
                     if !filters.category.isEmpty {
                         if !scoped.flatMap({$0.sizes ?? []}).isEmpty {FilterSelection(title:"Größen",items:choices(scoped.flatMap{$0.sizes ?? []}),selected:binding("size"))}
@@ -101,19 +105,19 @@ struct CatalogFilterSheet: View {
                     }
                     if (filters.category.isEmpty || filters.category=="mac") && (filters.model.isEmpty || catalog.model(filters.model)?.keyboard == true) {FilterSelection(title:"Tastaturlayout",items:catalog.keyboard,selected:binding("keyboard"))}
                     FilterSelection(title:"Zustand",items:catalog.conditions,selected:binding("condition"))
-                    FilterSection("Originalverpackung"){Toggle("Nur mit Originalverpackung",isOn:$filters.packaging)}
-                    FilterSection("Garantie"){Toggle("Nur mit gültiger Garantie",isOn:$filters.warranty)}
+                    FilterSection("Originalverpackung"){FilterToggle("Nur mit Originalverpackung",isOn:$filters.packaging)}
+                    FilterSection("Garantie"){FilterToggle("Nur mit gültiger Garantie",isOn:$filters.warranty)}
                     if scoped.contains(where:{$0.battery != nil}) {
                         FilterSection("Batterie") {
                             if scoped.contains(where:{$0.battery=="capacity"}){Picker("Kapazität",selection:$filters.capacity){Text("Alle").tag(0);ForEach(catalog.capacity,id:\.self){Text("Mind. \($0) %").tag($0)}}}
                             if scoped.contains(where:{$0.battery=="cycles"}){Picker("Ladezyklen",selection:$filters.cycles){Text("Alle").tag(0);ForEach(catalog.cycles,id:\.self){Text("Max. \($0) Zyklen").tag($0)}}}
                         }
                     }
-                    FilterSection("Versand"){Toggle("Versand möglich",isOn:$filters.shipping)}
+                    FilterSection("Versand"){FilterToggle("Versand möglich",isOn:$filters.shipping)}
                 }
 
             }.padding(.horizontal,20).background(Color(.systemGroupedBackground))
-                .textFieldStyle(.roundedBorder)
+                .textFieldStyle(SoftInputStyle())
                 .navigationTitle("Filter").navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement:.topBarLeading){Button("Zurücksetzen",systemImage:"arrow.counterclockwise"){filters=CatalogFilterState();locationQuery=""}.labelStyle(.iconOnly)}
@@ -139,5 +143,17 @@ struct FilterSection<Content: View>: View {
             }.buttonStyle(.plain).accessibilityValue(expanded ? "Ausgeklappt" : "Eingeklappt")
             if expanded { VStack(alignment:.leading,spacing:12) { content() }.frame(maxWidth:.infinity,alignment:.leading).padding(.bottom,8) }
         }.padding(.vertical,18).overlay(alignment:.bottom) { Divider() }
+    }
+}
+
+struct FilterToggle: View {
+    let title: String
+    @Binding var isOn: Bool
+    init(_ title:String,isOn:Binding<Bool>) { self.title=title;self._isOn=isOn }
+    var body: some View {
+        HStack(spacing:16) {
+            Text(title).fixedSize(horizontal:false,vertical:true).frame(maxWidth:.infinity,alignment:.leading)
+            Toggle(title,isOn:$isOn).labelsHidden().fixedSize()
+        }.frame(minHeight:48).padding(.trailing,4).accessibilityElement(children:.contain)
     }
 }

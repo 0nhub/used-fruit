@@ -39,6 +39,9 @@ export type BatteryMetric = "capacity" | "cycles";
 
 export interface Listing {
   id: string;
+  sellerId?: string;
+  number?: string;
+  version?: number;
   categoryId: CategoryId;
   modelId: string;
   title: string;

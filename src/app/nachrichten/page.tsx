@@ -6,13 +6,13 @@ import { ProductImage } from "@/components/ProductImage";
 import { SiteHeader } from "@/components/SiteHeader";
 import {
   formatListingHeadline,
-  formatListingName,
   formatMessageDay,
   formatMessageTime,
   formatPrice,
   isSameMessageDay,
 } from "@/lib/format";
-import { personKey, type Thread } from "@/lib/messages";
+import { isDemoListing } from "@/lib/listingNumber";
+import { type Thread } from "@/lib/messages";
 import { canRateThread, daysUntilRating, hasRatedThread } from "@/lib/reputation";
 import { INBOX_WIDTH_KEY } from "@/lib/profile";
 import { useListings } from "@/lib/useListings";
@@ -22,6 +22,10 @@ import { useReputation } from "@/lib/useReputation";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+
+import { currentIdentity } from "@/lib/authClient";
+import { useChatPresence } from "@/lib/useChatPresence";
+import { showApiError } from "@/lib/apiClient";
 
 type InboxTab = "nachrichten" | "archiv" | "blockiert";
 
@@ -85,16 +89,16 @@ function useInboxWidth() {
   return { width, startResize };
 }
 
-function counterpartOf(thread: Thread, sellerListingIds: Set<string>) {
-  return sellerListingIds.has(thread.listingId)
-    ? { name: thread.buyerName, emoji: thread.buyerEmoji }
-    : { name: thread.sellerName, emoji: thread.sellerEmoji };
+function counterpartOf(thread: Thread) {
+  return thread.sellerId === currentIdentity()?.id
+    ? { id: thread.buyerId ?? "", name: thread.buyerName, emoji: thread.buyerEmoji }
+    : { id: thread.sellerId ?? "", name: thread.sellerName, emoji: thread.sellerEmoji };
 }
 
 function NachrichtenInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const selectedId = searchParams.get("id") ?? "";
+  const selectedId = searchParams.get("id") ?? searchParams.get("conversation") ?? "";
   const tab = parseInboxTab(searchParams.get("tab"));
   const { width, startResize } = useInboxWidth();
   const { profile, signedIn } = useProfile();
@@ -102,6 +106,7 @@ function NachrichtenInner() {
   const {
     threads,
     blocked,
+    blockedName,
     ready,
     send,
     resolveOffer,
@@ -114,7 +119,7 @@ function NachrichtenInner() {
     unmute,
     isMuted,
   } = useMessages();
-  const { ratings, rate } = useReputation(profile.name);
+  const { ratings, rate } = useReputation(currentIdentity()?.id);
   const sellerListingIds = useMemo(
     () => new Set(userListings.map((item) => item.id)),
     [userListings],
@@ -125,14 +130,14 @@ function NachrichtenInner() {
   const menuRef = useRef<HTMLDivElement>(null);
 
   const visible = threads.filter((thread) => {
-    const blockedThread = isBlocked(counterpartOf(thread, sellerListingIds).name);
+    const blockedThread = isBlocked(counterpartOf(thread).id);
     if (tab === "blockiert") return blockedThread;
     if (tab === "archiv") return Boolean(thread.archived) && !blockedThread;
     return !thread.archived && !blockedThread;
   });
   const blockedOrphans = blocked.filter(
     (name) =>
-      !threads.some((thread) => personKey(counterpartOf(thread, sellerListingIds).name) === name),
+      !threads.some((thread) => counterpartOf(thread).id === name),
   );
   const selected = visible.find((thread) => thread.id === selectedId) ?? (selectedId ? undefined : visible[0]);
 
@@ -140,7 +145,7 @@ function NachrichtenInner() {
     if (!selectedId) return;
     const thread = threads.find((item) => item.id === selectedId);
     if (!thread) return;
-    const blockedThread = isBlocked(counterpartOf(thread, sellerListingIds).name);
+    const blockedThread = isBlocked(counterpartOf(thread).id);
     if (blockedThread && tab !== "blockiert") {
       router.push(`/nachrichten?tab=blockiert&id=${encodeURIComponent(thread.id)}`);
     } else if (!blockedThread && thread.archived && tab !== "archiv") {
@@ -167,21 +172,24 @@ function NachrichtenInner() {
     };
   }, [menuOpen]);
 
+  useChatPresence(selected?.id, selected?.messages.at(-1)?.id);
+
   const listing = selected ? getListing(selected.listingId) : undefined;
-  const iAmSeller = Boolean(selected && userListings.some((item) => item.id === selected.listingId));
+  const iAmSeller = Boolean(selected && selected.sellerId === currentIdentity()?.id);
   const counterpartName = selected
     ? iAmSeller
       ? selected.buyerName
       : selected.sellerName
     : "";
-  const counterpartBlocked = counterpartName ? isBlocked(counterpartName) : false;
-  const counterpartMuted = counterpartName ? isMuted(counterpartName) : false;
+  const counterpartId = selected ? (iAmSeller ? selected.buyerId : selected.sellerId) ?? "" : "";
+  const counterpartBlocked = counterpartId ? isBlocked(counterpartId) : false;
+  const counterpartMuted = selected ? isMuted(selected.id) : false;
   const ratingReady =
     Boolean(selected && profile.name.trim()) &&
-    canRateThread(selected!, profile.name, ratings);
+    canRateThread(selected!, currentIdentity()?.id ?? "", ratings);
   const ratingWaiting =
     Boolean(selected?.offer?.status === "accepted" && profile.name.trim()) &&
-    !hasRatedThread(ratings, selected!.id, profile.name) &&
+    !hasRatedThread(ratings, selected!.id, currentIdentity()?.id ?? "") &&
     !ratingReady;
   const ratingDaysLeft = selected ? daysUntilRating(selected) : 0;
 
@@ -273,7 +281,7 @@ function NachrichtenInner() {
           ) : (
             <ul>
               {visible.map((thread) => {
-                const person = counterpartOf(thread, sellerListingIds);
+                const person = counterpartOf(thread);
                 return (
                   <li key={thread.id}>
                     <button
@@ -302,7 +310,7 @@ function NachrichtenInner() {
             <ul className={visible.length > 0 ? "border-t border-uf-border-soft" : undefined}>
               {blockedOrphans.map((name) => (
                 <li key={name} className="flex items-center justify-between gap-3 px-4 py-3">
-                  <span className="truncate text-[13px] font-medium capitalize">{name}</span>
+                  <span className="truncate text-[13px] font-medium capitalize">{blockedName(name)}</span>
                   <button
                     type="button"
                     onClick={() => unblock(name)}
@@ -347,6 +355,8 @@ function NachrichtenInner() {
                           colorId={listing.colorId}
                           alt={title}
                           className="h-full"
+                          demo={isDemoListing(listing.id)}
+                          compact
                         />
                       </span>
                       <p className="truncate text-[15px] font-medium text-uf-text">{title}</p>
@@ -364,6 +374,8 @@ function NachrichtenInner() {
                             colorId={listing.colorId}
                             alt=""
                             className="h-full"
+                            demo={isDemoListing(listing.id)}
+                            compact
                           />
                         ) : null}
                       </span>
@@ -421,8 +433,8 @@ function NachrichtenInner() {
                         className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-[13px] text-uf-text hover:bg-uf-bg-subtle"
                         onClick={() => {
                           setMenuOpen(false);
-                          if (counterpartMuted) unmute(counterpartName);
-                          else mute(counterpartName);
+                          if (counterpartMuted) unmute(selected.id);
+                          else mute(selected.id);
                         }}
                       >
                         <MuteIcon className="h-4 w-4 shrink-0 text-uf-text-secondary" />
@@ -435,7 +447,7 @@ function NachrichtenInner() {
                         onClick={() => {
                           setMenuOpen(false);
                           if (counterpartBlocked) {
-                            unblock(counterpartName);
+                            unblock(counterpartId);
                             openList("nachrichten", selected.id);
                           } else {
                             setConfirm("block");
@@ -507,7 +519,7 @@ function NachrichtenInner() {
                   const previous = selected.messages[index - 1];
                   const showDay = !previous || !isSameMessageDay(previous.at, message.at);
                   return (
-                    <div key={message.id}>
+                    <div key={message.id} data-message-sequence={message.sequence}>
                       {showDay && (
                         <p className="mb-3 text-center text-[11px] text-uf-text-tertiary">
                           {formatMessageDay(message.at)}
@@ -560,16 +572,16 @@ function NachrichtenInner() {
               ) : (
                 <form
                   className="flex gap-2 border-t border-uf-border-soft px-4 py-3"
-                  onSubmit={(event) => {
+                  onSubmit={async (event) => {
                     event.preventDefault();
                     const text = draft.trim();
                     if (!text) return;
-                    send(selected.id, {
+                    try { await send(selected.id, {
                       author: iAmSeller ? "seller" : "buyer",
                       kind: "text",
                       text,
                     });
-                    setDraft("");
+                    setDraft(""); } catch (error) { showApiError(error); }
                   }}
                 >
                   <input
@@ -624,7 +636,7 @@ function NachrichtenInner() {
                     removeThread(selected.id);
                     leaveConversation();
                   } else {
-                    block(counterpartName);
+                    block(counterpartId);
                     leaveConversation("blockiert");
                   }
                 }}

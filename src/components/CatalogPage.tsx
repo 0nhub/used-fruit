@@ -1,7 +1,9 @@
 "use client";
 
+import { CatalogSortControl } from "@/components/CatalogSortControl";
 import { FilterSidebar } from "@/components/FilterSidebar";
 import { LegalNav } from "@/components/LegalNav";
+import { LocationPicker } from "@/components/LocationPicker";
 import { Header } from "@/components/Header";
 import { MobileFilterHost } from "@/components/MobileNav";
 import { ProductCard } from "@/components/ProductCard";
@@ -68,7 +70,9 @@ function CatalogShellInner({
 
   return (
     <div className="flex min-h-dvh flex-col bg-white lg:h-dvh lg:overflow-hidden">
-      <Header onHome={resetOnLogo ? resetFilters : undefined} mobileSort={
+      <Header desktopRail onHome={resetOnLogo ? resetFilters : undefined} mobileSort={
+        <>
+        <LocationPicker value={sidebar.location} onChange={sidebar.onLocationChange} align="left" variant="pill" />
         <span className="relative inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-uf-bg-subtle px-2.5 text-[13px] font-medium text-uf-text focus-within:ring-1 focus-within:ring-uf-border">
           <span aria-hidden="true">{SORT_OPTIONS.find((option) => option.id === sidebar.sortId)?.label}</span>
           <svg aria-hidden="true" width="10" height="14" viewBox="0 0 10 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -90,13 +94,14 @@ function CatalogShellInner({
           ))}
         </select>
         </span>
+        </>
       } />
       <MobileFilterHost count={activeFilterCount}>
         <FilterSidebar {...sidebar} hideLegal />
       </MobileFilterHost>
 
-      <div className="mx-auto flex min-h-0 w-full max-w-[1440px] flex-1 flex-col px-0 md:px-6 lg:min-h-0 lg:flex-row lg:gap-10 lg:overflow-hidden">
-        <div className="hidden lg:flex lg:min-h-0 lg:overflow-y-auto lg:overscroll-contain">
+      <div className="mx-auto flex min-h-0 w-full max-w-[1440px] flex-1 flex-col px-0 md:px-6 lg:min-h-0 lg:flex-row lg:overflow-hidden lg:px-0">
+        <div className="hidden lg:flex lg:h-full lg:w-[220px] lg:shrink-0 lg:flex-col lg:overflow-y-auto lg:overscroll-contain lg:px-5">
           <FilterSidebar {...sidebar} />
         </div>
 
@@ -105,7 +110,15 @@ function CatalogShellInner({
           if (link && !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey) {
             rememberCatalogReturn(decodeURIComponent(link.pathname.split("/").pop()!));
           }
-        }} className="uf-scroll-hidden min-h-0 min-w-0 flex-1 pb-6 pt-3 lg:overflow-y-auto lg:overscroll-contain lg:pt-0">
+        }} className="uf-scroll-hidden min-h-0 min-w-0 flex-1 pb-6 pt-3 lg:overflow-y-auto lg:overscroll-contain lg:border-l lg:border-uf-border-soft lg:pt-0 lg:pb-0">
+          <div className="hidden h-12 items-center justify-between border-b border-uf-border-soft px-6 lg:flex">
+            <LocationPicker value={sidebar.location} onChange={sidebar.onLocationChange} align="left" />
+            <CatalogSortControl
+              sortId={sidebar.sortId}
+              onSortChange={sidebar.onSortChange}
+              canSortByDistance={sidebar.canSortByDistance}
+            />
+          </div>
           {banner ? <div className="px-4 pb-4 sm:px-6">{banner}</div> : null}
           {listings.length === 0 ? (
             <div className="px-2 py-16 text-center">
@@ -119,7 +132,7 @@ function CatalogShellInner({
               <p className="text-[17px] font-medium text-uf-text">Keine Treffer</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 items-stretch border-l border-uf-border-soft lg:grid-cols-3">
+            <div className="grid grid-cols-2 items-stretch border-l border-uf-border-soft lg:grid-cols-3 lg:border-l-0">
               {filtered.map((listing) => (
                 <ProductCard key={listing.id} listing={listing} userPlace={userPlace} />
               ))}

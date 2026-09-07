@@ -1,6 +1,8 @@
-import { FAVORITES_STORAGE_KEY, DEFAULT_PROFILE, PROFILE_EVENT, readProfile, writeProfile, writeSignedIn } from "@/lib/profile";
+import { DEFAULT_PROFILE, PROFILE_EVENT, readProfile, writeProfile, writeSignedIn } from "@/lib/profile";
 
-type Identity = { id: string; name: string };
+import type { ApiProfile } from "./apiTypes";
+import { api } from "./apiClient";
+type Identity = ApiProfile;
 let pending: Promise<Identity | null> | null = null;
 let current: Identity | null = null;
 const identityKey = "used-fruit-auth-identity";
@@ -17,30 +19,21 @@ function switchAccount(user: Identity | null) {
     if (keys.length) localStorage.setItem(archiveKey(previous ?? "legacy"), JSON.stringify(snapshot));
     keys.forEach(key => localStorage.removeItem(key));
     if (next) {
-      const saved = localStorage.getItem(archiveKey(next));
-      if (saved) {
-        const values = JSON.parse(saved) as Record<string, unknown>;
-        for (const [key, value] of Object.entries(values)) {
-          if (key.startsWith("used-fruit-") && key !== identityKey && key !== "used-fruit-session" && !key.startsWith("used-fruit-account:") && typeof value === "string") localStorage.setItem(key, value);
-        }
-      }
-      if (!saved) localStorage.setItem("used-fruit-onboarding", "pending");
       localStorage.setItem(identityKey, next);
     } else localStorage.removeItem(identityKey);
     // A guest draft must survive the OAuth callback; account switches/logouts clear it.
     if (previous !== null || next === null) sessionStorage.removeItem("used-fruit-listing-draft");
   }
-  if (user && !readProfile().name) writeProfile({ ...DEFAULT_PROFILE, ...readProfile(), name: user.name });
   if (user) {
+    const previousProfile = readProfile();
+    localStorage.setItem("used-fruit-onboarding", user.onboardingCompleted ? "done" : "pending");
+    writeProfile({ ...DEFAULT_PROFILE, ...previousProfile, name: user.name, emoji: user.emoji, bio: user.bio, city: user.city, postalCode: user.postalCode,
+      coverImage: user.coverMediaId ? "/api/v1/media/" + user.coverMediaId : undefined,
+      notifyOnMessage: user.onboardingCompleted ? user.emailNotifications : true });
     const favorite = sessionStorage.getItem("used-fruit-pending-favorite");
-    if (favorite && favorite.length <= 200) {
-      let favorites: string[] = [];
-      try {
-        const stored: unknown = JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY) ?? "[]");
-        if (Array.isArray(stored)) favorites = stored.filter((id): id is string => typeof id === "string");
-      } catch { /* Start with an empty list if stored data is invalid. */ }
-      localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(Array.from(new Set([favorite, ...favorites]))));
+    if (favorite && /^[a-f0-9-]{36}$/.test(favorite)) {
       sessionStorage.removeItem("used-fruit-pending-favorite");
+      void api("/favorites/" + favorite, { method: "PUT" }).catch(() => sessionStorage.setItem("used-fruit-pending-favorite", favorite));
     }
   }
   current = user;
@@ -63,6 +56,7 @@ export function refreshIdentity() {
   return pending;
 }
 export async function endSession(deleteLocal = false) {
+  if (deleteLocal) await api("/me", { method: "DELETE" });
   const response = await fetch("/api/auth/logout", { method: "POST" });
   if (!response.ok) throw new Error("Abmeldung fehlgeschlagen. Bitte erneut versuchen.");
   const previous = localStorage.getItem(identityKey);

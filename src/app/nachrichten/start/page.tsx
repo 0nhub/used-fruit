@@ -28,8 +28,9 @@ function StartConversation() {
     }
     if (!listingsReady || !messagesReady || !listing) return;
     started.current = true;
-    const thread = openThread({ listing, sellerEmoji: listingSellerEmoji(listing), buyerName: profile.name.trim() || "Anbieter", buyerEmoji: profile.emoji });
-    router.replace(`/nachrichten?id=${encodeURIComponent(thread.id)}`);
+    void openThread({ listing, sellerEmoji: listingSellerEmoji(listing), buyerName: profile.name.trim() || "Anbieter", buyerEmoji: profile.emoji })
+      .then(thread => router.replace(`/nachrichten?id=${encodeURIComponent(thread.id)}`))
+      .catch(error => { window.alert(error instanceof Error ? error.message : "Unterhaltung konnte nicht geöffnet werden."); router.replace(`/listing/${id}`); });
   }, [profileReady, signedIn, listingsReady, messagesReady, listing, id, openThread, profile.name, profile.emoji, router]);
 
   return <main className="flex min-h-dvh flex-col items-center justify-center gap-4 px-4 text-uf-text-secondary">

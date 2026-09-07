@@ -1,0 +1,31 @@
+[Unit]
+Description=Used Fruit notification worker (%i)
+After=network-online.target postgresql@16-main.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=usedfruit
+Group=usedfruit
+WorkingDirectory=/opt/used-fruit-backend-%i
+Environment=NODE_ENV=production
+Environment=APPLE_PRIVATE_KEY_PATH=%d/apple-signin-key
+Environment=APNS_PRIVATE_KEY_PATH=%d/apns-key
+EnvironmentFile=/etc/used-fruit/ses.env
+LoadCredential=apple-signin-key:/etc/used-fruit/apple-signin.p8
+LoadCredential=apns-key:/etc/used-fruit/apns.p8
+EnvironmentFile=/etc/used-fruit/database-%i.env
+EnvironmentFile=/etc/used-fruit/backend-%i.env
+ExecStart=/usr/bin/node --import tsx scripts/notification-worker.ts
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=90
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/used-fruit/%i
+UMask=0027
+
+[Install]
+WantedBy=multi-user.target

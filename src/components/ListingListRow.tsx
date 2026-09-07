@@ -7,6 +7,7 @@ import { OwnerListingActions } from "@/components/OwnerListingActions";
 import { ProductImage } from "@/components/ProductImage";
 import { getCondition } from "@/data/catalog";
 import { formatListingMeta, formatListingName, formatPrice } from "@/lib/format";
+import { isDemoListing } from "@/lib/listingNumber";
 import type { Listing } from "@/lib/types";
 import Link from "next/link";
 import type { ReactNode } from "react";
@@ -32,7 +33,7 @@ export function ListingListRow({
             hidden ? "opacity-55" : ""
           }`}
         >
-          <ProductImage modelId={listing.modelId} colorId={listing.colorId} />
+          <ProductImage modelId={listing.modelId} colorId={listing.colorId} demo={isDemoListing(listing.id)} compact />
         </Link>
 
         <div className="min-w-0 flex-1">

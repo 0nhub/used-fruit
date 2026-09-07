@@ -1,0 +1,26 @@
+[Unit]
+Description=Used Fruit isolated acceptance environment
+After=network-online.target postgresql@16-main.service
+[Service]
+Type=simple
+User=usedfruit
+Group=usedfruit
+WorkingDirectory=/opt/used-fruit-backend-staging
+Environment=NODE_ENV=production
+Environment=NEXT_TELEMETRY_DISABLED=1
+Environment=APPLE_PRIVATE_KEY_PATH=%d/apple-signin-key
+EnvironmentFile=/etc/used-fruit/database-staging.env
+EnvironmentFile=/etc/used-fruit/backend-staging.env
+EnvironmentFile=/etc/used-fruit/mapkit-staging.env
+LoadCredential=apple-signin-key:/etc/used-fruit/apple-signin.p8
+ExecStart=/usr/bin/node node_modules/next/dist/bin/next start -H 10.0.3.1 -p 3003
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/used-fruit/staging /opt/used-fruit-backend-staging/.next
+UMask=0027
+[Install]
+WantedBy=multi-user.target

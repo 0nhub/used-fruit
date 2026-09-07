@@ -54,6 +54,7 @@ export function writeListingDraft(draft: ListingDraft) {
 
 export function clearListingDraft() {
   sessionStorage.removeItem(LISTING_DRAFT_KEY);
+  sessionStorage.removeItem("used-fruit-publish-key");
 }
 
 export function safeNextPath(raw: string | null | undefined): string {

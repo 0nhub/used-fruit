@@ -7,6 +7,7 @@ export const SELLER_PAGES_KEY = "used-fruit-seller-pages";
 export { BIO_MAX_LENGTH };
 
 export interface PublicSeller {
+  id?: string;
   name: string;
   emoji: string;
   bio: string;

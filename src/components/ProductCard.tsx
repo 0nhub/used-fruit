@@ -4,6 +4,7 @@ import { ProductImage } from "@/components/ProductImage";
 import { findPlace, distanceKm, type Place } from "@/data/locations";
 import { formatPlaceWithDistance } from "@/lib/device";
 import { formatListingHeadline, formatPrice } from "@/lib/format";
+import { isDemoListing } from "@/lib/listingNumber";
 import type { Listing } from "@/lib/types";
 import Link from "next/link";
 
@@ -38,16 +39,16 @@ export function ProductCard({
         }
       >
         <div className="flex min-h-7 items-center pr-8 sm:min-h-8 sm:pr-10">
-          <p className="flex min-w-0 items-center gap-1 text-[11px] text-uf-text-secondary sm:text-[12px]">
+          <p className="flex min-w-0 items-center gap-1 text-[11px] leading-4 text-uf-text-secondary sm:text-[12px]">
             <LocationIcon className="h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5" />
-            <span className="truncate">
+            <span className="truncate leading-4">
               {formatPlaceWithDistance(listing.city, distance)}
             </span>
           </p>
         </div>
 
         <div className={listing.visibility === "reserved" || listing.visibility === "inactive" ? "opacity-55" : undefined}>
-          <ProductImage modelId={listing.modelId} colorId={listing.colorId} />
+          <ProductImage modelId={listing.modelId} colorId={listing.colorId} demo={isDemoListing(listing.id)} />
         </div>
 
         <div className="mt-3 text-center sm:mt-5">

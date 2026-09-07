@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { SESSION_COOKIE, unseal } from "@/lib/auth";
+import { authenticate, accountView } from "@/server/accounts";
+import { failure } from "@/server/http";
 export async function GET(request: NextRequest) {
-  const session = unseal(request.cookies.get(SESSION_COOKIE)?.value);
-  return NextResponse.json({ user: session?.kind === "session" ? { id: session.sub, name: session.name } : null }, { headers: { "Cache-Control": "no-store" } });
+  try {
+    const user = await authenticate(request, false);
+    return NextResponse.json({ user: user ? accountView(user) : null }, { headers: { "Cache-Control": "no-store" } });
+  } catch (error) { return failure(error); }
 }

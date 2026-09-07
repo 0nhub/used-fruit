@@ -302,6 +302,10 @@ export function buildReputation(
 ): PersonReputation {
   const key = personKey(name);
   const stats = computeStats(name, listings, threads, ratings);
+  return reputationFromStats(key, stats);
+}
+
+export function reputationFromStats(key: string, stats: PersonStats): PersonReputation {
   const rankId = rankFromStats(stats);
   const next = nextRankId(rankId);
   const ratingCount = stats.positive + stats.negative;
@@ -324,17 +328,17 @@ export function buildReputation(
 }
 
 export function counterpartName(thread: Thread, myName: string): string {
-  return personKey(myName) === personKey(thread.sellerName) ? thread.buyerName : thread.sellerName;
+  return (thread.sellerId ? myName === thread.sellerId : personKey(myName) === personKey(thread.sellerName)) ? thread.buyerName : thread.sellerName;
 }
 
 export function counterpartRole(thread: Thread, myName: string): "buyer" | "seller" {
-  return personKey(myName) === personKey(thread.sellerName) ? "buyer" : "seller";
+  return (thread.sellerId ? myName === thread.sellerId : personKey(myName) === personKey(thread.sellerName)) ? "buyer" : "seller";
 }
 
 export function acceptTimestamp(thread: Thread): string | undefined {
   if (thread.offer?.status !== "accepted") return undefined;
   const accept = [...thread.messages].reverse().find((message) => message.kind === "accept");
-  return accept?.at ?? thread.updatedAt;
+  return thread.offer.resolvedAt ?? accept?.at ?? thread.updatedAt;
 }
 
 export function ratingUnlockAt(thread: Thread): number | undefined {

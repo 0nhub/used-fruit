@@ -1,3 +1,8 @@
+/** Built-in example listings shipped for local and catalog previews. */
+export function isDemoListing(id: string): boolean {
+  return /^uf-s-\d{1,6}$/.test(id);
+}
+
 /** Stable display number; internal IDs and URLs remain unchanged. */
 export function listingNumber(id: string): string {
   const seed = /^uf-s-(\d{1,6})$/.exec(id);

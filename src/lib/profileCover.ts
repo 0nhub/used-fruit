@@ -1,4 +1,5 @@
 export function safeProfileCover(value: unknown): string | undefined {
+  if (typeof value === "string" && /^\/api\/v1\/media\/[a-f0-9-]{36}$/.test(value)) return value;
   return typeof value === "string" && value.length <= 450000 && /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(value) ? value : undefined;
 }
 

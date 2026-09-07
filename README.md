@@ -1,5 +1,7 @@
 # Used Fruit
 
+> **Backend-Umstellung (05.09.2026):** Der aktuelle Quellstand nutzt eine gemeinsame PostgreSQL-/API-Datenhaltung für Web und iOS. Staging ist aktiv, Produktion bleibt bis zur vollständigen Abnahme auf dem bisherigen Release. Maßgeblich: [Umsetzungsprotokoll](docs/backend-implementation.md) und [API-Vertrag](docs/api/openapi.json). Die folgenden Local-first-Abschnitte beschreiben teilweise den bisherigen Produktionsstand.
+
 Unabhängiger Online-Marktplatz für **gebrauchte Apple-Geräte** in Deutschland.  
 UI und Browse-Erfahrung lehnen sich an den Apple Refurbished Store an, ohne Apple-Partner zu sein und ohne offizielle Apple-Produktfotos zu verwenden.
 

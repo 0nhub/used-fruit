@@ -1,5 +1,7 @@
 # Used Fruit deployment
 
+> **Staging backend (2026-09-05):** See [implementation and acceptance log](docs/backend-implementation.md). Staging runs at `https://staging.usedfruit.de`, port 3003, with its own PostgreSQL database and dependencies. Production remains on `titles-20260905`; do not migrate or switch before acceptance. Many older release paths listed below are historical and have been source-archived; only active, rollback and referenced releases were retained.
+
 Deployed on the existing Hetzner server `bookmer` (`195.201.145.202`).
 
 - Domain: https://usedfruit.de/

@@ -1,5 +1,7 @@
 # Used Fruit für iPhone
 
+> **Gemeinsames Backend:** Der aktuelle Store verwendet die Staging-API, native Apple-Anmeldung und Keychain-Tokens. Vertrag und Freigabesperren: [API](../docs/api/README.md), [Umsetzungsprotokoll](../docs/backend-implementation.md). Der Debug-Testzugang dient ausschließlich lokalen Screenshots und ist kein Backend-Testkonto. Echte Abnahme benötigt zwei Apple-Konten und ein physisches iPhone.
+
 Native SwiftUI-App für **iPhone mit iOS 26 oder neuer**, ohne WebView und ohne Drittanbieter-Abhängigkeiten. Lokaler interaktiver Prototyp, noch keine App-Store-Veröffentlichung.
 
 ## Lokal starten
@@ -82,6 +84,24 @@ Filterbereiche sind standardmäßig geöffnet, mit Trennlinien und einspaltigen 
 
 Die native Detailansicht verwendet die exportierten Hardware- und Anbieterinformationen der Website, einschließlich Emoji, Mitgliedsdatum, Rang, Bewertungszahl, positivem Anteil und Auszeichnungen. Die Daten sind ein gemeinsamer Katalogexport, keine Live-Synchronisierung von Browser-Profilen. Anbieter lassen sich mit ihren Inseraten öffnen. Native MapKit-Karten zeigen den PLZ-/Stadtmittelpunkt mit Vollbild und Apple-Karten-Link; die Vorschau nimmt keine Scroll-Gesten entgegen.
 
-„Nachricht“ öffnet das Gespräch; „Kaufen“ fügt dort die lokale Nachricht „Kaufen“ hinzu. Es wird keine Zahlung oder Bestellung ausgelöst. Die Nachrichtenliste zeigt Name, Vorschau und Zeitpunkt ohne Gerätetitel; neue Nachrichten speichern `sentAt`. Alte Nachrichten ohne gespeicherten Zeitpunkt erhalten keine erfundene Uhrzeit. Datumsangaben verwenden Tag.Monat.Jahr, heutige Nachrichtenvorschauen HH:mm.
+„Nachricht“ öffnet das Gespräch. „Kaufen“ öffnet die Bestätigung eines Angebots zum angezeigten Inseratspreis und speichert es über die gemeinsame Angebote-API. Eine Zahlung wird dabei nicht ausgelöst. Die Nachrichtenliste zeigt Name, Vorschau und Zeitpunkt ohne Gerätetitel; neue Nachrichten speichern `sentAt`. Alte Nachrichten ohne gespeicherten Zeitpunkt erhalten keine erfundene Uhrzeit. Datumsangaben verwenden Tag.Monat.Jahr, heutige Nachrichtenvorschauen HH:mm.
 
 Geprüft: Inserat öffnen, Teilen-/Herz-Aktionen vorhanden, Karte und Vollbild, Anbieterbereich und Kaufabsicht im Chat. Zusätzlich bestehen der bisherige Filter-/Wizard-/Konto-UI-Test und alle 249 Katalogvergleichsfälle.
+
+## UI-Abgleich am 05.09.2026, 17:41
+
+Filteroptionen stehen zweispaltig. Im Konto sind Standort, Kurzbeschreibung, rechtliche Links und der Testkonto-Untertitel entfernt; Antippen des Namens öffnet einen Namensdialog. Die Nachrichtenübersicht verwendet Gerätebilder und Datum/Uhrzeit.
+
+Inserat-Aktionen stehen in der oberen Navigationszeile; zusätzliche Abschnittstitel und Standort-Icons entfallen. Kauf-/Nachricht-Aktionen schweben mit Glass-Stil ohne vollflächigen Hintergrund. Kartenaktionen nutzen gleiche Breiten ohne Vollbild-Pfeil.
+
+Im Wizard ist die Kapazität als Drehrad von 100 bis 70 Prozent (70 oder weniger) auswählbar. Der Preis öffnet automatisch den Zahlenblock. Bei kurzem Inhalt steht Weiter unten rechts, bei langem Inhalt unter der Auswahl. Die Straße wird nur bei aktivierter genauer Adressanzeige in die Inseratdaten übernommen. Für diese Einstellung hat der Nutzer die Adress-Geokodierung über Apple ausdrücklich freigegeben; bei Fehlern bleibt die Karte als ungefähre Ortsanzeige beschriftet.
+
+Die Simulator-UI-Tests vor Abschluss der parallelen API-Umstellung bestehen. Diese Prüfung ist keine Verifikation der gleichzeitig bearbeiteten Live-API.
+
+## Kaufangebote
+
+„Kaufen“ zeigt Produkt, Betrag und Verkäufer vor dem Absenden. „Verbindlich anbieten“ legt über POST /conversations/{id}/offers ein serverseitiges Angebot an. Derselbe Idempotenzschlüssel bleibt bei einem fehlgeschlagenen Versuch für die Wiederholung erhalten; laufende Anfragen sperren die Schaltflächen.
+
+Das Gespräch zeigt den festen Betrag und den Serverstatus. Der Empfänger kann ablehnen oder nach einer weiteren Bestätigung annehmen (PATCH /offers/{id}). Das vorhandene Backend markiert die Anzeige bei Annahme transaktional als verkauft und lehnt andere offene Angebote ab. Eine Annahme des eigenen Angebots ist serverseitig ausgeschlossen.
+
+Zahlungsabwicklung, Treuhand, Auszahlungen und Versandabschluss sind nicht implementiert. „Kauf vereinbart“ bedeutet ausdrücklich keinen bestätigten Zahlungseingang. Der native Client nutzt weiterhin Staging; kein Produktionsrelease durch diese UI-Änderung.

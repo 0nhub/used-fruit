@@ -17,7 +17,7 @@ export function FavoriteListingActions({ listing }: { listing: Listing }) {
   const [error, setError] = useState("");
   const existing = findThreadForListing(threads, listing);
 
-  const start = (kind: "buy" | "contact") => {
+  const start = async (kind: "buy" | "contact") => {
     setError("");
     if (!signedIn) {
       router.push(`/anmelden?next=/favoriten`);
@@ -27,14 +27,15 @@ export function FavoriteListingActions({ listing }: { listing: Listing }) {
       setError("Bitte zuerst deinen Namen im Profil setzen.");
       return;
     }
-    const thread = openThread({
+    try {
+    const thread = await openThread({
       listing,
       sellerEmoji: listingSellerEmoji(listing),
       buyerName: profile.name.trim(),
       buyerEmoji: profile.emoji,
     });
     if (kind === "buy") {
-      send(
+      await send(
         thread.id,
         {
           author: "buyer",
@@ -46,6 +47,7 @@ export function FavoriteListingActions({ listing }: { listing: Listing }) {
       );
     }
     router.push(`/nachrichten?id=${encodeURIComponent(thread.id)}`);
+    } catch (error) { setError(error instanceof Error ? error.message : "Nachricht konnte nicht geöffnet werden."); }
   };
 
   if (!ready) return <div className="h-8" aria-hidden />;

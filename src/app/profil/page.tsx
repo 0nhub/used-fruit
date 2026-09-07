@@ -1,4 +1,5 @@
 "use client";
+import { currentIdentity } from "@/lib/authClient";
 
 import { prepareProfileCover } from "@/lib/profileCover";
 import { BlockedProfiles } from "@/components/BlockedProfiles";
@@ -13,25 +14,22 @@ import { RADIUS_OPTIONS } from "@/data/catalog";
 import { formatPlaceLabel } from "@/data/locations";
 import { canNotifyMessages, requestMessagePermission } from "@/lib/notify";
 import { BIO_MAX_LENGTH, extractAvatarEmoji } from "@/lib/profile";
-import { renameRatedPerson } from "@/lib/reputation";
 import { sellerHref } from "@/lib/sellerPage";
 import { useListings } from "@/lib/useListings";
 import { useProfile } from "@/lib/useProfile";
 import { useReputation } from "@/lib/useReputation";
 import { useUserLocation } from "@/lib/useUserLocation";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const fieldClass =
   "mt-1.5 h-10 w-full rounded-xl border border-uf-border bg-white px-3 text-[14px] outline-none";
 
 export default function ProfilPage() {
-  const router = useRouter();
   const { profile, signedIn, ready, saveProfile, deleteAccount } = useProfile();
   const { location, setLocation } = useUserLocation();
   const { renameSeller } = useListings();
-  const { snapshot: reputation, pending, rate } = useReputation(profile.name);
+  const { snapshot: reputation, pending, rate } = useReputation(currentIdentity()?.id);
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
   const [emoji, setEmoji] = useState(profile.emoji);
@@ -59,7 +57,7 @@ export default function ProfilPage() {
     (name.trim() !== profile.name.trim() ||
       bio.trim() !== profile.bio.trim() ||
       emoji !== profile.emoji || coverImage !== profile.coverImage);
-  const publicPage = sellerHref(profile.name);
+  const publicPage = sellerHref(currentIdentity()?.id ?? "");
 
   if (!ready) {
     return (
@@ -102,7 +100,7 @@ export default function ProfilPage() {
         {publicPage && <Link href={publicPage} className="mt-4 inline-flex text-[14px] text-uf-link hover:underline">Öffentliche Seite ansehen ↗</Link>}
         <form
           className="mt-8 space-y-8"
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
             if (coverBusy) return;
             const nextEmoji = extractAvatarEmoji(emoji);
@@ -115,13 +113,13 @@ export default function ProfilPage() {
               coverImage,
             };
             setEmoji(nextEmoji);
-            try { saveProfile(next); }
-            catch { setCoverError("Nicht genügend Browserspeicher. Bitte entferne das Titelbild oder wähle ein kleineres Bild."); return; }
+            try { await saveProfile(next); }
+            catch (error) { setCoverError(error instanceof Error ? error.message : "Speichern fehlgeschlagen."); return; }
             if (next.name) {
               if (profile.name.trim() && profile.name.trim() !== next.name) {
-                renameRatedPerson(profile.name, next.name);
+                // Central ratings remain attached to the immutable user ID.
               }
-              renameSeller(next.name, nextEmoji);
+              renameSeller();
             }
             setSaved(true);
             window.setTimeout(() => setSaved(false), 1800);
@@ -320,28 +318,17 @@ export default function ProfilPage() {
             role="switch"
             aria-checked={profile.notifyOnMessage}
             onClick={async () => {
-              const nextOn = !profile.notifyOnMessage;
-              if (nextOn) {
-                const allowed = await requestMessagePermission();
-                saveProfile({ ...profile, notifyOnMessage: allowed });
-                setNotifyHint(
-                  allowed
-                    ? "Du wirst sofort benachrichtigt."
-                    : "Der Browser hat Hinweise blockiert. Bitte in den Systemeinstellungen erlauben.",
-                );
-              } else {
-                saveProfile({ ...profile, notifyOnMessage: false });
-                setNotifyHint("");
-              }
+              try { await saveProfile({ ...profile, notifyOnMessage: !profile.notifyOnMessage }); setNotifyHint("Einstellung gespeichert."); }
+              catch (error) { setNotifyHint(error instanceof Error ? error.message : "Speichern fehlgeschlagen."); }
             }}
             className="mt-5 flex w-full items-center justify-between gap-4 rounded-2xl border border-uf-border-soft px-4 py-3 text-left"
           >
             <span>
               <span className="block text-[14px] text-uf-text">
-                Benachrichtige mich, sobald ich eine Nachricht habe
+                E-Mail bei neuen Nachrichten erhalten
               </span>
               <span className="mt-0.5 block text-[12px] text-uf-text-tertiary">
-                Sofort, auch wenn Used Fruit gerade im Hintergrund ist
+                Wenn eine Nachricht nach zwei Minuten noch ungelesen ist
               </span>
             </span>
             <span

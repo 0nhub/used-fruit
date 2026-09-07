@@ -1,12 +1,12 @@
 import { createHmac, randomBytes, timingSafeEqual } from "crypto";
 
-export const AUTH_ORIGIN = "https://usedfruit.de";
+export const AUTH_ORIGIN = process.env.USED_FRUIT_ORIGIN || "https://usedfruit.de";
 export const APPLE_ORIGIN = "https://appleid.apple.com";
 export const CALLBACK = `${AUTH_ORIGIN}/api/auth/callback`;
 export const SESSION_COOKIE = "__Host-used-fruit-apple-auth";
 export const FLOW_COOKIE = "__Host-used-fruit-apple-oauth";
 export const COOKIE_OPTIONS = { httpOnly: true, secure: true, sameSite: "lax" as const, path: "/" };
-export type AuthSession = { kind: "session"; sub: string; name: string; exp: number };
+export type AuthSession = { kind: "session"; sub: string; name: string; sid?: string; exp: number };
 export type AuthFlow = { kind: "flow"; state: string; nonce: string; next: string; exp: number };
 
 function signingKey() {

@@ -1,10 +1,8 @@
 "use client";
 
 import { LegalNav } from "@/components/LegalNav";
-import { LocationAutocomplete } from "@/components/LocationAutocomplete";
 import type { UserLocation } from "@/components/LocationPicker";
-import { CATEGORIES, CONDITIONS, RADIUS_OPTIONS, getModelsByCategory } from "@/data/catalog";
-import { formatPlaceLabel } from "@/data/locations";
+import { CATEGORIES, CONDITIONS, getModelsByCategory } from "@/data/catalog";
 import { ChevronIcon } from "@/components/icons";
 import {
   BATTERY_CAPACITY_FILTERS,
@@ -12,18 +10,11 @@ import {
   getBatteryMetricForCategory,
 } from "@/lib/device";
 import { KEYBOARD_LAYOUTS, hasBuiltInKeyboard } from "@/lib/keyboard";
-import { SORT_OPTIONS } from "@/lib/format";
 import type { CategoryId, ConditionId, KeyboardLayoutId, SortId } from "@/lib/types";
-import { useEffect, useId, useMemo, useState, type ChangeEvent } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 
 const fieldClass =
   "h-9 w-full rounded-lg border border-uf-border bg-uf-bg-subtle px-3 text-[13px] outline-none";
-const selectClass =
-  "uf-select h-9 w-auto min-w-[9.5rem] max-w-full rounded-lg border border-uf-border bg-uf-bg-subtle pl-3 text-[13px] outline-none";
-
-function blurSelect(e: ChangeEvent<HTMLSelectElement>) {
-  e.currentTarget.blur();
-}
 
 interface FilterSidebarProps {
   categoryId?: CategoryId;
@@ -64,7 +55,6 @@ interface FilterSidebarProps {
   originalBox?: "yes" | "no";
   onOriginalBoxChange: (value?: "yes" | "no") => void;
   hideLegal?: boolean;
-  hideLocation?: boolean;
 }
 
 function Section({
@@ -204,84 +194,10 @@ export function FilterSidebar(props: FilterSidebarProps) {
       className={
         embedded
           ? "w-full"
-          : "flex w-full shrink-0 flex-col lg:w-[220px]"
+          : "flex w-full shrink-0 flex-col lg:w-full"
       }
     >
       <div>
-      <div className={`${props.hideLocation ? "" : "hidden lg:block"} border-b border-uf-border-soft pb-4`}>
-        <label className="sr-only" htmlFor="uf-sort">
-          Sortierung
-        </label>
-        <select
-          id="uf-sort"
-          value={props.sortId}
-          onChange={(e) => {
-            props.onSortChange(e.target.value as SortId);
-            blurSelect(e);
-          }}
-          className={selectClass}
-        >
-          {SORT_OPTIONS.filter(option => !props.hideLocation || !option.needsLocation).map((option) => (
-            <option
-              key={option.id}
-              value={option.id}
-              disabled={option.needsLocation && !props.canSortByDistance}
-            >
-              {option.needsLocation && !props.canSortByDistance
-                ? `${option.label} (Standort setzen)`
-                : option.label}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {!props.hideLocation && <Section title="Standort">
-        <label className="block text-[12px] text-uf-text-tertiary">PLZ / Ort</label>
-        <LocationAutocomplete
-          className="mt-1.5"
-          value={props.location.query}
-          onChange={(q) =>
-            props.onLocationChange({
-              ...props.location,
-              query: q,
-              city: undefined,
-              postalCode: undefined,
-              place: undefined,
-            })
-          }
-          onSelect={(place) =>
-            props.onLocationChange({
-              query: formatPlaceLabel(place),
-              city: place.city,
-              postalCode: place.postalCode,
-              radiusKm: props.location.radiusKm,
-              place,
-            })
-          }
-          inputClassName={fieldClass}
-          placeholder="z. B. München"
-        />
-        <label className="mt-3 block text-[12px] text-uf-text-tertiary">Umkreis (optional)</label>
-        <select
-          value={props.location.radiusKm ?? ""}
-          onChange={(e) => {
-            props.onLocationChange({
-              ...props.location,
-              radiusKm: e.target.value ? Number(e.target.value) : undefined,
-            });
-            blurSelect(e);
-          }}
-          className="uf-select mt-1.5 h-9 w-[5.25rem] rounded-lg border border-uf-border bg-uf-bg-subtle pl-2.5 text-[13px] outline-none"
-        >
-          <option value="">Keine</option>
-          {RADIUS_OPTIONS.map((r) => (
-            <option key={r} value={r}>
-              {r} km
-            </option>
-          ))}
-        </select>
-      </Section>}
-
       <Section title="Preis">
         <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-1.5">
           <label className="sr-only" htmlFor="uf-price-min">

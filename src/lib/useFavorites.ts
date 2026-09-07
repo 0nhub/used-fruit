@@ -1,36 +1,44 @@
 "use client";
 
-import { refreshIdentity } from "@/lib/authClient";
-import { FAVORITES_STORAGE_KEY, PROFILE_EVENT } from "@/lib/profile";
-import { useCallback, useEffect, useState } from "react";
+import { currentIdentity, refreshIdentity } from "@/lib/authClient";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { api, API_EVENT, invalidateApi, showApiError } from "./apiClient";
 
-function readFavorites(): string[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem(FAVORITES_STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw) as unknown;
-    return Array.isArray(parsed) ? parsed.filter((id): id is string => typeof id === "string") : [];
-  } catch {
-    return [];
-  }
-}
+import { PROFILE_EVENT } from "./profile";
 
 export function useFavorites() {
+  const generation = useRef(0);
+  const account = useRef<string | null>(null);
   const [ids, setIds] = useState<string[]>([]);
   const [ready, setReady] = useState(false);
 
-  const refresh = useCallback(() => {
-    setIds(readFavorites());
-    setReady(true);
+  const refresh = useCallback(async () => {
+    const request = ++generation.current;
+    try {
+      const user = await refreshIdentity();
+      if (request !== generation.current) return;
+      if (account.current !== (user?.id ?? null)) { setIds([]); account.current=user?.id ?? null; }
+      const next = user ? (await api<{items:string[]}>("/favorites")).items : [];
+      if (request === generation.current && currentIdentity()?.id === user?.id) setIds(next);
+    } catch { if(request === generation.current) setIds([]); }
+    finally { if(request === generation.current) setReady(true); }
   }, []);
 
   useEffect(() => {
+    const changed = () => {
+      const id=currentIdentity()?.id ?? null;
+      if(account.current===id)return;
+      account.current=id;generation.current++;setIds([]);setReady(false);
+      queueMicrotask(()=>void refresh());
+    };
+    window.addEventListener(PROFILE_EVENT, changed);
     refresh();
-    window.addEventListener(PROFILE_EVENT, refresh);
+    window.addEventListener(API_EVENT, refresh);
     window.addEventListener("storage", refresh);
     return () => {
-      window.removeEventListener(PROFILE_EVENT, refresh);
+      generation.current++;
+      window.removeEventListener(PROFILE_EVENT, changed);
+      window.removeEventListener(API_EVENT, refresh);
       window.removeEventListener("storage", refresh);
     };
   }, [refresh]);
@@ -44,12 +52,12 @@ export function useFavorites() {
       window.location.assign("/anmelden?next=/favoriten");
       return;
     }
-    const prev = readFavorites();
-    const next = prev.includes(id) ? prev.filter((item) => item !== id) : [id, ...prev];
-    localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(next));
-    setIds(next);
-    window.dispatchEvent(new Event(PROFILE_EVENT));
-  }, []);
+    try {
+      await api("/favorites/" + id, { method: ids.includes(id) ? "DELETE" : "PUT" });
+      await refresh();
+      invalidateApi();
+    } catch (error) { showApiError(error); }
+  }, [ids, refresh]);
 
   return { ids, ready, isFavorite, toggleFavorite };
 }

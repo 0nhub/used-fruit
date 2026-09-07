@@ -2,7 +2,7 @@
 
 import { catalogReturn } from "@/lib/catalogReturn";
 import { BlockSellerButton } from "@/components/BlockedProfiles";
-import { listingNumber } from "@/lib/listingNumber";
+import { isDemoListing, listingNumber } from "@/lib/listingNumber";
 import { LegalNav } from "@/components/LegalNav";
 import { ListingReport } from "@/components/ListingReport";
 import { needsSimLock, formatSimLock } from "@/lib/simLock";
@@ -62,8 +62,8 @@ function SellerBox({
   mobileFooter?: boolean;
 }) {
   const router = useRouter();
-  const { snapshot: sellerReputation } = useReputation(listing.sellerName);
-  const shopHref = sellerHref(listing.sellerName);
+  const { snapshot: sellerReputation } = useReputation(listing.sellerId);
+  const shopHref = sellerHref(listing.sellerId ?? "");
   const startConversation = () => {
     router.push(`/nachrichten/start?listing=${encodeURIComponent(listing.id)}`);
   };
@@ -204,6 +204,7 @@ export default function ListingDetailPage() {
               modelId={listing.modelId}
               colorId={listing.colorId}
               alt={formatListingName(listing)}
+              demo={isDemoListing(listing.id)}
             />
           </div>
           {place && (
@@ -237,6 +238,9 @@ export default function ListingDetailPage() {
                   {formatListingMeta(listing)}
                 </p>
               )}
+              {isDemoListing(listing.id) ? (
+                <p className="mt-2 text-[15px] font-medium text-uf-text-secondary">Demo-Inserat, kein echtes Angebot</p>
+              ) : null}
             </div>
             <div className="flex shrink-0 items-center">
               <ShareButton listing={listing} />
@@ -307,9 +311,9 @@ export default function ListingDetailPage() {
           )}
           <div className="mt-8 border-t border-uf-border-soft pt-6">
             <SpecGrid>
-              <SpecRow label="Anzeigen-ID" value={<span className="break-all">{listingNumber(listing.id)}</span>} />
-              <SpecRow label="Anzeige melden" value={<ListingReport listingId={listing.id} />} />
-              {!isOwn && <SpecRow label="Restriktion" value={<BlockSellerButton name={listing.sellerName} />} />}
+              <SpecRow label="Anzeigen-ID" value={<span className="break-all">{listing.number ?? listingNumber(listing.id)}</span>} />
+              <SpecRow label="Anzeige melden" value={<ListingReport listingId={listing.id} displayNumber={listing.number} />} />
+              {!isOwn && <SpecRow label="Restriktion" value={<BlockSellerButton name={listing.sellerName} userId={listing.sellerId!} />} />}
             </SpecGrid>
           </div>
         </div>

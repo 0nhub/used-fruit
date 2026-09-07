@@ -6,6 +6,7 @@ extension Color {
 }
 struct DeviceArtwork: View {
     let offer: Offer
+    var height: CGFloat = 150
     var body: some View {
         Canvas {context,size in
             let scale=min(size.width/360,size.height/240)
@@ -21,7 +22,7 @@ struct DeviceArtwork: View {
             else if offer.category=="iPad" {rect(88,22,184,184,16,shell);screen(98,32,164,164,8)}
             else {rect(138,18,84,196,16,shell);screen(144,26,72,180,12);rect(162,32,36,7,3.5,.black.opacity(0.8))}
             c.fill(Path(ellipseIn:CGRect(x:offer.category=="Mac" ? 110:150,y:220,width:offer.category=="Mac" ? 140:60,height:5)),with:.color(.black.opacity(0.07)))
-        }.frame(height:150).accessibilityHidden(true)
+        }.frame(height:height).accessibilityHidden(true)
     }
 }
 struct OfferCard: View {
@@ -37,11 +38,11 @@ struct OfferCard: View {
     var body: some View {
         VStack(spacing:10) {
             HStack(spacing:4) {
-                Label(location,systemImage:"mappin").font(.caption2).foregroundStyle(.secondary).lineLimit(2)
+                Text(location).font(.caption2).foregroundStyle(.secondary).lineLimit(2)
                 Spacer(minLength:0)
                 Button{store.toggleFavorite(offer)}label:{Image(systemName:store.data.favorites.contains(offer.id) ? "heart.fill":"heart").foregroundStyle(store.data.favorites.contains(offer.id) ? .red:.secondary).frame(width:34,height:34).background(.background,in:Circle()).shadow(color:.black.opacity(0.07),radius:4,y:2)}.buttonStyle(.plain).accessibilityLabel(store.data.favorites.contains(offer.id) ? "Favorit entfernen":"Als Favorit merken")
             }
-            NavigationLink(value:offer) {
+            NavigationLink { OfferDetail(offer:offer) } label: {
                 VStack(spacing:10){DeviceArtwork(offer:offer)
                     Text(offer.displayTitle).font(.system(size:14)).multilineTextAlignment(.center).foregroundStyle(.primary).lineLimit(3).frame(height:titleHeight,alignment:.center)
                     Text(offer.price,format:.currency(code:"EUR")).font(.system(size:19,weight:.semibold)).foregroundStyle(.primary)
@@ -66,7 +67,7 @@ struct DiscoverView: View {
             }
             .safeAreaInset(edge:.top,spacing:0){
                 ScrollView(.horizontal){HStack(spacing:8){
-                    Button{showFilters=true}label:{Image(systemName:"slider.horizontal.3").frame(width:42,height:42).background(Color(.secondarySystemBackground),in:Circle()).overlay(alignment:.topTrailing){if filters.activeCount>0{Text("\(filters.activeCount)").font(.caption2).padding(4).background(.blue,in:Circle()).foregroundStyle(.white)}}}.buttonStyle(.plain).accessibilityLabel("Filter")
+                    Button{showFilters=true}label:{Image(systemName:"slider.horizontal.3").frame(width:42,height:42).background(Color(.secondarySystemBackground),in:Circle())}.buttonStyle(.plain).accessibilityLabel("Filter")
                     Menu {Button("Neueste zuerst"){filters.sort="newest"};Button("Preis aufsteigend"){filters.sort="price-asc"};Button("Entfernung"){filters.sort="nearest"}.disabled(filters.place==nil)} label:{HStack(spacing:6){Text(sortTitle);Image(systemName:"chevron.up.chevron.down").font(.caption)}.font(.subheadline).padding(.horizontal,13).frame(height:42).background(Color(.secondarySystemBackground),in:Capsule())}.foregroundStyle(.primary)
                     ForEach([CatalogChoice(id:"",label:"Alle")]+WebCatalog.shared.categories){item in Button{filters.changeCategory(item.id)}label:{Text(item.label).font(.subheadline).padding(.horizontal,18).frame(height:42).background(Color(.secondarySystemBackground),in:Capsule()).overlay(Capsule().stroke(filters.category==item.id ? Color(.separator):.clear,lineWidth:1))}.buttonStyle(.plain).foregroundStyle(filters.category==item.id ? .primary:.secondary)}
                 }.padding(.horizontal,12).padding(.vertical,10)}.scrollIndicators(.hidden).background(.background).overlay(alignment:.bottom){Divider()}
@@ -88,30 +89,34 @@ struct FavoritesView: View {
 }
 struct OfferDetail: View {
     @Environment(AppStore.self) private var store
-    let offer: Offer
+    private let initialOffer:Offer
+    init(offer:Offer){initialOffer=offer}
+    private var offer:Offer {store.data.ownOffers.first{$0.id==initialOffer.id} ?? store.publicOffers.first{$0.id==initialOffer.id} ?? initialOffer}
     @State private var showChat = false
+    @State private var confirmPurchase = false
+    @State private var purchaseBusy = false
+    @State private var purchaseKey = UUID().uuidString
+    @State private var chatId = ""
     @State private var showMap = false
     @State private var showRank = false
+    @State private var reportSheet = false
+    @State private var reportReason = "Spam oder Betrugsverdacht"
+    @State private var confirmDelete = false
+    @State private var editingListing = false
+    @State private var note = ""
+    @State private var precisePlace: CatalogPlace?
     private var specs: [String:String] { offer.specs ?? [:] }
-    private var seller: CatalogSeller? { WebCatalog.shared.sellers?[offer.seller] }
-    private var place: CatalogPlace? { WebCatalog.shared.place(postal:specs["postalCode"],city:offer.city) }
+    private var seller: CatalogSeller? { store.profiles[offer.sellerId] }
+    private var place: CatalogPlace? { precisePlace ?? WebCatalog.shared.place(postal:specs["postalCode"],city:offer.city) }
     private var hardware: [HardwareRow] { WebCatalog.shared.hardware?["\(specs["model"] ?? "")|\(specs["size"] ?? "")"] ?? WebCatalog.shared.hardware?["\(specs["model"] ?? "")|"] ?? [] }
     private func contact(buy: Bool) {
-        guard !store.isBlocked(offer.seller) else { return }
-        store.startChat(offer)
-        if buy { store.send("Kaufen",to:offer.id) }
-        showChat=true
+        guard !store.isBlocked(offer.sellerId) else { return }
+        if buy {confirmPurchase=true;return}
+        Task { if let id = await store.startChat(offer) { chatId=id;showChat=true } }
     }
     var body: some View {
         ScrollView {
             VStack(alignment:.leading,spacing:28) {
-                HStack {
-                    Spacer()
-                    ShareLink(item:URL(string:"https://usedfruit.de/listing/\(offer.id)")!) { Image(systemName:"square.and.arrow.up").frame(width:44,height:44).background(.background,in:Circle()).shadow(color:.black.opacity(0.08),radius:4,y:2) }.foregroundStyle(.primary).accessibilityLabel("Inserat teilen")
-                    Button { store.toggleFavorite(offer) } label: {
-                        Image(systemName:store.data.favorites.contains(offer.id) ? "heart.fill":"heart").foregroundStyle(store.data.favorites.contains(offer.id) ? .red:.primary).frame(width:44,height:44).background(.background,in:Circle()).shadow(color:.black.opacity(0.08),radius:4,y:2)
-                    }.buttonStyle(.plain).accessibilityLabel("Favorit umschalten")
-                }
                 DeviceArtwork(offer:offer)
                 VStack(alignment:.leading,spacing:24) {
                     Text(offer.displayTitle).font(.title.bold()).fixedSize(horizontal:false,vertical:true)
@@ -119,36 +124,34 @@ struct OfferDetail: View {
                 }
                 if !offer.detail.isEmpty { Text(offer.detail).lineSpacing(6) }
                 VStack(alignment:.leading,spacing:16) {
-                    Text("Angaben zum Inserat").font(.title3.bold())
                     ForEach(["year","chip","size","memory","storage","color","connectivity","simLock","keyboard","condition","packaging","warrantyUntil","capacity","cycles","shipping"],id:\.self) { key in
                         if let value=specs[key] {
                             DetailRow(label:["year":"Modelljahr","chip":"Chip","size":"Größe","memory":"Arbeitsspeicher","storage":"Speicher","color":"Farbe","connectivity":"Verbindung","simLock":"SIM-Lock","keyboard":"Tastaturlayout","condition":"Zustand","packaging":"Originalverpackung","warrantyUntil":"Garantie bis","capacity":"Batteriekapazität (%)","cycles":"Ladezyklen","shipping":"Versand"][key] ?? key,
-                                      value:key=="warrantyUntil" ? GermanDate.date(value) : WebCatalog.shared.choices(key,values:specs).first{$0.id==value}?.label ?? value)
+                                      value:key=="capacity" && specs["capacityAtMost"]=="yes" ? "70% oder weniger" : key=="warrantyUntil" ? GermanDate.date(value) : WebCatalog.shared.choices(key,values:specs).first{$0.id==value}?.label ?? value)
                         }
                     }
                 }
                 if !hardware.isEmpty {
                     VStack(alignment:.leading,spacing:16) {
-                        Text("Technische Daten").font(.title3.bold())
                         ForEach(hardware,id:\.self) { DetailRow(label:$0.label,value:$0.value) }
                     }
                 }
                 VStack(alignment:.leading,spacing:14) {
-                    Label([specs["postalCode"],offer.city].compactMap{$0}.joined(separator:" "),systemImage:"mappin.and.ellipse").font(.headline)
+                    Text([specs["showExactAddress"] == "yes" ? specs["street"] : nil,specs["postalCode"],offer.city].compactMap{$0}.joined(separator:" ")).font(.headline)
                     if let place {
-                        ListingMap(place:place).allowsHitTesting(false).frame(height:220).clipShape(.rect(cornerRadius:18)).accessibilityIdentifier("listing-map")
+                        ListingMap(place:place).id(place).allowsHitTesting(false).frame(height:220).clipShape(.rect(cornerRadius:18)).accessibilityIdentifier("listing-map")
                         HStack {
-                            Button("Vollbild",systemImage:"arrow.up.left.and.arrow.down.right") { showMap=true }
-                            Spacer()
-                            Link("Apple Karten",destination:URL(string:"https://maps.apple.com/?ll=\(place.lat),\(place.lng)")!)
+                            Button { showMap=true } label: { Text("Vollbild").frame(maxWidth:.infinity).padding(.vertical,8) }
+                            Link(destination:place.appleMapsURL) { Text("Apple Karten").frame(maxWidth:.infinity).padding(.vertical,8) }
                         }.buttonStyle(.bordered).tint(.primary)
-                        Text("Der Punkt zeigt nur Stadt und PLZ. Für den Treffpunkt nimm direkt Kontakt auf.").font(.footnote).foregroundStyle(.secondary)
+                        Text(precisePlace != nil ? "Die genaue Adresse wird mit Zustimmung des Anbieters angezeigt." : "Der Punkt zeigt nur Stadt und PLZ. Für den Treffpunkt nimm direkt Kontakt auf.").font(.footnote).foregroundStyle(.secondary)
                     } else { Text("Für diesen Ort sind noch keine Kartenkoordinaten hinterlegt.").font(.footnote).foregroundStyle(.secondary) }
                 }.padding().background(Color(.secondarySystemBackground),in:.rect(cornerRadius:22))
                 VStack(alignment:.leading,spacing:20) {
                     HStack(alignment:.top) {
-                        NavigationLink { NativeSellerView(name:offer.seller) } label: {
-                            HStack { Text(offer.seller==store.data.name ? store.data.emoji : seller?.emoji ?? "🍏").font(.largeTitle);Text(offer.seller).font(.headline);Image(systemName:"arrow.up.right.square").font(.subheadline) }
+                        VStack(alignment:.leading) {Text("Anzeigen-ID: \(offer.number ?? offer.id)").font(.caption).foregroundStyle(.secondary);TextField("Private Notiz",text:$note).onSubmit{store.setNote(note,for:offer.id)};Button("Notiz speichern"){store.setNote(note,for:offer.id)}.font(.caption)}
+                        NavigationLink { NativeSellerView(name:offer.seller,userId:offer.sellerId) } label: {
+                            HStack { Text(offer.sellerId==store.identity ? store.data.emoji : seller?.emoji ?? "🍏").font(.largeTitle);Text(offer.seller).font(.headline);Image(systemName:"arrow.up.right.square").font(.subheadline) }
                         }.buttonStyle(.plain)
                         Spacer(minLength:6)
                         if let date=seller?.joinedAt { Text("Mitglied seit\n\(GermanDate.date(date))").font(.caption).foregroundStyle(.secondary).multilineTextAlignment(.trailing) }
@@ -162,30 +165,67 @@ struct OfferDetail: View {
                             }.multilineTextAlignment(.center).foregroundStyle(.primary)
                         }.buttonStyle(.plain).accessibilityLabel("Auszeichnungen anzeigen")
                     }
-                    if let bio=(offer.seller==store.data.name ? store.data.bio : seller?.bio),!bio.isEmpty { Text(bio).font(.subheadline) }
+                    if let bio=(offer.sellerId==store.identity ? store.data.bio : seller?.bio),!bio.isEmpty { Text(bio).font(.subheadline) }
                 }.padding().background(Color(.secondarySystemBackground),in:.rect(cornerRadius:22))
                 VStack(spacing:16) {
-                    DetailRow(label:"Anzeigen-ID",value:offer.id)
+                    DetailRow(label:"Anzeigen-ID",value:offer.number ?? offer.id)
                     if let created=specs["createdAt"] { DetailRow(label:"Veröffentlicht",value:GermanDate.date(created)) }
                 }
-                Text("Lokaler Prototyp: Kaufabsichten und Nachrichten werden nur auf diesem Gerät gespeichert.").font(.footnote).foregroundStyle(.secondary)
             }.padding(20)
         }
+        .toolbar(.hidden,for:.tabBar)
         .toolbar(.visible,for:.navigationBar)
-        .navigationTitle("Inserat").navigationBarTitleDisplayMode(.inline)
+        .navigationTitle("").navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(.hidden,for:.navigationBar,.tabBar)
+        .toolbar { ToolbarItemGroup(placement:.topBarTrailing) {
+            Button("Melden",systemImage:"flag") {reportSheet=true}
+            ShareLink(item:URL(string:"https://usedfruit.de/listing/\(offer.id)")!) { Image(systemName:"square.and.arrow.up") }.accessibilityLabel("Inserat teilen")
+            Button { store.toggleFavorite(offer) } label: { Image(systemName:store.data.favorites.contains(offer.id) ? "heart.fill":"heart").foregroundStyle(store.data.favorites.contains(offer.id) ? .red:.primary) }.accessibilityLabel("Favorit umschalten")
+        } }
         .safeAreaInset(edge:.bottom) {
+            if offer.sellerId == store.identity {
+                HStack { Button("Bearbeiten"){editingListing=true};Button("Reservieren"){store.updateListing(offer,status:"reserved")};Button("Aktivieren"){store.updateListing(offer,status:"public")};Button("Löschen",role:.destructive){confirmDelete=true} }.buttonStyle(.bordered).padding()
+            } else {
             HStack(spacing:12) {
-                Button { contact(buy:false) } label: { Text("Nachricht").frame(maxWidth:.infinity).padding(.vertical,8) }.buttonStyle(.bordered).tint(.primary)
-                Button { contact(buy:true) } label: { Text("Kaufen").frame(maxWidth:.infinity).padding(.vertical,8) }.buttonStyle(.borderedProminent).tint(.blue)
-            }.buttonBorderShape(.capsule).disabled(store.isBlocked(offer.seller)).padding().background(.bar)
+                Button { contact(buy:false) } label: { Text("Nachricht").frame(maxWidth:.infinity).padding(.vertical,8) }.buttonStyle(.glass).tint(.primary)
+                Button { contact(buy:true) } label: { Text("Kaufen").frame(maxWidth:.infinity).padding(.vertical,8) }.buttonStyle(.glassProminent).tint(.blue)
+            }.buttonBorderShape(.capsule).disabled(purchaseBusy || store.isBlocked(offer.sellerId) || offer.sellerId==store.identity).padding()
+            }
         }
-        .navigationDestination(isPresented:$showChat) { ConversationView(id:offer.id) }
-        .sheet(isPresented:$showMap) {
-            if let place { ListingMap(place:place).ignoresSafeArea().overlay(alignment:.topLeading) { Button("Schließen",systemImage:"xmark") { showMap=false }.labelStyle(.iconOnly).buttonStyle(.bordered).buttonBorderShape(.circle).padding(20) } }
+        .alert("Kauf bestätigen",isPresented:$confirmPurchase) {
+            Button("Abbrechen",role:.cancel) {}
+            Button("Kaufen") {
+                purchaseBusy=true
+                Task {
+                    if let id=await store.submitPurchase(offer,key:purchaseKey) { chatId=id;showChat=true;purchaseKey=UUID().uuidString }
+                    purchaseBusy=false
+                }
+            }
+        } message: {
+            Text("Du kaufst für \(offer.price.formatted(.currency(code: "EUR").locale(Locale(identifier: "de_DE")))) das Gerät \(offer.displayTitle). Der Verkäufer muss den Verkauf noch bestätigen. Hier wird noch keine Zahlung ausgelöst.")
+        }
+        .task(id:offer.id) {
+            guard specs["showExactAddress"]=="yes",let street=specs["street"],!street.isEmpty,let base=place else { return }
+            let results=try? await CLGeocoder().geocodeAddressString("\(street), \(base.postalCode) \(base.city), Deutschland")
+            if let coordinate=results?.first?.location?.coordinate {
+                precisePlace=CatalogPlace(postalCode:base.postalCode,city:base.city,state:base.state,lat:coordinate.latitude,lng:coordinate.longitude)
+            }
+        }
+        .confirmationDialog("Inserat löschen?",isPresented:$confirmDelete,titleVisibility:.visible){Button("Löschen",role:.destructive){store.removeListing(offer)}}
+        .sheet(isPresented:$editingListing){CreateOfferView(editing:offer)}
+        .sheet(isPresented:$reportSheet){NavigationStack{Form{TextField("Grund der Meldung",text:$reportReason,axis:.vertical);Button("Meldung senden"){store.report(offer,reason:reportReason);reportSheet=false}}.navigationTitle("Anzeige melden")}}
+        .task { note=store.notes[offer.id] ?? "";await store.loadProfile(offer.sellerId) }
+        .navigationDestination(isPresented:$showChat) { ConversationView(id:chatId) }
+        .fullScreenCover(isPresented:$showMap) {
+            if let place { FullScreenListingMap(place:place) }
         }
         .sheet(isPresented:$showRank) {
             if let rep=seller?.reputation {
-                NavigationStack { List(rep.medals) { medal in Label { VStack(alignment:.leading,spacing:5) { Text(medal.label).font(.headline);Text(medal.how).font(.subheadline).foregroundStyle(.secondary) } } icon: { Image(systemName:medal.earned ? "checkmark.seal.fill":"seal").foregroundStyle(medal.earned ? Color.accentColor:.secondary) } }.navigationTitle("Auszeichnungen").toolbar { Button("Fertig") { showRank=false } } }
+                VStack(spacing:0) {
+                    HStack { DismissCircle { showRank=false };Spacer();Text("Auszeichnungen").font(.headline);Spacer();Color.clear.frame(width:52,height:52) }.padding(16)
+                    List(rep.medals) { medal in Label { VStack(alignment:.leading,spacing:5) { Text(medal.label).font(.headline);Text(medal.how).font(.subheadline).foregroundStyle(.secondary) } } icon: { Image(systemName:medal.earned ? "checkmark.seal.fill":"seal").foregroundStyle(medal.earned ? Color.accentColor:.secondary) } }.listStyle(.plain)
+                }.toolbar(.hidden,for:.tabBar,.navigationBar)
+
             }
         }
     }
@@ -205,13 +245,39 @@ struct ListingMap: View {
 struct NativeSellerView: View {
     @Environment(AppStore.self) private var store
     let name: String
+    let userId: String
     var body: some View {
         ScrollView {
             VStack(spacing:18) {
-                if name==store.data.name { Text(store.data.emoji).font(.system(size:64));Text(name).font(.title.bold());Text(store.data.bio ?? "") }
-                else if let seller=WebCatalog.shared.sellers?[name] { Text(seller.emoji).font(.system(size:64));Text(name).font(.title.bold());Text(seller.bio);Text("Mitglied seit \(GermanDate.date(seller.joinedAt))").font(.footnote).foregroundStyle(.secondary) }
-                LazyVGrid(columns:[GridItem(.flexible(),spacing:0),GridItem(.flexible(),spacing:0)],spacing:0) { ForEach(store.offers.filter{$0.seller==name}) { OfferCard(offer:$0) } }
+                if userId==store.identity { Text(store.data.emoji).font(.system(size:64));Text(name).font(.title.bold());Text(store.data.bio ?? "") }
+                else if let seller=store.profiles[userId] { Text(seller.emoji).font(.system(size:64));Text(name).font(.title.bold());Text(seller.bio);Text("Mitglied seit \(GermanDate.date(seller.joinedAt))").font(.footnote).foregroundStyle(.secondary) }
+                LazyVGrid(columns:[GridItem(.flexible(),spacing:0),GridItem(.flexible(),spacing:0)],spacing:0) { ForEach(store.offers.filter{$0.sellerId==userId}) { OfferCard(offer:$0) } }
             }
-        }.navigationTitle("Anbieter").navigationBarTitleDisplayMode(.inline).navigationDestination(for:Offer.self) { OfferDetail(offer:$0) }
+        }.task { await store.loadProfile(userId) }.navigationTitle("Anbieter").navigationBarTitleDisplayMode(.inline).navigationDestination(for:Offer.self) { OfferDetail(offer:$0) }
+    }
+}
+
+extension CatalogPlace {
+    var appleMapsURL: URL {
+        var url=URLComponents(string:"https://maps.apple.com/")!
+        url.queryItems=[URLQueryItem(name:"ll",value:"\(lat),\(lng)"),URLQueryItem(name:"q",value:label)]
+        return url.url!
+    }
+}
+struct DismissCircle: View {
+    var action: () -> Void
+    var body: some View {
+        Button(action:action) { Image(systemName:"xmark").font(.system(size:20,weight:.semibold)).foregroundStyle(.primary).frame(width:52,height:52) }
+            .buttonStyle(.glass).buttonBorderShape(.circle).accessibilityLabel("Schließen")
+    }
+}
+struct FullScreenListingMap: View {
+    let place: CatalogPlace
+    @Environment(\.dismiss) private var dismiss
+    var body: some View {
+        ZStack(alignment:.topLeading) {
+            ListingMap(place:place).ignoresSafeArea(.all)
+            DismissCircle { dismiss() }.padding(.leading,20).padding(.top,12)
+        }.statusBarHidden().accessibilityIdentifier("fullscreen-listing-map")
     }
 }

@@ -8,6 +8,7 @@ export type OfferStatus = "pending" | "accepted" | "declined";
 
 export interface ChatMessage {
   id: string;
+  sequence?: string;
   at: string;
   author: "buyer" | "seller";
   kind: "text" | "offer" | "accept" | "decline";
@@ -17,6 +18,11 @@ export interface ChatMessage {
 
 export interface Thread {
   id: string;
+  sellerId?: string;
+  buyerId?: string;
+  muted?: boolean;
+  unreadCount?: number;
+  readSequence?: string;
   listingId: string;
   listingTitle: string;
   listingPrice: number;
@@ -24,7 +30,7 @@ export interface Thread {
   sellerEmoji: string;
   buyerName: string;
   buyerEmoji: string;
-  offer?: { price: number; status: OfferStatus };
+  offer?: { id?: string; senderId?: string; resolvedAt?: string; price: number; status: OfferStatus };
   messages: ChatMessage[];
   updatedAt: string;
   archived?: boolean;

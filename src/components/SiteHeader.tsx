@@ -26,12 +26,14 @@ export function SiteHeader({
   onLogoClick,
   listingId,
   minimal = false,
+  desktopRail = false,
 }: {
   center?: ReactNode;
   mobileSort?: ReactNode;
   onLogoClick?: () => void;
   listingId?: string;
   minimal?: boolean;
+  desktopRail?: boolean;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -50,8 +52,10 @@ export function SiteHeader({
   return (
     <>
       <header className="sticky top-0 z-40 shrink-0 border-b border-uf-border-soft bg-white pt-[env(safe-area-inset-top)]">
-        <div className="relative flex h-12 w-full items-center gap-0.5 px-1.5 sm:gap-2 sm:px-3 md:px-6">
-          <div className="flex shrink-0 items-center">
+        <div className={desktopRail
+          ? "relative mx-auto flex h-12 w-full max-w-[1440px] items-center px-1.5 sm:px-3 md:px-6 lg:px-0"
+          : "relative flex h-12 w-full items-center gap-0.5 px-1.5 sm:gap-2 sm:px-3 md:px-6"}>
+          <div className={desktopRail ? "flex shrink-0 items-center lg:h-12 lg:w-[220px] lg:px-5" : "flex shrink-0 items-center"}>
             <Link
               href="/"
               onClick={
@@ -69,17 +73,32 @@ export function SiteHeader({
               <span>Used Fruit</span>
             </Link>
           </div>
-  
-          <div className="pointer-events-none absolute inset-x-0 hidden justify-center lg:flex [&>*]:pointer-events-auto">
-            {showMobileCategories ? center ?? (
-              <Suspense fallback={<CategoryNavFallback />}>
-                <CategoryNav />
-              </Suspense>
+
+          {!desktopRail && (
+            <div className="pointer-events-none absolute inset-x-0 hidden justify-center lg:flex [&>*]:pointer-events-auto">
+              {showMobileCategories ? center ?? (
+                <Suspense fallback={<CategoryNavFallback />}>
+                  <CategoryNav />
+                </Suspense>
+              ) : null}
+            </div>
+          )}
+
+          <div className={desktopRail
+            ? "relative ml-auto flex min-h-12 min-w-0 flex-1 items-center lg:ml-0 lg:h-12 lg:border-l lg:border-uf-border-soft lg:px-6"
+            : "ml-auto flex shrink-0 items-center"}>
+            {desktopRail && showMobileCategories ? (
+              <div className="hidden min-w-0 lg:flex">
+                {center ?? (
+                  <Suspense fallback={<CategoryNavFallback />}>
+                    <CategoryNav />
+                  </Suspense>
+                )}
+              </div>
             ) : null}
-          </div>
-  
-          <div className="ml-auto flex shrink-0 items-center">
-            <NavActions />
+            <div className="ml-auto flex shrink-0 items-center">
+              <NavActions />
+            </div>
           </div>
         </div>
       </header>

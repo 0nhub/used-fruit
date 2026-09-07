@@ -1,5 +1,6 @@
 "use client";
 
+import { DemoListingMark } from "@/components/DemoListingMark";
 import { ProductImage } from "@/components/ProductImage";
 import { useCatalogPhotos } from "@/lib/useCatalogPhotos";
 import { useState } from "react";
@@ -8,17 +9,19 @@ export function ProductGallery({
   modelId,
   colorId,
   alt,
+  demo = false,
 }: {
   modelId: string;
   colorId: string;
   alt: string;
+  demo?: boolean;
 }) {
   const { photosFor } = useCatalogPhotos();
   const photos = photosFor(modelId, colorId);
   const [active, setActive] = useState(0);
 
   if (photos.length === 0) {
-    return <ProductImage modelId={modelId} colorId={colorId} alt={alt} />;
+    return <ProductImage modelId={modelId} colorId={colorId} alt={alt} demo={demo} />;
   }
 
   return (
@@ -43,6 +46,7 @@ export function ProductGallery({
               alt={alt}
               className="absolute inset-0 h-full w-full object-contain"
             />
+            {demo ? <DemoListingMark /> : null}
           </div>
         ))}
       </div>

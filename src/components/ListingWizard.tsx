@@ -106,8 +106,9 @@ export function ListingWizard() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { addListing } = useListings();
-  const { profile, signedIn, ready: profileReady } = useProfile();
+  const { profile, signedIn, onboardingCompleted, ready: profileReady } = useProfile();
   const publicationId = useRef<string | null>(null);
+  const restoredDraft = useRef(false);
   const [leavingForLogin, setLeavingForLogin] = useState(false);
 
   const [stepIndex, setStepIndex] = useState(0);
@@ -156,6 +157,26 @@ export function ListingWizard() {
   );
   const chipChoices = useMemo(() => chipsForModel(model), [model]);
   const yearChoices = useMemo(() => yearsForChip(model, chip || undefined), [model, chip]);
+
+  useEffect(() => {
+    if (!profileReady || restoredDraft.current) return;
+    restoredDraft.current = true;
+    const draft = readListingDraft();
+    if (!draft || !getModelById(draft.modelId)) return;
+    setCategoryId(draft.categoryId); setModelId(draft.modelId); setChip(draft.chip ?? "");
+    setColorId(draft.colorId); setSize(draft.size ?? ""); setYear(draft.year);
+    setMemory(draft.memory ?? ""); setStorage(draft.storage ?? "");
+    setConnectivity(draft.connectivity); setSimLock(draft.simLock);
+    setKeyboardLayout(draft.keyboardLayout); setKeyboardLayoutDetails(draft.keyboardLayoutDetails ?? "");
+    setCondition(draft.condition); setOriginalBox(draft.originalBox);
+    setHasAppleWarranty(Boolean(draft.appleWarrantyUntil)); setWarrantyUntil(draft.appleWarrantyUntil ?? "");
+    setBatteryCapacity(draft.batteryMaxCapacityPercent == null ? "" : String(draft.batteryMaxCapacityPercent));
+    setBatteryCycles(draft.batteryCycleCount == null ? "" : String(draft.batteryCycleCount));
+    setPrice(String(draft.price)); setCity(draft.city); setPostalCode(draft.postalCode);
+    setLocationQuery(draft.postalCode + " " + draft.city); setLocality(draft.locality ?? ""); setStreet(draft.street ?? "");
+    setShippingScope(draft.shippingScope);
+    setStepIndex(buildWizardSteps(draft.modelId, draft.year, draft.chip, draft.connectivity).length - 1);
+  }, [profileReady]);
 
   useEffect(() => {
     const sole = soleSpecValues(model);
@@ -290,7 +311,7 @@ export function ListingWizard() {
   };
 
   const commitListing = useCallback(
-    (draft: ListingDraft) => {
+    async (draft: ListingDraft) => {
       if (needsSimLock(draft.categoryId, draft.connectivity) && !isSimLockStatus(draft.simLock)) {
         setError("Bitte den SIM-Lock-Status angeben. Erstelle einen neuen Entwurf, falls diese Angabe fehlt.");
         return;
@@ -301,7 +322,11 @@ export function ListingWizard() {
       }
       if (publicationId.current) return;
       const id = createId("uf");
-      addListing({
+      const requestKey = sessionStorage.getItem("used-fruit-publish-key") || crypto.randomUUID();
+      sessionStorage.setItem("used-fruit-publish-key", requestKey);
+      publicationId.current = "pending";
+      try {
+      const saved = await addListing({
         id,
         categoryId: draft.categoryId,
         modelId: draft.modelId,
@@ -332,10 +357,15 @@ export function ListingWizard() {
         appleWarrantyUntil: draft.appleWarrantyUntil,
         batteryMaxCapacityPercent: draft.batteryMaxCapacityPercent,
         batteryCycleCount: draft.batteryCycleCount,
-      });
-      publicationId.current = id;
+      }, requestKey);
+      publicationId.current = saved.id;
+      sessionStorage.removeItem("used-fruit-publish-key");
       clearListingDraft();
-      router.push(`/listing/${id}`);
+      router.push(`/listing/${saved.id}`);
+      } catch (error) {
+        publicationId.current = null;
+        setError(error instanceof Error ? error.message : "Veröffentlichen fehlgeschlagen. Dein Entwurf bleibt erhalten.");
+      }
     },
     [addListing, profile.emoji, profile.name, router],
   );
@@ -417,6 +447,7 @@ export function ListingWizard() {
     const draft = collectDraft();
     if (!draft) return;
     if (!profileReady) return;
+    writeListingDraft(draft);
     if (!signedIn) {
       writeListingDraft(draft);
       setLeavingForLogin(true);
@@ -431,12 +462,12 @@ export function ListingWizard() {
   }, [leavingForLogin, router]);
 
   useEffect(() => {
-    if (!profileReady || !signedIn) return;
+    if (!profileReady || !signedIn || !onboardingCompleted) return;
     if (searchParams.get("publish") !== "1") return;
     const draft = readListingDraft();
     if (!draft) return;
     commitListing(draft);
-  }, [commitListing, profileReady, searchParams, signedIn]);
+  }, [commitListing, profileReady, searchParams, signedIn, onboardingCompleted]);
 
   return (
     <UnsavedGuard

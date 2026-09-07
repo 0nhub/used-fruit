@@ -25,7 +25,7 @@ export function SellerShop({
   listings: Listing[];
   isOwn: boolean;
 }) {
-  const { snapshot: reputation } = useReputation(seller.name);
+  const { snapshot: reputation } = useReputation(seller.id);
 
   useEffect(() => {
     document.title = `${seller.name} · Used Fruit`;
