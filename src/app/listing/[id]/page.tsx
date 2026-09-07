@@ -24,7 +24,8 @@ import {
   formatWarrantyLabel,
 } from "@/lib/device";
 import { formatListingMeta, formatListingName, formatMemberSince, formatPrice } from "@/lib/format";
-import { formatKeyboardLayout, hasBuiltInKeyboard } from "@/lib/keyboard";
+import { acceptsDesktopAccessories, formatIncludedAccessories, needsKeyboardLayout } from "@/lib/accessories";
+import { formatKeyboardLayout } from "@/lib/keyboard";
 import { listingJoinedAt, listingSellerEmoji } from "@/lib/seller";
 import { sellerHref } from "@/lib/sellerPage";
 import { useListings } from "@/lib/useListings";
@@ -265,7 +266,12 @@ export default function ListingDetailPage() {
 
           <div className="mt-8">
             <SpecGrid>
-              {hasBuiltInKeyboard(listing.modelId) && <SpecRow label="Tastaturlayout" value={formatKeyboardLayout(listing)} />}
+              {acceptsDesktopAccessories(listing.modelId) && (
+                <SpecRow label="Zubehör" value={formatIncludedAccessories(listing)} />
+              )}
+              {needsKeyboardLayout(listing.modelId, listing.includedAccessories) && (
+                <SpecRow label="Tastaturlayout" value={formatKeyboardLayout(listing)} />
+              )}
               {needsSimLock(listing.categoryId, listing.connectivity) && <SpecRow label="SIM-Lock" value={formatSimLock(listing.simLock)} />}
               {listing.memory && <SpecRow label="Arbeitsspeicher" value={listing.memory} />}
               {color && <SpecRow label="Farbe" value={color.label} />}

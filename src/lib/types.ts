@@ -15,6 +15,10 @@ export type IpadConnectivity = "wifi" | "cellular";
 
 export type KeyboardLayoutId = "de-at" | "ch" | "us" | "uk" | "international" | "fr" | "other";
 
+export type DesktopAccessoryId = "keyboard" | "magic-mouse" | "magic-trackpad";
+
+export type AccessoryFilterId = DesktopAccessoryId | "none";
+
 export type ListingVisibility = "public" | "reserved" | "inactive";
 
 export interface Category {
@@ -57,6 +61,8 @@ export interface Listing {
   /** Physical built-in keyboard; missing means unknown, never DE by default. */
   keyboardLayout?: KeyboardLayoutId;
   keyboardLayoutDetails?: string;
+  /** Desktop Mac extras. Empty array means none included. */
+  includedAccessories?: DesktopAccessoryId[];
   condition: ConditionId;
   /** Originalkarton / Originalverpackung vorhanden. */
   originalBox?: boolean;
@@ -92,6 +98,7 @@ export interface ListingFilters {
   memory: string[];
   storage: string[];
   keyboardLayouts?: KeyboardLayoutId[];
+  accessories?: AccessoryFilterId[];
   conditions: ConditionId[];
   warrantyOnly?: boolean;
   minBatteryCapacity?: number;

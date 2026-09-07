@@ -1,7 +1,8 @@
 import { findPlace, distanceKm, type Place } from "@/data/locations";
 import { getModelById, isPartsListing, normalizeConditionId } from "@/data/catalog";
 import { getBatteryMetricForModel, isAppleWarrantyActive } from "@/lib/device";
-import { formatKeyboardLayout, hasBuiltInKeyboard } from "@/lib/keyboard";
+import { acceptsDesktopAccessories, formatIncludedAccessories, needsKeyboardLayout } from "@/lib/accessories";
+import { formatKeyboardLayout } from "@/lib/keyboard";
 import type { Listing, ListingFilters, SortId } from "@/lib/types";
 
 export const SORT_OPTIONS: { id: SortId; label: string; needsLocation?: boolean }[] = [
@@ -101,7 +102,19 @@ export function filterListings(listings: Listing[], filters: ListingFilters): Li
 
   return listings.filter((listing) => {
     if (filters.categoryId && listing.categoryId !== filters.categoryId) return false;
-    if (filters.keyboardLayouts?.length && (!hasBuiltInKeyboard(listing.modelId) || !listing.keyboardLayout || !filters.keyboardLayouts.includes(listing.keyboardLayout))) return false;
+    if (filters.keyboardLayouts?.length) {
+      const hasKeyboard = needsKeyboardLayout(listing.modelId, listing.includedAccessories);
+      if (!hasKeyboard || !listing.keyboardLayout || !filters.keyboardLayouts.includes(listing.keyboardLayout)) return false;
+    }
+    if (filters.accessories?.length) {
+      if (!acceptsDesktopAccessories(listing.modelId) || !Array.isArray(listing.includedAccessories)) return false;
+      const wantsNone = filters.accessories.includes("none");
+      const wanted = filters.accessories.filter((item) => item !== "none");
+      const listingNone = listing.includedAccessories.length === 0;
+      const matchesNone = wantsNone && listingNone;
+      const matchesSome = wanted.some((item) => listing.includedAccessories!.includes(item));
+      if (!matchesNone && !matchesSome) return false;
+    }
     if (filters.modelId && listing.modelId !== filters.modelId) return false;
     if (filters.sizes.length && (!listing.size || !filters.sizes.includes(listing.size))) return false;
     if (filters.years.length && (!listing.year || !filters.years.includes(listing.year))) return false;
@@ -152,7 +165,8 @@ export function filterListings(listings: Listing[], filters: ListingFilters): Li
         listing.postalCode,
         listing.chip,
         listing.storage,
-        hasBuiltInKeyboard(listing.modelId) ? `Tastatur: ${formatKeyboardLayout(listing)}` : undefined,
+        needsKeyboardLayout(listing.modelId, listing.includedAccessories) ? `Tastatur: ${formatKeyboardLayout(listing)}` : undefined,
+        acceptsDesktopAccessories(listing.modelId) ? formatIncludedAccessories(listing) : undefined,
         listing.memory,
         listing.colorId,
       ]

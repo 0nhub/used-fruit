@@ -5,6 +5,6 @@ export function listingFromApi(row:ApiListing):Listing {
   return {...row.specs,...row.privateSpecs,id:row.id,number:row.number,sellerId:row.sellerId,version:row.version,categoryId:row.categoryId,modelId:row.modelId,title:row.title,price:row.priceCents/100,city:row.city,postalCode:row.postalCode,radiusKm:0,createdAt:row.createdAt,sellerName:row.sellerName,sellerEmoji:row.sellerEmoji,sellerJoinedAt:row.sellerJoinedAt,soldAt:row.soldAt??undefined,visibility:row.status==='public'||row.status==='sold'?undefined:row.status} as Listing;
 }
 export function listingToApi(listing:Listing) {
-  const keys=['chip','year','colorId','size','memory','storage','condition','originalBox','shippingScope','connectivity','simLock','keyboardLayout','keyboardLayoutDetails','batteryMaxCapacityPercent','batteryCycleCount','appleWarrantyUntil','serialNumber','street','locality'] as const;
+  const keys=['chip','year','colorId','size','memory','storage','condition','originalBox','shippingScope','connectivity','simLock','keyboardLayout','keyboardLayoutDetails','includedAccessories','batteryMaxCapacityPercent','batteryCycleCount','appleWarrantyUntil','serialNumber','street','locality'] as const;
   return {categoryId:listing.categoryId,modelId:listing.modelId,priceCents:Math.round(listing.price*100),city:listing.city,postalCode:listing.postalCode,specs:Object.fromEntries(keys.filter(key=>listing[key]!==undefined).map(key=>[key,listing[key]]))};
 }

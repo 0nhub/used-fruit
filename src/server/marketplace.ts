@@ -27,6 +27,18 @@ export async function listListings(userId: string | null, query: URLSearchParams
     const selected=query.getAll(name);
     if(selected.length){requireValue(selected.length<=30&&selected.every(x=>x.length<=200),'Zu viele Filterwerte.');add(`l.specs->>'${name}'=ANY(?::text[])`,selected);}
   }
+  {
+    const selected=query.getAll('accessory');
+    if(selected.length){
+      const allowed=new Set(['keyboard','magic-mouse','magic-trackpad','none']);
+      requireValue(selected.length<=10&&selected.every(item=>allowed.has(item)),'Ungültiges Zubehör.');
+      const clauses:string[]=[];
+      if(selected.includes('none')) clauses.push("COALESCE(l.specs->'includedAccessories','null'::jsonb)='[]'::jsonb");
+      const wanted=selected.filter(item=>item!=='none');
+      if(wanted.length) clauses.push(`EXISTS (SELECT 1 FROM jsonb_array_elements_text(COALESCE(l.specs->'includedAccessories','[]'::jsonb)) AS acc(value) WHERE acc.value=ANY(${bind(wanted)}::text[]))`);
+      where.push('('+clauses.join(' OR ')+')');
+    }
+  }
   for(const name of ['shipping','originalBox'])if(query.has(name)){
     requireValue(['yes','no'].includes(query.get(name)!),'Ungültiger Filter.');
     if(name==='shipping')add("l.specs->>'shippingScope'=?",query.get(name)==='yes'?'deutschland':'local');

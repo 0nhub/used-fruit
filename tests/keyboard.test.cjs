@@ -21,6 +21,25 @@ test('only built-in MacBook keyboards get a required wizard step', () => {
   for (const id of ['macbook-air','macbook-pro','macbook-neo']) assert.ok(buildWizardSteps(id).includes('keyboard'));
   for (const id of ['imac','mac-mini','ipad-pro','iphone-16', undefined]) assert.equal(buildWizardSteps(id).includes('keyboard'), false);
 });
+test('desktop Macs ask for accessories; keyboard layout only if a keyboard is included', () => {
+  for (const id of ['imac','mac-mini','mac-studio','mac-pro']) assert.ok(buildWizardSteps(id).includes('accessories'));
+  for (const id of ['macbook-air','ipad-pro','iphone-16', undefined]) assert.equal(buildWizardSteps(id).includes('accessories'), false);
+  assert.ok(buildWizardSteps('imac', undefined, undefined, undefined, ['keyboard']).includes('keyboard'));
+  assert.equal(buildWizardSteps('imac', undefined, undefined, undefined, []).includes('keyboard'), false);
+});
+test('accessory filters apply only to desktop Macs', () => {
+  const accessories = load('src/lib/accessories.ts');
+  const listings = [
+    {...base,id:'air'},
+    {...base,id:'mini-none',modelId:'mac-mini',title:'Mac mini',includedAccessories:[]},
+    {...base,id:'mini-kb',modelId:'mac-mini',title:'Mac mini',includedAccessories:['keyboard'],keyboardLayout:'de-at'},
+    {...base,id:'mini-mouse',modelId:'mac-mini',title:'Mac mini',includedAccessories:['magic-mouse']},
+  ];
+  assert.deepEqual(filterListings(listings,{...filters,accessories:['none']}).map(x=>x.id), ['mini-none']);
+  assert.deepEqual(filterListings(listings,{...filters,accessories:['keyboard']}).map(x=>x.id), ['mini-kb']);
+  assert.deepEqual(filterListings(listings,{...filters,keyboardLayouts:['de-at']}).map(x=>x.id), ['mini-kb']);
+  assert.equal(accessories.formatIncludedAccessories({includedAccessories:[]}), 'Kein Zubehör');
+});
 test('unknown or partial imported layouts never become German', () => {
   for (const keyboardLayout of [undefined, 'DE', 'QWERTZ', 'QWERTY', 'unknown', null]) {
     assert.equal(keyboard.hasValidKeyboard({keyboardLayout}), false);

@@ -1,9 +1,9 @@
 import { getModelById } from "@/data/catalog";
 import { chipsForModel, optionsForYear, yearsForChip } from "@/data/modelYears";
 import { getBatteryMetricForModel } from "@/lib/device";
-import { hasBuiltInKeyboard } from "@/lib/keyboard";
+import { acceptsDesktopAccessories, needsKeyboardLayout } from "@/lib/accessories";
 import { needsSimLock } from "@/lib/simLock";
-import type { IpadConnectivity, ModelDefinition } from "@/lib/types";
+import type { DesktopAccessoryId, IpadConnectivity, ModelDefinition } from "@/lib/types";
 
 export type WizardStep =
   | "category"
@@ -15,6 +15,7 @@ export type WizardStep =
   | "memory"
   | "storage"
   | "keyboard"
+  | "accessories"
   | "simLock"
   | "connectivity"
   | "condition"
@@ -59,6 +60,7 @@ export function buildWizardSteps(
   year?: number,
   chip?: string,
   connectivity?: IpadConnectivity,
+  includedAccessories?: DesktopAccessoryId[],
 ): WizardStep[] {
   const steps: WizardStep[] = ["category", "model"];
   const model = modelId ? getModelById(modelId) : undefined;
@@ -80,7 +82,8 @@ export function buildWizardSteps(
 
   if (needsSimLock(model?.categoryId, connectivity)) steps.push("simLock");
 
-  if (modelId && hasBuiltInKeyboard(modelId)) steps.push("keyboard");
+  if (modelId && acceptsDesktopAccessories(modelId)) steps.push("accessories");
+  if (modelId && needsKeyboardLayout(modelId, includedAccessories)) steps.push("keyboard");
 
   steps.push("condition", "packaging", "warranty");
   if (modelId && getBatteryMetricForModel(modelId)) steps.push("battery");
@@ -139,9 +142,14 @@ export const STEP_COPY: Record<
     subtitle: "Ist das Gerät an einen Mobilfunkanbieter gebunden?",
     tip: "Gemeint ist die Anbietersperre, nicht die SIM-PIN oder Aktivierungssperre. Beim iPhone: Einstellungen → Allgemein → Info → SIM-Lock. Beim iPad im Zweifel beim Mobilfunkanbieter nachfragen.",
   },
+  accessories: {
+    title: "Zubehör",
+    subtitle: "Welche Apple-Zubehörteile sind dabei — oder keines?",
+    tip: "Gemeint sind Tastatur, Magic Mouse und Magic Trackpad. Wenn eine Tastatur dabei ist, fragst du als Nächstes nach dem Layout.",
+  },
   keyboard: {
     title: "Tastaturlayout",
-    subtitle: "Welche Tastatur ist fest eingebaut?",
+    subtitle: "Welches Layout hat die Tastatur?",
     tip: "Prüfe die aufgedruckten Buchstaben und Sonderzeichen. Die macOS-Sprache oder Eingabequelle ändert die physische Tastatur nicht. Deutsch und Österreichisch teilen dasselbe Layout; Schweizerisch ist eine eigene Variante.",
   },
   condition: {

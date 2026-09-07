@@ -9,8 +9,9 @@ import {
   BATTERY_CYCLE_FILTERS,
   getBatteryMetricForCategory,
 } from "@/lib/device";
+import { ACCESSORY_FILTERS, acceptsDesktopAccessories } from "@/lib/accessories";
 import { KEYBOARD_LAYOUTS, hasBuiltInKeyboard } from "@/lib/keyboard";
-import type { CategoryId, ConditionId, KeyboardLayoutId, SortId } from "@/lib/types";
+import type { AccessoryFilterId, CategoryId, ConditionId, KeyboardLayoutId, SortId } from "@/lib/types";
 import { useEffect, useId, useMemo, useState } from "react";
 
 const fieldClass =
@@ -26,6 +27,8 @@ interface FilterSidebarProps {
   storage: string[];
   keyboardLayouts: KeyboardLayoutId[];
   onToggleKeyboardLayout: (value: KeyboardLayoutId) => void;
+  accessories: AccessoryFilterId[];
+  onToggleAccessory: (value: AccessoryFilterId) => void;
   conditions: ConditionId[];
   warrantyOnly: boolean;
   minBatteryCapacity?: number;
@@ -331,12 +334,22 @@ export function FilterSidebar(props: FilterSidebarProps) {
         </Section>
       )}
 
-      {(!props.categoryId || props.categoryId === "mac") && (!props.modelId || hasBuiltInKeyboard(props.modelId)) && (
+      {props.categoryId === "mac" && (!props.modelId || hasBuiltInKeyboard(props.modelId) || acceptsDesktopAccessories(props.modelId)) && (
         <Section title="Tastaturlayout">
           {KEYBOARD_LAYOUTS.map((item) => (
             <CheckRow key={item.id} label={item.shortLabel} title={item.label}
               checked={props.keyboardLayouts.includes(item.id)}
               onChange={() => props.onToggleKeyboardLayout(item.id)} />
+          ))}
+        </Section>
+      )}
+
+      {props.categoryId === "mac" && (!props.modelId || acceptsDesktopAccessories(props.modelId)) && (
+        <Section title="Zubehör">
+          {ACCESSORY_FILTERS.map((item) => (
+            <CheckRow key={item.id} label={item.label}
+              checked={props.accessories.includes(item.id)}
+              onChange={() => props.onToggleAccessory(item.id)} />
           ))}
         </Section>
       )}

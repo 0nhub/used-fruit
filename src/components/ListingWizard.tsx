@@ -15,7 +15,8 @@ import { formatPlaceLabel } from "@/data/locations";
 import { chipsForModel, optionsForYear, yearsForChip } from "@/data/modelYears";
 import { getBatteryMetricForModel } from "@/lib/device";
 import { SIM_LOCK_OPTIONS, needsSimLock, isSimLockStatus } from "@/lib/simLock";
-import { KEYBOARD_LAYOUTS, hasBuiltInKeyboard, hasValidKeyboard } from "@/lib/keyboard";
+import { DESKTOP_ACCESSORIES, acceptsDesktopAccessories, hasValidDesktopAccessories, needsKeyboardLayout } from "@/lib/accessories";
+import { KEYBOARD_LAYOUTS, hasValidKeyboard } from "@/lib/keyboard";
 import { buildListingTitle, createId } from "@/lib/format";
 import {
   clearListingDraft,
@@ -31,7 +32,7 @@ import {
 } from "@/lib/listingWizard";
 import { useListings } from "@/lib/useListings";
 import { useProfile } from "@/lib/useProfile";
-import type { CategoryId, ConditionId, IpadConnectivity, SimLockStatus, KeyboardLayoutId, ShippingScope } from "@/lib/types";
+import type { CategoryId, ConditionId, DesktopAccessoryId, IpadConnectivity, KeyboardLayoutId, ShippingScope, SimLockStatus } from "@/lib/types";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -124,6 +125,7 @@ export function ListingWizard() {
   const [connectivity, setConnectivity] = useState<IpadConnectivity | undefined>();
   const [keyboardLayout, setKeyboardLayout] = useState<KeyboardLayoutId | undefined>();
   const [keyboardLayoutDetails, setKeyboardLayoutDetails] = useState("");
+  const [includedAccessories, setIncludedAccessories] = useState<DesktopAccessoryId[] | undefined>();
   const [condition, setCondition] = useState<ConditionId | undefined>();
   const [originalBox, setOriginalBox] = useState<boolean | undefined>();
   const [hasAppleWarranty, setHasAppleWarranty] = useState(true);
@@ -146,8 +148,8 @@ export function ListingWizard() {
     : [], [categoryId]);
   const batteryMetric = getBatteryMetricForModel(modelId);
   const steps = useMemo(
-    () => buildWizardSteps(modelId || undefined, year, chip, connectivity),
-    [modelId, year, chip, connectivity],
+    () => buildWizardSteps(modelId || undefined, year, chip, connectivity, includedAccessories),
+    [modelId, year, chip, connectivity, includedAccessories],
   );
   const step = steps[Math.min(stepIndex, steps.length - 1)];
   const copy = STEP_COPY[step];
@@ -168,6 +170,7 @@ export function ListingWizard() {
     setMemory(draft.memory ?? ""); setStorage(draft.storage ?? "");
     setConnectivity(draft.connectivity); setSimLock(draft.simLock);
     setKeyboardLayout(draft.keyboardLayout); setKeyboardLayoutDetails(draft.keyboardLayoutDetails ?? "");
+    setIncludedAccessories(Array.isArray(draft.includedAccessories) ? draft.includedAccessories : undefined);
     setCondition(draft.condition); setOriginalBox(draft.originalBox);
     setHasAppleWarranty(Boolean(draft.appleWarrantyUntil)); setWarrantyUntil(draft.appleWarrantyUntil ?? "");
     setBatteryCapacity(draft.batteryMaxCapacityPercent == null ? "" : String(draft.batteryMaxCapacityPercent));
@@ -175,7 +178,7 @@ export function ListingWizard() {
     setPrice(String(draft.price)); setCity(draft.city); setPostalCode(draft.postalCode);
     setLocationQuery(draft.postalCode + " " + draft.city); setLocality(draft.locality ?? ""); setStreet(draft.street ?? "");
     setShippingScope(draft.shippingScope);
-    setStepIndex(buildWizardSteps(draft.modelId, draft.year, draft.chip, draft.connectivity).length - 1);
+    setStepIndex(buildWizardSteps(draft.modelId, draft.year, draft.chip, draft.connectivity, draft.includedAccessories).length - 1);
   }, [profileReady]);
 
   useEffect(() => {
@@ -232,6 +235,7 @@ export function ListingWizard() {
     setConnectivity(undefined);
     setKeyboardLayout(undefined);
     setKeyboardLayoutDetails("");
+    setIncludedAccessories(undefined);
     setCondition(undefined);
     setOriginalBox(undefined);
     setHasAppleWarranty(true);
@@ -262,6 +266,8 @@ export function ListingWizard() {
         return isSimLockStatus(simLock);
       case "connectivity":
         return Boolean(connectivity);
+      case "accessories":
+        return includedAccessories !== undefined;
       case "keyboard":
         return hasValidKeyboard({ keyboardLayout, keyboardLayoutDetails });
       case "condition":
@@ -316,8 +322,12 @@ export function ListingWizard() {
         setError("Bitte den SIM-Lock-Status angeben. Erstelle einen neuen Entwurf, falls diese Angabe fehlt.");
         return;
       }
-      if (hasBuiltInKeyboard(draft.modelId) && !hasValidKeyboard(draft)) {
-        setError("Bitte das Tastaturlayout des MacBooks angeben. Erstelle einen neuen Entwurf, falls dieser noch keine Tastaturangabe enthält.");
+      if (needsKeyboardLayout(draft.modelId, draft.includedAccessories) && !hasValidKeyboard(draft)) {
+        setError("Bitte das Tastaturlayout angeben. Erstelle einen neuen Entwurf, falls dieser noch keine Tastaturangabe enthält.");
+        return;
+      }
+      if (acceptsDesktopAccessories(draft.modelId) && !hasValidDesktopAccessories(draft.modelId, draft)) {
+        setError("Bitte das mitgelieferte Zubehör angeben.");
         return;
       }
       if (publicationId.current) return;
@@ -339,8 +349,9 @@ export function ListingWizard() {
         storage: draft.storage,
         connectivity: draft.connectivity,
         simLock: needsSimLock(draft.categoryId, draft.connectivity) ? draft.simLock : undefined,
-        keyboardLayout: hasBuiltInKeyboard(draft.modelId) ? draft.keyboardLayout : undefined,
-        keyboardLayoutDetails: hasBuiltInKeyboard(draft.modelId) && draft.keyboardLayout === "other" ? draft.keyboardLayoutDetails?.trim() : undefined,
+        keyboardLayout: needsKeyboardLayout(draft.modelId, draft.includedAccessories) ? draft.keyboardLayout : undefined,
+        keyboardLayoutDetails: needsKeyboardLayout(draft.modelId, draft.includedAccessories) && draft.keyboardLayout === "other" ? draft.keyboardLayoutDetails?.trim() : undefined,
+        includedAccessories: acceptsDesktopAccessories(draft.modelId) ? draft.includedAccessories : undefined,
         condition: draft.condition,
         originalBox: draft.originalBox,
         price: draft.price,
@@ -379,8 +390,12 @@ export function ListingWizard() {
       setError("Bitte angeben, ob das iPad WLAN oder WLAN + Cellular hat.");
       return;
     }
-    if (hasBuiltInKeyboard(modelId) && !hasValidKeyboard({ keyboardLayout, keyboardLayoutDetails })) {
-      setError("Bitte das Tastaturlayout des MacBooks vollständig angeben.");
+    if (needsKeyboardLayout(modelId, includedAccessories) && !hasValidKeyboard({ keyboardLayout, keyboardLayoutDetails })) {
+      setError("Bitte das Tastaturlayout vollständig angeben.");
+      return;
+    }
+    if (acceptsDesktopAccessories(modelId) && !hasValidDesktopAccessories(modelId, { includedAccessories, keyboardLayout, keyboardLayoutDetails })) {
+      setError("Bitte das mitgelieferte Zubehör angeben.");
       return;
     }
     if (needsSimLock(categoryId, connectivity) && !isSimLockStatus(simLock)) {
@@ -427,8 +442,9 @@ export function ListingWizard() {
       storage: storage || undefined,
       connectivity: categoryId === "ipad" ? connectivity : undefined,
       simLock: needsSimLock(categoryId, connectivity) ? simLock : undefined,
-      keyboardLayout: hasBuiltInKeyboard(modelId) ? keyboardLayout : undefined,
-      keyboardLayoutDetails: hasBuiltInKeyboard(modelId) && keyboardLayout === "other" ? keyboardLayoutDetails.trim() : undefined,
+      keyboardLayout: needsKeyboardLayout(modelId, includedAccessories) ? keyboardLayout : undefined,
+      keyboardLayoutDetails: needsKeyboardLayout(modelId, includedAccessories) && keyboardLayout === "other" ? keyboardLayoutDetails.trim() : undefined,
+      includedAccessories: acceptsDesktopAccessories(modelId) ? includedAccessories : undefined,
       condition,
       originalBox,
       price: parsedPrice,
@@ -645,6 +661,41 @@ export function ListingWizard() {
             {step === "simLock" && SIM_LOCK_OPTIONS.map((item) => (
               <OptionRow key={item.id} label={item.label} selected={simLock === item.id} onSelect={() => setSimLock(item.id)} />
             ))}
+
+            {step === "accessories" && (
+              <>
+                {DESKTOP_ACCESSORIES.map((item) => (
+                  <OptionRow
+                    key={item.id}
+                    label={item.label}
+                    selected={Boolean(includedAccessories?.includes(item.id))}
+                    onSelect={() => {
+                      setIncludedAccessories((current) => {
+                        const list = current ?? [];
+                        if (list.includes(item.id)) {
+                          const next = list.filter((id) => id !== item.id);
+                          return next.length ? next : undefined;
+                        }
+                        return [...list, item.id];
+                      });
+                      if (item.id === "keyboard") {
+                        setKeyboardLayout(undefined);
+                        setKeyboardLayoutDetails("");
+                      }
+                    }}
+                  />
+                ))}
+                <OptionRow
+                  label="Kein Zubehör"
+                  selected={includedAccessories?.length === 0}
+                  onSelect={() => {
+                    setIncludedAccessories([]);
+                    setKeyboardLayout(undefined);
+                    setKeyboardLayoutDetails("");
+                  }}
+                />
+              </>
+            )}
 
             {step === "keyboard" && (
               <>

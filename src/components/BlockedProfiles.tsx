@@ -12,7 +12,7 @@ export function BlockSellerButton({ name, userId }: { name: string; userId: stri
   const titleId = useId();
   const descriptionId = useId();
   return <>
-  <button type="button" className="cursor-pointer text-[14px] text-uf-link" onClick={async () => {
+  <button type="button" className="cursor-pointer text-[14px] text-uf-link underline-offset-4 transition-colors duration-150 hover:text-uf-action hover:underline focus-visible:underline motion-reduce:transition-none" onClick={async () => {
     if (!await refreshIdentity()) {
       window.location.assign(`/anmelden?next=${encodeURIComponent(location.pathname)}`);
       return;
@@ -26,12 +26,12 @@ export function BlockSellerButton({ name, userId }: { name: string; userId: stri
       Das Profil und seine Inserate werden ausgeblendet. Du kannst die Blockierung später in deinem Konto aufheben.
     </p>
     <div className="mt-5 flex justify-end gap-2">
-      <button type="button" autoFocus onClick={() => dialog.current?.close()} className="min-h-11 rounded-full bg-uf-bg-subtle px-4 text-[13px] text-uf-text">Abbrechen</button>
+      <button type="button" autoFocus onClick={() => dialog.current?.close()} className="min-h-11 rounded-full bg-uf-bg-subtle px-4 text-[13px] text-uf-text transition-colors duration-150 hover:bg-[#e8e8ed] motion-reduce:transition-none">Abbrechen</button>
       <button type="button" onClick={async () => {
         if (!await block(userId)) return;
         dialog.current?.close();
         router.push("/");
-      }} className="min-h-11 rounded-full bg-uf-text px-4 text-[13px] text-white">Blockieren</button>
+      }} className="min-h-11 rounded-full bg-uf-text px-4 text-[13px] text-white transition-colors duration-150 hover:bg-[#424245] motion-reduce:transition-none">Blockieren</button>
     </div>
   </dialog>
   </>;

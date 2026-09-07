@@ -4,7 +4,7 @@ import { parseCategoryParam } from "@/components/CategoryNav";
 import { getModelById } from "@/data/catalog";
 import { filterListings, sortListings } from "@/lib/format";
 import { useUserLocation } from "@/lib/useUserLocation";
-import type { CategoryId, ConditionId, KeyboardLayoutId, Listing, SortId } from "@/lib/types";
+import type { AccessoryFilterId, CategoryId, ConditionId, KeyboardLayoutId, Listing, SortId } from "@/lib/types";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
@@ -29,6 +29,7 @@ export function useCatalogFilters(listings: Listing[], { ignoreLocation = false 
   const [colors, setColors] = useState<string[]>(() => saved && "colors" in saved ? saved.colors as string[] : []);
   const [memory, setMemory] = useState<string[]>(() => saved && "memory" in saved ? saved.memory as string[] : []);
   const [keyboardLayouts, setKeyboardLayouts] = useState<KeyboardLayoutId[]>(() => saved && "keyboardLayouts" in saved ? saved.keyboardLayouts as KeyboardLayoutId[] : []);
+  const [accessories, setAccessories] = useState<AccessoryFilterId[]>(() => saved && "accessories" in saved ? saved.accessories as AccessoryFilterId[] : []);
   const [storage, setStorage] = useState<string[]>(() => saved && "storage" in saved ? saved.storage as string[] : []);
   const [conditions, setConditions] = useState<ConditionId[]>(() => saved && "conditions" in saved ? saved.conditions as ConditionId[] : []);
   const [warrantyOnly, setWarrantyOnly] = useState<boolean>(() => saved && "warrantyOnly" in saved ? saved.warrantyOnly as boolean : false);
@@ -42,8 +43,8 @@ export function useCatalogFilters(listings: Listing[], { ignoreLocation = false 
   const { location, setLocation, userPlace } = useUserLocation();
 
   useEffect(() => {
-    filterSnapshots.set(snapshotKey, { modelId, sizes, years, colors, memory, keyboardLayouts, storage, conditions, warrantyOnly, minBatteryCapacity, maxBatteryCycles, sortId, minPrice, maxPrice, shipping, originalBox });
-  }, [snapshotKey, modelId, sizes, years, colors, memory, keyboardLayouts, storage, conditions, warrantyOnly, minBatteryCapacity, maxBatteryCycles, sortId, minPrice, maxPrice, shipping, originalBox]);
+    filterSnapshots.set(snapshotKey, { modelId, sizes, years, colors, memory, keyboardLayouts, accessories, storage, conditions, warrantyOnly, minBatteryCapacity, maxBatteryCycles, sortId, minPrice, maxPrice, shipping, originalBox });
+  }, [snapshotKey, modelId, sizes, years, colors, memory, keyboardLayouts, accessories, storage, conditions, warrantyOnly, minBatteryCapacity, maxBatteryCycles, sortId, minPrice, maxPrice, shipping, originalBox]);
 
   useEffect(() => {
     if (sortId === "nearest" && !userPlace) {
@@ -59,6 +60,7 @@ export function useCatalogFilters(listings: Listing[], { ignoreLocation = false 
     setMemory([]);
     setStorage([]);
     setKeyboardLayouts([]);
+    setAccessories([]);
     setConditions([]);
     setWarrantyOnly(false);
     setOriginalBox(undefined);
@@ -78,6 +80,7 @@ export function useCatalogFilters(listings: Listing[], { ignoreLocation = false 
 
   const resetFilters = () => {
     setKeyboardLayouts([]);
+    setAccessories([]);
     setMinPrice(undefined);
     setMaxPrice(undefined);
     setShipping(undefined);
@@ -99,7 +102,8 @@ export function useCatalogFilters(listings: Listing[], { ignoreLocation = false 
       colors,
       memory,
       storage,
-      keyboardLayouts,
+      keyboardLayouts: categoryId === "mac" ? keyboardLayouts : undefined,
+      accessories: categoryId === "mac" ? accessories : undefined,
       conditions,
       warrantyOnly,
       minBatteryCapacity,
@@ -125,6 +129,7 @@ export function useCatalogFilters(listings: Listing[], { ignoreLocation = false 
     memory,
     storage,
     keyboardLayouts,
+    accessories,
     conditions,
     warrantyOnly,
     minBatteryCapacity,
@@ -148,6 +153,7 @@ export function useCatalogFilters(listings: Listing[], { ignoreLocation = false 
     memory,
     storage,
     keyboardLayouts,
+    accessories,
     conditions,
     warrantyOnly,
     minBatteryCapacity,
@@ -171,6 +177,7 @@ export function useCatalogFilters(listings: Listing[], { ignoreLocation = false 
       setMemory([]);
       setStorage([]);
       setKeyboardLayouts([]);
+      setAccessories([]);
       setMinBatteryCapacity(undefined);
       setMaxBatteryCycles(undefined);
     },
@@ -179,6 +186,7 @@ export function useCatalogFilters(listings: Listing[], { ignoreLocation = false 
     onToggleColor: (v: string) => setColors((s) => toggleValue(s, v)),
     onToggleMemory: (v: string) => setMemory((s) => toggleValue(s, v)),
     onToggleKeyboardLayout: (v: KeyboardLayoutId) => setKeyboardLayouts((s) => toggleValue(s, v)),
+    onToggleAccessory: (v: AccessoryFilterId) => setAccessories((s) => toggleValue(s, v)),
     onToggleStorage: (v: string) => setStorage((s) => toggleValue(s, v)),
     onToggleCondition: (v: ConditionId) => setConditions((s) => toggleValue(s, v)),
     onWarrantyOnlyChange: setWarrantyOnly,

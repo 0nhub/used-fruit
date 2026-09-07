@@ -1,5 +1,6 @@
 import { getModelById, CONDITIONS } from "@/data/catalog";
 import { chipsForModel, optionsForYear, yearsForChip } from "@/data/modelYears";
+import { acceptsDesktopAccessories, hasValidDesktopAccessories, isDesktopAccessoryId } from "@/lib/accessories";
 import { hasBuiltInKeyboard, hasValidKeyboard } from "@/lib/keyboard";
 import { isSimLockStatus, needsSimLock } from "@/lib/simLock";
 import { getBatteryMetricForModel } from "@/lib/device";
@@ -34,6 +35,14 @@ export function validateListing(input: Record<string, unknown>) {
   const connectivity = s.connectivity === "cellular" ? "cellular" : "wifi";
   if (needsSimLock(model.categoryId, connectivity)) requireValue(isSimLockStatus(s.simLock), "Bitte gib mit oder ohne SIM-Lock an.");
   if (hasBuiltInKeyboard(modelId)) requireValue(hasValidKeyboard(s as unknown as Listing), "Bitte gib das Tastaturlayout an.");
+  if (acceptsDesktopAccessories(modelId)) {
+    requireValue(Array.isArray(s.includedAccessories) && (s.includedAccessories as unknown[]).every(isDesktopAccessoryId), "Bitte gib das mitgelieferte Zubehör an.");
+    requireValue(hasValidDesktopAccessories(modelId, s as unknown as Listing), "Bitte das Tastaturlayout angeben, wenn eine Tastatur dabei ist.");
+    if (!(s.includedAccessories as string[]).includes("keyboard")) {
+      delete s.keyboardLayout;
+      delete s.keyboardLayoutDetails;
+    }
+  }
   for (const [key,max] of [["batteryMaxCapacityPercent",100],["batteryCycleCount",100000]] as const) if(s[key]!==undefined) requireValue(Number.isInteger(s[key])&&Number(s[key])>=0&&Number(s[key])<=max,"Ungültiger Batteriezustand.");
   if(s.year!==undefined) requireValue(Number.isInteger(s.year)&&Number(s.year)>=1980&&Number(s.year)<=2200,"Ungültiges Modelljahr.");
   if(s.simLock!==undefined) requireValue(isSimLockStatus(s.simLock),"Bitte gib mit oder ohne SIM-Lock an.");
@@ -41,7 +50,7 @@ export function validateListing(input: Record<string, unknown>) {
   if (metric === "capacity") requireValue(Number.isInteger(s.batteryMaxCapacityPercent) && Number(s.batteryMaxCapacityPercent) >= 0 && Number(s.batteryMaxCapacityPercent) <= 100, "Ungültiger Batteriezustand.");
   if (metric === "cycles") requireValue(Number.isInteger(s.batteryCycleCount) && Number(s.batteryCycleCount) >= 0 && Number(s.batteryCycleCount) <= 100000, "Ungültige Ladezyklen.");
   if (s.appleWarrantyUntil) requireValue(typeof s.appleWarrantyUntil === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s.appleWarrantyUntil) && Number.isFinite(Date.parse(s.appleWarrantyUntil)) && new Date(s.appleWarrantyUntil).toISOString().slice(0,10) === s.appleWarrantyUntil, "Ungültiges Garantiedatum.");
-  const publicKeys = ["chip","year","colorId","size","memory","storage","condition","originalBox","shippingScope","connectivity","simLock","keyboardLayout","keyboardLayoutDetails","batteryMaxCapacityPercent","batteryCycleCount","appleWarrantyUntil"];
+  const publicKeys = ["chip","year","colorId","size","memory","storage","condition","originalBox","shippingScope","connectivity","simLock","keyboardLayout","keyboardLayoutDetails","includedAccessories","batteryMaxCapacityPercent","batteryCycleCount","appleWarrantyUntil"];
   const specs = Object.fromEntries(publicKeys.filter(key => s[key] !== undefined && !(key === "appleWarrantyUntil" && !s[key])).map(key => [key,s[key]]));
   const privateSpecs: Record<string,string> = {};
   for (const key of ["serialNumber", "street", "locality"]) if (s[key]) privateSpecs[key] = string(s[key], 200);

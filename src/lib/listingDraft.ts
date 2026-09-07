@@ -5,6 +5,7 @@ import type {
   IpadConnectivity,
   SimLockStatus,
   KeyboardLayoutId,
+  DesktopAccessoryId,
   ShippingScope,
 } from "@/lib/types";
 
@@ -23,6 +24,7 @@ export interface ListingDraft {
   simLock?: SimLockStatus;
   keyboardLayout?: KeyboardLayoutId;
   keyboardLayoutDetails?: string;
+  includedAccessories?: DesktopAccessoryId[];
   condition: ConditionId;
   originalBox: boolean;
   price: number;
