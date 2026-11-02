@@ -6,6 +6,7 @@ import { transaction } from './db';
 import { assertContact, lockPeople } from './access';
 import { ApiError, requireValue, uuid } from './http';
 import { isObjectStorageEnabled, putMediaObject, readMediaObject, retireMediaObject } from './objectStorage';
+import { deleteLocalMedia, localMediaRecord, rememberLocalMedia } from './localMarketplace';
 
 function localMediaDirectory() {
   const directory=process.env.USED_FRUIT_MEDIA_DIR || (process.env.NODE_ENV !== 'production' ? path.join(process.cwd(), '.data', 'media') : '');
@@ -34,6 +35,11 @@ export async function uploadMedia(userId: string,request: Request) {
   if (!remote && !directory) throw new Error('Media storage unavailable');
   if (remote) await putMediaObject(filename, encoded);
   else { await mkdir(directory!,{recursive:true,mode:0o750}); await writeFile(path.join(directory!,filename),encoded,{flag:'wx',mode:0o640}); }
+  if (!process.env.DATABASE_URL) {
+    try { await rememberLocalMedia(userId, id, filename, encoded.length); }
+    catch (error) { await removeStored(filename, directory, false); throw error; }
+    return {id,url:'/api/v1/media/'+id};
+  }
   try {
     await transaction(async client=> {
       await lockPeople(client,[userId]);
@@ -47,6 +53,16 @@ export async function uploadMedia(userId: string,request: Request) {
   return {id,url:'/api/v1/media/'+id};
 }
 export async function readMedia(id: string,userId: string|null) {
+  if (!process.env.DATABASE_URL) {
+    const local = await localMediaRecord(id, userId);
+    if (!local) throw new ApiError(404, 'not_found', 'Bild nicht gefunden.');
+    const directory = localMediaDirectory();
+    if (!directory) throw new ApiError(404, 'not_found', 'Bild nicht gefunden.');
+    try {
+      const bytes = await readFile(path.join(directory, local.filename));
+      return new Response(new Uint8Array(bytes),{headers:{'Content-Type':'image/webp','Content-Length':String(bytes.length),'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'}});
+    } catch (error) { if ((error as NodeJS.ErrnoException).code === 'ENOENT') throw new ApiError(404, 'not_found', 'Bild nicht gefunden.'); throw error; }
+  }
   const row=await transaction(async client=> {
     const media=(await client.query(`SELECT m.* FROM media m JOIN users u ON u.id=m.user_id WHERE m.id=$1 AND m.deleted_at IS NULL AND u.deleted_at IS NULL AND u.banned_at IS NULL AND (u.cover_media_id=m.id OR u.id=$2 OR EXISTS (SELECT 1 FROM listings l WHERE l.seller_id=m.user_id AND l.status IN ('public','sold') AND jsonb_typeof(l.specs->'photoIds')='array' AND l.specs->'photoIds' ? m.id::text))`,[uuid(id),userId])).rows[0];
     if (!media) throw new ApiError(404,'not_found','Bild nicht gefunden.');
@@ -64,6 +80,7 @@ export async function readMedia(id: string,userId: string|null) {
   return new Response(new Uint8Array(bytes),{headers:{'Content-Type':'image/webp','Content-Length':String(bytes.length),'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'}});
 }
 export async function deleteMedia(id: string,userId: string) {
+  if (!process.env.DATABASE_URL) return deleteLocalMedia(id, userId);
   await transaction(async client=> {
     await lockPeople(client,[userId]);
     const result=await client.query('UPDATE media SET deleted_at=now() WHERE id=$1 AND user_id=$2 AND deleted_at IS NULL RETURNING id',[uuid(id),userId]);

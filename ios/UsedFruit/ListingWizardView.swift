@@ -155,7 +155,7 @@ struct CreateOfferView: View {
                             TextField("Straße und Hausnummer",text:binding("street")).textContentType(.streetAddressLine1).padding(18)
                             Divider().padding(.horizontal,18)
                             TextField("PLZ oder Stadt",text:$locationQuery).textContentType(.postalCode).padding(18)
-                            if !locationQuery.isEmpty {ForEach(catalog.places.filter{$0.label.localizedCaseInsensitiveContains(locationQuery)}.prefix(8)){place in Button(place.label){values["city"]=place.city;values["postalCode"]=place.postalCode;locationQuery=""}.frame(maxWidth:.infinity,alignment:.leading).padding(14)}}
+                            if !locationQuery.isEmpty {ForEach(catalog.searchPlaces(locationQuery)){place in Button(place.label){values["city"]=place.city;values["postalCode"]=place.postalCode;locationQuery=""}.frame(maxWidth:.infinity,alignment:.leading).padding(14)}}
                             if let city=values["city"] {Text("\(values["postalCode"] ?? "") \(city)").frame(maxWidth:.infinity,alignment:.leading).padding(18)}
                             Divider().padding(.horizontal,18)
                             TextField("Ortsteil",text:binding("locality")).padding(18)

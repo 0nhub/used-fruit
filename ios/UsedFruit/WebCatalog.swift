@@ -84,7 +84,36 @@ struct WebCatalog: Codable {
         return value
     }()
     func model(_ id: String?) -> CatalogModel? { models.first { $0.id == id } }
-    func place(postal: String?, city: String?) -> CatalogPlace? { places.first { $0.postalCode == postal } ?? places.first { $0.city == city } }
+    func place(postal: String?, city: String?) -> CatalogPlace? {
+        if let postal {
+            let matches = places.filter { $0.postalCode == postal }
+            if let city, let named = matches.first(where: { $0.city.compare(city, options: [.caseInsensitive, .diacriticInsensitive], locale: Locale(identifier: "de_DE")) == .orderedSame }) { return named }
+            if let first = matches.first { return first }
+        }
+        if let city { return places.first { $0.city.compare(city, options: [.caseInsensitive, .diacriticInsensitive], locale: Locale(identifier: "de_DE")) == .orderedSame } }
+        return nil
+    }
+    func searchPlaces(_ query: String, limit: Int = 8) -> [CatalogPlace] {
+        let q = query.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: Locale(identifier: "de_DE")).trimmingCharacters(in: .whitespacesAndNewlines)
+        if q.isEmpty { return [] }
+        return places.compactMap { place -> (CatalogPlace, Int)? in
+            let city = place.city.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: Locale(identifier: "de_DE"))
+            var score = 0
+            if place.postalCode.hasPrefix(q) { score += 100 - (place.postalCode.count - q.count) }
+            if city == q { score += 200 }
+            else if city.hasPrefix(q) { score += 80 }
+            else if score == 0, city.contains(q) { score += 40 }
+            else if score == 0, "\(place.postalCode) \(city)".contains(q) { score += 20 }
+            return score > 0 ? (place, score) : nil
+        }
+        .sorted {
+            if $0.1 != $1.1 { return $0.1 > $1.1 }
+            if $0.0.postalCode != $1.0.postalCode { return $0.0.postalCode < $1.0.postalCode }
+            return $0.0.city.localizedCompare($1.0.city) == .orderedAscending
+        }
+        .prefix(limit)
+        .map(\.0)
+    }
     func years(_ model: CatalogModel, chip: String?) -> [Int] { chip.flatMap { model.chipYears[$0] } ?? model.years ?? [] }
     func wizardSteps(_ values: [String:String]) -> [String] {
         let m = model(values["model"]), chips = m?.chips ?? []

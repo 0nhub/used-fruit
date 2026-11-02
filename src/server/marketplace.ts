@@ -5,13 +5,18 @@ import { assertContact, conversationAccess, idempotent, lockPeople } from "./acc
 import { presentListingPrice } from "@/lib/priceAdjustment";
 import { validateListing } from "./listingValidation";
 import { getLocalSeedListing, listLocalSeedListings, localSeedAvailable } from "./localSeedListings";
+import { createLocalListing, listLocalListings, readLocalListing, updateLocalListing } from "./localMarketplace";
 
 const listingColumns = `l.id,l.number::text,l.seller_id AS "sellerId",l.title,l.category_id AS "categoryId",l.model_id AS "modelId",l.price_cents AS "priceCents",l.currency,l.specs,l.city,l.postal_code AS "postalCode",l.status,l.version,l.created_at AS "createdAt",l.updated_at AS "updatedAt",l.sold_at AS "soldAt",u.name AS "sellerName",u.emoji AS "sellerEmoji",u.created_at AS "sellerJoinedAt",(SELECT MIN(o.created_at) FROM offers o WHERE o.listing_id=l.id AND o.status='pending') AS "pendingAt"`;
 const publicSeller = `u.deleted_at IS NULL AND u.banned_at IS NULL`;
 const notBlocked = `NOT EXISTS(SELECT 1 FROM user_blocks b WHERE (b.blocker_id=$1 AND b.blocked_id=l.seller_id) OR (b.blocked_id=$1 AND b.blocker_id=l.seller_id))`;
 
 export async function listListings(userId: string | null, query: URLSearchParams, own = false) {
-  if (localSeedAvailable()) return listLocalSeedListings(query, own);
+  if (localSeedAvailable()) {
+    const seeds = listLocalSeedListings(query, own);
+    const stored = await listLocalListings(userId, own);
+    return { items: [...stored, ...seeds.items], nextCursor: null };
+  }
   const values: unknown[] = [userId];
   const where = [publicSeller, notBlocked, own ? "l.seller_id=$1 AND l.status<>'deleted'" : "l.status='public'"];
   const bind=(value:unknown)=>{values.push(value);return '$'+values.length;};
@@ -74,7 +79,7 @@ export async function listListings(userId: string | null, query: URLSearchParams
   return {items:rows.map(publicListing),nextCursor:result.rows.length>limit&&last?Buffer.from(JSON.stringify([sort,sort==='newest'?last.createdAt:sort==='nearest'?last.distanceKm:last.priceCents,last.id])).toString('base64url'):null};
 }
 export async function getListing(id: string, userId: string | null) {
-  if (localSeedAvailable()) return getLocalSeedListing(id);
+  if (localSeedAvailable()) return await readLocalListing(id, userId) ?? getLocalSeedListing(id);
   const result = await database().query(`SELECT ${listingColumns},CASE WHEN l.seller_id=$1 THEN l.private_specs END AS "privateSpecs" FROM listings l JOIN users u ON u.id=l.seller_id
     WHERE l.id=$2 AND ${publicSeller} AND ${notBlocked} AND (l.status='public' OR (l.seller_id=$1 AND l.status<>'deleted'))`,[userId,uuid(id)]);
   if (!result.rows[0]) throw new ApiError(404,"not_found","Inserat nicht gefunden.");
@@ -91,7 +96,8 @@ function publicListing<T extends {priceCents:number;specs?:unknown;createdAt:str
   const { pendingAt: _pendingAt, ...listing } = presentListingPrice(row);
   return listing;
 }
-export async function createListing(userId: string, input: Record<string,unknown>, key: string | null) {
+export async function createListing(userId: string, input: Record<string,unknown>, key: string | null, seller = { name: "Anbieter", emoji: "🍏" }) {
+  if (localSeedAvailable()) return createLocalListing(userId, input, key, seller);
   const listing=validateListing(input);
   const result = await transaction(client=>idempotent(client,userId,"listing:create",key,input,async()=> {
     const account=(await client.query("SELECT onboarding_completed FROM users WHERE id=$1 AND banned_at IS NULL AND deleted_at IS NULL FOR UPDATE",[userId])).rows[0];
@@ -103,6 +109,7 @@ export async function createListing(userId: string, input: Record<string,unknown
   return getListing(result.id,userId);
 }
 export async function updateListing(id: string, userId: string, input: Record<string,unknown>, remove=false) {
+  if (localSeedAvailable()) return updateLocalListing(id, userId, input, remove);
   await transaction(async client=> {
     const existing=(await client.query("SELECT * FROM listings WHERE id=$1 AND seller_id=$2 AND status<>'deleted' FOR UPDATE",[uuid(id),userId])).rows[0];
     if (!existing) throw new ApiError(404,"not_found","Inserat nicht gefunden.");

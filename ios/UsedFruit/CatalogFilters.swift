@@ -77,7 +77,7 @@ struct CatalogFilterSheet: View {
                 VStack(alignment:.leading,spacing:0) {
                     FilterSection("Standort") {
                         TextField("PLZ oder Ort",text:$locationQuery)
-                        if !locationQuery.isEmpty {ForEach(catalog.places.filter{$0.label.localizedCaseInsensitiveContains(locationQuery)}.prefix(8)){place in Button(place.label){filters.place=place;locationQuery=""}}}
+                        if !locationQuery.isEmpty {ForEach(catalog.searchPlaces(locationQuery)){place in Button(place.label){filters.place=place;locationQuery=""}}}
                         if let place=filters.place {HStack{Text(place.label);Spacer();Button("Entfernen"){filters.place=nil;filters.radius=0;if filters.sort=="nearest"{filters.sort="newest"}}}}
                         Picker("Umkreis",selection:$filters.radius){Text("Keine Begrenzung").tag(0);ForEach(catalog.radius,id:\.self){Text("\($0) km").tag($0)}}.disabled(filters.place==nil)
                     }

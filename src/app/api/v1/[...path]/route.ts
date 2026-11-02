@@ -47,7 +47,7 @@ async function handle(request: NextRequest,context: {params:Promise<{path:string
       if (method==='DELETE') return reply(await deleteAccount(id));
     }
     if (route==='me/listings'&&method==='GET') return reply(await marketplace.listListings(id,request.nextUrl.searchParams,true));
-    if (route==='listings'&&method==='POST') return reply(await marketplace.createListing(id,await input(),key));
+    if (route==='listings'&&method==='POST') return reply(await marketplace.createListing(id,await input(),key,{name:user.name,emoji:user.emoji}));
     if (path[0]==='listings'&&path.length===2) {
       if (method==='PATCH') return reply(await marketplace.updateListing(path[1],id,await input()));
       if (method==='DELETE') return reply(await marketplace.updateListing(path[1],id,{},true));
