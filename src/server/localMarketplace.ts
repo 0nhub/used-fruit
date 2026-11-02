@@ -135,9 +135,15 @@ export async function createLocalListing(userId: string, input: Record<string, u
       const media = state.media.find((item) => item.id === photoId && item.userId === userId && !item.deletedAt);
       if (!media) throw new ApiError(400, "invalid_input", "Ein Foto ist nicht mehr verfügbar. Bitte lade es erneut hoch.");
     }
+    const requested = typeof input.id === "string" && /^uf-[a-z0-9]{4,12}$/.test(input.id) ? input.id : "";
+    const taken = requested ? state.listings.find((item) => item.id === requested && item.status !== "deleted") : undefined;
+    if (taken) {
+      if (taken.sellerId !== userId) throw new ApiError(409, "listing_exists", "Dieses Inserat gehört zu einem anderen Konto.");
+      return visible(taken, userId);
+    }
     const now = new Date().toISOString();
     const stored: StoredListing = {
-      id: randomUUID(),
+      id: requested || randomUUID(),
       number: "",
       sellerId: userId,
       categoryId: listing.categoryId,
