@@ -1,4 +1,5 @@
 import { database, transaction } from './db';
+import { localSeedAvailable } from './localSeedListings';
 import { assertContact, conversationAccess, lockPeople } from './access';
 import { ApiError, requireValue, string, uuid } from './http';
 import { getListing } from './marketplace';
@@ -40,6 +41,7 @@ export async function updateProfile(userId: string,input: Record<string,unknown>
   });
 }
 export async function favorites(userId: string) {
+  if (localSeedAvailable()) return { items: [] as string[] };
   const result=await database().query(`SELECT f.listing_id AS id FROM favorites f JOIN listings l ON l.id=f.listing_id JOIN users u ON u.id=l.seller_id WHERE f.user_id=$1 AND l.status='public' AND u.deleted_at IS NULL AND u.banned_at IS NULL AND NOT EXISTS(SELECT 1 FROM user_blocks b WHERE (b.blocker_id=$1 AND b.blocked_id=l.seller_id) OR (b.blocked_id=$1 AND b.blocker_id=l.seller_id)) ORDER BY f.created_at DESC`,[userId]);
   return {items:result.rows.map(row=>row.id)};
 }
@@ -49,14 +51,14 @@ export async function setFavorite(userId: string,id: string,enabled: boolean) {
   else await database().query('DELETE FROM favorites WHERE user_id=$1 AND listing_id=$2',[userId,id]);
   return {ok:true};
 }
-export async function notes(userId: string) { return {items:(await database().query('SELECT listing_id AS "listingId",note FROM listing_notes WHERE user_id=$1',[userId])).rows}; }
+export async function notes(userId: string) { if (localSeedAvailable()) return { items: [] as { listingId: string; note: string }[] }; return {items:(await database().query('SELECT listing_id AS "listingId",note FROM listing_notes WHERE user_id=$1',[userId])).rows}; }
 export async function setNote(userId: string,id: string,input: Record<string,unknown>,remove=false) {
   uuid(id);
   if (remove) await database().query('DELETE FROM listing_notes WHERE user_id=$1 AND listing_id=$2',[userId,id]);
   else { await getListing(id,userId); await database().query('INSERT INTO listing_notes(user_id,listing_id,note) VALUES($1,$2,$3) ON CONFLICT(user_id,listing_id) DO UPDATE SET note=EXCLUDED.note',[userId,id,string(input.note,200,true)]); }
   return {ok:true};
 }
-export async function listBlocks(userId: string) { return {items:(await database().query(`SELECT u.id,u.name,u.emoji,b.created_at AS "createdAt" FROM user_blocks b JOIN users u ON u.id=b.blocked_id WHERE b.blocker_id=$1 ORDER BY b.created_at DESC`,[userId])).rows}; }
+export async function listBlocks(userId: string) { if (localSeedAvailable()) return { items: [] as { id: string; name: string; emoji: string; createdAt: string }[] }; return {items:(await database().query(`SELECT u.id,u.name,u.emoji,b.created_at AS "createdAt" FROM user_blocks b JOIN users u ON u.id=b.blocked_id WHERE b.blocker_id=$1 ORDER BY b.created_at DESC`,[userId])).rows}; }
 export async function report(userId: string,input: Record<string,unknown>) {
   const reason=string(input.reason,2000);
   requireValue(input.listingId||input.userId,'Bitte wähle ein Inserat oder Profil.');
