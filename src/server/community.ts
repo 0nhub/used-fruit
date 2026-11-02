@@ -3,6 +3,7 @@ import { localSeedAvailable } from './localSeedListings';
 import { assertContact, conversationAccess, lockPeople } from './access';
 import { ApiError, requireValue, string, uuid } from './http';
 import { getListing } from './marketplace';
+import { localFavorites, setLocalFavorite } from './localMarketplace';
 import { reputationFromStats } from '@/lib/reputation';
 
 export async function publicProfile(userId: string|null, target: string) {
@@ -40,12 +41,23 @@ export async function updateProfile(userId: string,input: Record<string,unknown>
     return (await client.query('SELECT * FROM users WHERE id=$1',[userId])).rows[0];
   });
 }
+function favoriteId(value: string) {
+  if (/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)) return value;
+  requireValue(/^uf-[a-z0-9-]{1,40}$/.test(value), "Ungültige ID.");
+  return value;
+}
 export async function favorites(userId: string) {
-  if (localSeedAvailable()) return { items: [] as string[] };
+  if (localSeedAvailable()) return { items: await localFavorites(userId) };
   const result=await database().query(`SELECT f.listing_id AS id FROM favorites f JOIN listings l ON l.id=f.listing_id JOIN users u ON u.id=l.seller_id WHERE f.user_id=$1 AND l.status='public' AND u.deleted_at IS NULL AND u.banned_at IS NULL AND NOT EXISTS(SELECT 1 FROM user_blocks b WHERE (b.blocker_id=$1 AND b.blocked_id=l.seller_id) OR (b.blocked_id=$1 AND b.blocker_id=l.seller_id)) ORDER BY f.created_at DESC`,[userId]);
   return {items:result.rows.map(row=>row.id)};
 }
 export async function setFavorite(userId: string,id: string,enabled: boolean) {
+  if (localSeedAvailable()) {
+    const listingId = favoriteId(id);
+    if (enabled) await getListing(listingId, userId);
+    await setLocalFavorite(userId, listingId, enabled);
+    return { ok: true };
+  }
   uuid(id);
   if (enabled) { await getListing(id,userId); await database().query('INSERT INTO favorites(user_id,listing_id) VALUES($1,$2) ON CONFLICT DO NOTHING',[userId,id]); }
   else await database().query('DELETE FROM favorites WHERE user_id=$1 AND listing_id=$2',[userId,id]);

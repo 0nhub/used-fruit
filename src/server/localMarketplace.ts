@@ -28,14 +28,20 @@ interface IdempotencyRow {
   response: unknown;
 }
 
+interface StoredFavorite {
+  userId: string;
+  listingId: string;
+}
+
 interface LocalState {
   listings: StoredListing[];
   media: StoredMedia[];
   idempotency: IdempotencyRow[];
+  favorites: StoredFavorite[];
 }
 
 const FILE = path.join(process.cwd(), ".data", "local-marketplace.json");
-const empty = (): LocalState => ({ listings: [], media: [], idempotency: [] });
+const empty = (): LocalState => ({ listings: [], media: [], idempotency: [], favorites: [] });
 let chain: Promise<unknown> = Promise.resolve();
 
 function exclusive<T>(work: () => Promise<T>): Promise<T> {
@@ -47,7 +53,7 @@ function exclusive<T>(work: () => Promise<T>): Promise<T> {
 async function readState(): Promise<LocalState> {
   try {
     const parsed = JSON.parse(await readFile(FILE, "utf8")) as Partial<LocalState>;
-    return { listings: parsed.listings ?? [], media: parsed.media ?? [], idempotency: parsed.idempotency ?? [] };
+    return { listings: parsed.listings ?? [], media: parsed.media ?? [], idempotency: parsed.idempotency ?? [], favorites: parsed.favorites ?? [] };
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") return empty();
     throw error;
@@ -197,5 +203,19 @@ export async function updateLocalListing(id: string, userId: string, input: Reco
     existing.updatedAt = new Date().toISOString();
     await writeState(state);
     return visible(existing, userId);
+  });
+}
+
+export async function localFavorites(userId: string) {
+  const state = await readState();
+  return state.favorites.filter((item) => item.userId === userId).map((item) => item.listingId);
+}
+
+export async function setLocalFavorite(userId: string, listingId: string, enabled: boolean) {
+  await exclusive(async () => {
+    const state = await readState();
+    state.favorites = state.favorites.filter((item) => !(item.userId === userId && item.listingId === listingId));
+    if (enabled) state.favorites.push({ userId, listingId });
+    await writeState(state);
   });
 }

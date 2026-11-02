@@ -13,14 +13,9 @@ const notBlocked = `NOT EXISTS(SELECT 1 FROM user_blocks b WHERE (b.blocker_id=$
 
 export async function listListings(userId: string | null, query: URLSearchParams, own = false) {
   if (localSeedAvailable()) {
-    const seeds = listLocalSeedListings(query, false);
+    const seeds = listLocalSeedListings(query, own);
     const stored = await listLocalListings(userId, own);
-    const catalog = seeds.items.filter((item) => !stored.some((mine) => mine.id === item.id));
-    if (!own) return { items: [...stored, ...catalog], nextCursor: null };
-    const mine = catalog
-      .filter((item) => item.number === "3639988583" || item.id === "uf-se3-64")
-      .map((item) => ({ ...item, sellerId: userId ?? item.sellerId }));
-    return { items: [...stored, ...mine], nextCursor: null };
+    return { items: [...stored, ...seeds.items], nextCursor: null };
   }
   const values: unknown[] = [userId];
   const where = [publicSeller, notBlocked, own ? "l.seller_id=$1 AND l.status<>'deleted'" : "l.status='public'"];
