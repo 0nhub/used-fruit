@@ -1,4 +1,5 @@
 "use client";
+import { appleLoginHref } from "@/lib/appleLogin";
 import { currentIdentity } from "@/lib/authClient";
 
 import { prepareProfileCover } from "@/lib/profileCover";
@@ -77,8 +78,8 @@ export default function ProfilPage() {
           Melde dich an, um Namen, Standort und Konto zu verwalten.
         </p>
         <a
-          href="/anmelden?next=/profil"
-          className="mt-6 inline-flex h-10 items-center rounded-full bg-uf-text px-5 text-[14px] text-white"
+          href={appleLoginHref("/profil")}
+          className="mt-6 inline-flex h-10 items-center rounded-full bg-uf-action px-5 text-[14px] text-white hover:bg-uf-link"
         >
           Mit Apple anmelden
         </a>
@@ -290,7 +291,7 @@ export default function ProfilPage() {
                 <button
                   type="submit"
                   title="Änderungen speichern"
-                  className="h-10 rounded-full bg-uf-text px-5 text-[14px] text-white transition-colors duration-150 hover:bg-[#424245]"
+                  className="h-10 rounded-full bg-uf-action px-5 text-[14px] text-white transition-colors duration-150 hover:bg-uf-link"
                 >
                   Speichern
                 </button>

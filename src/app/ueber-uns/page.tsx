@@ -35,7 +35,7 @@ export default function AboutPage() {
           <h2>Bewusst weitergeben</h2>
           <p>Nachhaltiger zu handeln soll sich einfach und gut anfühlen. Dafür entwickeln wir Used Fruit weiter: mit einer ruhigen Oberfläche, hilfreichen Informationen und dem Ziel, Vertrauen und Orientierung beim Gebrauchtkauf zu stärken.</p>
         </div>
-        <Link href="/" className="mt-9 inline-flex h-11 items-center rounded-full bg-uf-text px-5 text-[14px] text-white">Geräte entdecken</Link>
+        <Link href="/" className="mt-9 inline-flex h-11 items-center rounded-full bg-uf-action px-5 text-[14px] text-white hover:bg-uf-link">Geräte entdecken</Link>
       </main>
       <footer className="mx-auto max-w-[680px] px-5 pb-8 sm:px-6"><LegalNav /></footer>
     </div>

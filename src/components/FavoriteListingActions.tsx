@@ -1,6 +1,7 @@
 "use client";
 
-import { formatPrice } from "@/lib/format";
+import { BuyButton } from "@/components/BuyConfirmDialog";
+import { appleLoginHref } from "@/lib/appleLogin";
 import { findThreadForListing } from "@/lib/messages";
 import { listingSellerEmoji } from "@/lib/seller";
 import { useMessages } from "@/lib/useMessages";
@@ -13,14 +14,15 @@ import { useState } from "react";
 export function FavoriteListingActions({ listing }: { listing: Listing }) {
   const router = useRouter();
   const { profile, signedIn } = useProfile();
-  const { threads, ready, openThread, send } = useMessages();
+  const { threads, ready, openThread } = useMessages();
   const [error, setError] = useState("");
   const existing = findThreadForListing(threads, listing);
+  const offerOpen = existing?.offer?.status === "pending" || existing?.offer?.status === "accepted";
 
-  const start = async (kind: "buy" | "contact") => {
+  const start = async () => {
     setError("");
     if (!signedIn) {
-      router.push(`/anmelden?next=/favoriten`);
+      window.location.assign(appleLoginHref("/favoriten"));
       return;
     }
     if (!profile.name.trim()) {
@@ -34,30 +36,18 @@ export function FavoriteListingActions({ listing }: { listing: Listing }) {
       buyerName: profile.name.trim(),
       buyerEmoji: profile.emoji,
     });
-    if (kind === "buy") {
-      await send(
-        thread.id,
-        {
-          author: "buyer",
-          kind: "offer",
-          price: listing.price,
-          text: `Ich kaufe für ${formatPrice(listing.price)}.`,
-        },
-        { price: listing.price, status: "pending" },
-      );
-    }
     router.push(`/nachrichten?id=${encodeURIComponent(thread.id)}`);
     } catch (error) { setError(error instanceof Error ? error.message : "Nachricht konnte nicht geöffnet werden."); }
   };
 
   if (!ready) return <div className="h-8" aria-hidden />;
 
-  if (existing) {
+  if (existing && offerOpen) {
     return (
       <button
         type="button"
         onClick={() => router.push(`/nachrichten?id=${encodeURIComponent(existing.id)}`)}
-        className="h-8 rounded-full bg-uf-text px-3.5 text-[13px] font-medium text-white hover:bg-[#424245]"
+        className="h-8 rounded-full bg-uf-action px-3.5 text-[13px] font-medium text-white hover:bg-uf-link"
       >
         Zur Nachricht
       </button>
@@ -66,19 +56,20 @@ export function FavoriteListingActions({ listing }: { listing: Listing }) {
 
   return (
     <div className="flex min-w-0 flex-wrap items-center gap-2">
+      {!listing.soldAt ? (
+        <BuyButton
+          listing={listing}
+          className="h-8 rounded-full bg-uf-action px-3.5 text-[13px] font-medium text-white hover:bg-uf-link"
+        >
+          Kaufen
+        </BuyButton>
+      ) : null}
       <button
         type="button"
-        onClick={() => start("buy")}
-        className="h-8 rounded-full bg-uf-text px-3.5 text-[13px] font-medium text-white hover:bg-[#424245]"
-      >
-        Kaufen
-      </button>
-      <button
-        type="button"
-        onClick={() => start("contact")}
+        onClick={() => existing ? router.push(`/nachrichten?id=${encodeURIComponent(existing.id)}`) : start()}
         className="h-8 rounded-full border border-uf-border bg-white px-3.5 text-[13px] text-uf-text hover:bg-uf-bg-subtle"
       >
-        Nachricht schreiben
+        {existing ? "Zur Nachricht" : "Nachricht schreiben"}
       </button>
       {error ? (
         <span className="w-full text-[12px] text-[#d80000]">

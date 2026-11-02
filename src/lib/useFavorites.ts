@@ -1,5 +1,6 @@
 "use client";
 
+import { appleLoginHref } from "@/lib/appleLogin";
 import { currentIdentity, refreshIdentity } from "@/lib/authClient";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { api, API_EVENT, invalidateApi, showApiError } from "./apiClient";
@@ -49,7 +50,7 @@ export function useFavorites() {
     const identity = await refreshIdentity();
     if (!identity) {
       sessionStorage.setItem("used-fruit-pending-favorite", id);
-      window.location.assign("/anmelden?next=/favoriten");
+      window.location.assign(appleLoginHref("/favoriten"));
       return;
     }
     try {

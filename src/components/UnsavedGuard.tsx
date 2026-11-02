@@ -161,7 +161,7 @@ export function UnsavedGuard({
               <button
                 type="button"
                 onClick={leave}
-                className="h-10 rounded-full bg-uf-text px-4 text-[14px] text-white"
+                className="h-10 rounded-full bg-uf-action px-4 text-[14px] text-white hover:bg-uf-link"
               >
                 {leaveLabel}
               </button>

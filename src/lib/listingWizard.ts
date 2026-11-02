@@ -1,5 +1,5 @@
 import { getModelById } from "@/data/catalog";
-import { chipsForModel, optionsForYear, yearsForChip } from "@/data/modelYears";
+import { chipsForModel, optionsForSelection, yearsForChip } from "@/data/modelYears";
 import { getBatteryMetricForModel } from "@/lib/device";
 import { acceptsDesktopAccessories, needsKeyboardLayout } from "@/lib/accessories";
 import { needsSimLock } from "@/lib/simLock";
@@ -24,7 +24,8 @@ export type WizardStep =
   | "battery"
   | "price"
   | "location"
-  | "shipping";
+  | "shipping"
+  | "photos";
 
 function onlyChoice<T>(items?: readonly T[]): T | undefined {
   return items?.length === 1 ? items[0] : undefined;
@@ -34,19 +35,22 @@ export function soleSpecValues(
   model: ModelDefinition | undefined,
   year?: number,
   chip?: string,
+  size?: string,
+  storage?: string,
 ) {
   if (!model) return {};
   const chips = chipsForModel(model);
   const resolvedChip = chip || onlyChoice(chips);
   const years = yearsForChip(model, resolvedChip);
   const resolvedYear = year ?? onlyChoice(years);
-  const options = optionsForYear(model, resolvedYear);
+  const options = optionsForSelection(model, resolvedYear, resolvedChip, size);
+  const withStorage = optionsForSelection(model, resolvedYear, resolvedChip, size, storage);
   return {
     chip: onlyChoice(chips),
     colorId: onlyChoice(options.colors)?.id,
     size: onlyChoice(options.sizes),
     year: onlyChoice(years),
-    memory: onlyChoice(options.memory),
+    memory: onlyChoice(withStorage.memory),
     storage: onlyChoice(options.storage),
   };
 }
@@ -61,6 +65,8 @@ export function buildWizardSteps(
   chip?: string,
   connectivity?: IpadConnectivity,
   includedAccessories?: DesktopAccessoryId[],
+  size?: string,
+  storage?: string,
 ): WizardStep[] {
   const steps: WizardStep[] = ["category", "model"];
   const model = modelId ? getModelById(modelId) : undefined;
@@ -73,11 +79,12 @@ export function buildWizardSteps(
 
   const resolvedYear = year ?? onlyChoice(years);
   const ready = Boolean(model && (resolvedYear != null || !model.years?.length));
-  const options = ready ? optionsForYear(model, resolvedYear) : undefined;
+  const options = ready ? optionsForSelection(model, resolvedYear, resolvedChip, size) : undefined;
+  const memoryOptions = ready ? optionsForSelection(model, resolvedYear, resolvedChip, size, storage) : undefined;
   if (needsChoice(options?.colors)) steps.push("color");
   if (needsChoice(options?.sizes)) steps.push("size");
-  if (needsChoice(options?.memory)) steps.push("memory");
   if (needsChoice(options?.storage)) steps.push("storage");
+  if (needsChoice(memoryOptions?.memory)) steps.push("memory");
   if (model?.categoryId === "ipad") steps.push("connectivity");
 
   if (needsSimLock(model?.categoryId, connectivity)) steps.push("simLock");
@@ -87,7 +94,7 @@ export function buildWizardSteps(
 
   steps.push("condition", "packaging", "warranty");
   if (modelId && getBatteryMetricForModel(modelId)) steps.push("battery");
-  steps.push("price", "location", "shipping");
+  steps.push("price", "location", "shipping", "photos");
   return steps;
 }
 
@@ -170,15 +177,20 @@ export const STEP_COPY: Record<
   },
   price: {
     title: "Preis",
-    subtitle: "Zu welchem Preis möchtest du das Gerät anbieten?",
+    subtitle: "Zu welchem Preis möchtest du das Gerät anbieten? Optional kannst du den Preis automatisch senken, solange niemand kauft.",
   },
   location: {
     title: "Standort",
-    subtitle: "PLZ oder Stadt wählen, danach den Ortsteil eingrenzen.",
+    subtitle: "PLZ oder Stadt wählen. Ortsteil ist freiwillig.",
   },
   shipping: {
     title: "Versand",
     subtitle: "Nur Abholung oder auch Versand innerhalb Deutschlands?",
+  },
+  photos: {
+    title: "Fotos",
+    subtitle: "Lade eigene Fotos vom Gerät hoch. Mindestens eines, höchstens acht.",
+    tip: "JPEG, PNG oder WebP, jeweils höchstens 8 MB.",
   },
 };
 

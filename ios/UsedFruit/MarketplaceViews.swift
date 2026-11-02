@@ -8,21 +8,18 @@ struct DeviceArtwork: View {
     let offer: Offer
     var height: CGFloat = 150
     var body: some View {
-        Canvas {context,size in
-            let scale=min(size.width/360,size.height/240)
-            var c=context;c.translateBy(x:(size.width-360*scale)/2,y:(size.height-240*scale)/2);c.scaleBy(x:scale,y:scale)
-            let s=offer.specs ?? [:],model=WebCatalog.shared.model(s["model"])
-            let shell=Color(catalogHex:model?.colors.first{$0.id==s["color"]}?.hex ?? "#C0C0C5")
-            let seed=Array((s["model",default:offer.title]+"-"+s["color",default:""]).utf16).reduce(0){$0+Int($1)}
-            let hues=[200.0,280,40,160,320,20],h=hues[seed%6]
-            let colors=[Color(hue:h/360,saturation:0.6,brightness:0.85),Color(hue:hues[(seed+2)%6]/360,saturation:0.65,brightness:0.8),Color(hue:((h+40).truncatingRemainder(dividingBy:360))/360,saturation:0.5,brightness:0.92)]
-            func rect(_ x:Double,_ y:Double,_ w:Double,_ h:Double,_ r:Double,_ color:Color){c.fill(Path(roundedRect:CGRect(x:x,y:y,width:w,height:h),cornerRadius:r),with:.color(color))}
-            func screen(_ x:Double,_ y:Double,_ w:Double,_ h:Double,_ r:Double){c.fill(Path(roundedRect:CGRect(x:x,y:y,width:w,height:h),cornerRadius:r),with:.linearGradient(Gradient(colors:colors),startPoint:CGPoint(x:x,y:y),endPoint:CGPoint(x:x+w,y:y+h)))}
-            if offer.category=="Mac" {rect(48,28,264,158,10,shell);screen(58,38,244,132,4);rect(30,186,300,10,2,shell);rect(140,188,80,4,1,.gray.opacity(0.45))}
-            else if offer.category=="iPad" {rect(88,22,184,184,16,shell);screen(98,32,164,164,8)}
-            else {rect(138,18,84,196,16,shell);screen(144,26,72,180,12);rect(162,32,36,7,3.5,.black.opacity(0.8))}
-            c.fill(Path(ellipseIn:CGRect(x:offer.category=="Mac" ? 110:150,y:220,width:offer.category=="Mac" ? 140:60,height:5)),with:.color(.black.opacity(0.07)))
-        }.frame(height:height).accessibilityHidden(true)
+        Group {
+            if let id=offer.photoIds?.first, let url=URL(string:"/api/v1/media/"+id, relativeTo:NativeAPI.shared.origin) {
+                AsyncImage(url:url) { phase in
+                    if let image=phase.image { image.resizable().scaledToFit() } else { Color(.secondarySystemBackground) }
+                }
+            } else {
+                Color(.secondarySystemBackground)
+            }
+        }
+        .frame(maxWidth:.infinity)
+        .frame(height:height)
+        .accessibilityLabel(offer.photoIds?.isEmpty == false ? "Gerätefoto" : "Kein Foto")
     }
 }
 struct OfferCard: View {
@@ -117,7 +114,15 @@ struct OfferDetail: View {
     var body: some View {
         ScrollView {
             VStack(alignment:.leading,spacing:28) {
-                DeviceArtwork(offer:offer)
+                if let ids=offer.photoIds, !ids.isEmpty {
+                    TabView {
+                        ForEach(ids,id:\.self) { id in
+                            AsyncImage(url:URL(string:"/api/v1/media/"+id,relativeTo:NativeAPI.shared.origin)) { phase in
+                                if let image=phase.image { image.resizable().scaledToFit() } else { Color(.secondarySystemBackground) }
+                            }
+                        }
+                    }.tabViewStyle(.page).frame(height:240).accessibilityLabel("Gerätefotos")
+                } else { DeviceArtwork(offer:offer) }
                 VStack(alignment:.leading,spacing:24) {
                     Text(offer.displayTitle).font(.title.bold()).fixedSize(horizontal:false,vertical:true)
                     Text(offer.price,format:.currency(code:"EUR").locale(Locale(identifier:"de_DE"))).font(.largeTitle.bold())
@@ -149,7 +154,7 @@ struct OfferDetail: View {
                 }.padding().background(Color(.secondarySystemBackground),in:.rect(cornerRadius:22))
                 VStack(alignment:.leading,spacing:20) {
                     HStack(alignment:.top) {
-                        VStack(alignment:.leading) {Text("Anzeigen-ID: \(offer.number ?? offer.id)").font(.caption).foregroundStyle(.secondary);TextField("Private Notiz",text:$note).onSubmit{store.setNote(note,for:offer.id)};Button("Notiz speichern"){store.setNote(note,for:offer.id)}.font(.caption)}
+                        VStack(alignment:.leading) {Text("Anzeigen-ID: \(offer.number ?? offer.id)").font(.caption).foregroundStyle(.secondary);if store.signedIn {TextField("Private Notiz",text:$note).onSubmit{store.setNote(note,for:offer.id)};Button("Notiz speichern"){store.setNote(note,for:offer.id)}.font(.caption)}}
                         NavigationLink { NativeSellerView(name:offer.seller,userId:offer.sellerId) } label: {
                             HStack { Text(offer.sellerId==store.identity ? store.data.emoji : seller?.emoji ?? "🍏").font(.largeTitle);Text(offer.seller).font(.headline);Image(systemName:"arrow.up.right.square").font(.subheadline) }
                         }.buttonStyle(.plain)

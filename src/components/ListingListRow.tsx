@@ -4,7 +4,9 @@ import { FavoriteButton } from "@/components/FavoriteButton";
 import { FavoriteListingActions } from "@/components/FavoriteListingActions";
 import { ListingNoteField } from "@/components/ListingNoteField";
 import { OwnerListingActions } from "@/components/OwnerListingActions";
+import { DemoDeviceSlide } from "@/components/DemoDeviceSlides";
 import { ProductImage } from "@/components/ProductImage";
+import { listingCoverUrl } from "@/lib/listingPhotos";
 import { getCondition } from "@/data/catalog";
 import { formatListingMeta, formatListingName, formatPrice } from "@/lib/format";
 import { isDemoListing } from "@/lib/listingNumber";
@@ -33,7 +35,13 @@ export function ListingListRow({
             hidden ? "opacity-55" : ""
           }`}
         >
-          <ProductImage modelId={listing.modelId} colorId={listing.colorId} demo={isDemoListing(listing.id)} compact />
+          {listingCoverUrl(listing) ? (
+            <ProductImage src={listingCoverUrl(listing)} demo={isDemoListing(listing.id)} compact />
+          ) : isDemoListing(listing.id) ? (
+            <DemoDeviceSlide modelId={listing.modelId} colorId={listing.colorId} view={0} demo compact />
+          ) : (
+            <ProductImage compact />
+          )}
         </Link>
 
         <div className="min-w-0 flex-1">

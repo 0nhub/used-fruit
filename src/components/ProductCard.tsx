@@ -1,12 +1,49 @@
+"use client";
+
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { LocationIcon } from "@/components/icons";
+import { DemoDeviceSlide } from "@/components/DemoDeviceSlides";
 import { ProductImage } from "@/components/ProductImage";
+import { listingCoverUrl } from "@/lib/listingPhotos";
 import { findPlace, distanceKm, type Place } from "@/data/locations";
 import { formatPlaceWithDistance } from "@/lib/device";
 import { formatListingHeadline, formatPrice } from "@/lib/format";
 import { isDemoListing } from "@/lib/listingNumber";
 import type { Listing } from "@/lib/types";
 import Link from "next/link";
+import { useLayoutEffect, useRef } from "react";
+
+function CardHeadline({ children }: { children: string }) {
+  const ref = useRef<HTMLHeadingElement>(null);
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const fit = () => {
+      let size = window.matchMedia("(min-width: 640px)").matches ? 14 : 13;
+      el.style.fontSize = `${size}px`;
+      while (size > 10 && el.scrollWidth > el.clientWidth + 0.5) {
+        size -= 0.25;
+        el.style.fontSize = `${size}px`;
+      }
+    };
+
+    fit();
+    const observer = new ResizeObserver(fit);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [children]);
+
+  return (
+    <h2
+      ref={ref}
+      className="h-[18px] overflow-hidden text-ellipsis whitespace-nowrap text-[13px] font-normal leading-[18px] text-uf-text group-hover:text-uf-link sm:h-5 sm:text-[14px] sm:leading-5"
+    >
+      {children}
+    </h2>
+  );
+}
 
 export function ProductCard({
   listing,
@@ -48,17 +85,23 @@ export function ProductCard({
         </div>
 
         <div className={listing.visibility === "reserved" || listing.visibility === "inactive" ? "opacity-55" : undefined}>
-          <ProductImage modelId={listing.modelId} colorId={listing.colorId} demo={isDemoListing(listing.id)} />
+          {listingCoverUrl(listing) ? (
+            <ProductImage src={listingCoverUrl(listing)} demo={isDemoListing(listing.id)} />
+          ) : isDemoListing(listing.id) ? (
+            <DemoDeviceSlide modelId={listing.modelId} colorId={listing.colorId} view={0} demo />
+          ) : (
+            <ProductImage />
+          )}
         </div>
 
         <div className="mt-3 text-center sm:mt-5">
-          <h2 className="line-clamp-2 text-[13px] font-normal leading-snug text-uf-text group-hover:text-uf-link sm:text-[14px]">
-            {formatListingHeadline(listing, { includeParts: false })}
-          </h2>
+          <CardHeadline>{formatListingHeadline(listing, { includeParts: false })}</CardHeadline>
           <p className="mt-1 text-[16px] font-medium tracking-tight text-uf-text sm:mt-1.5 sm:text-[18px]">
             {formatPrice(listing.price)}
           </p>
-          {listing.visibility === "reserved" ? (
+          {listing.soldAt ? (
+            <p className="mt-1 text-[13px] font-medium text-uf-text-secondary">Verkauft</p>
+          ) : listing.visibility === "reserved" ? (
             <p className="mt-1 text-[13px] font-medium text-[#c93400]">Reserviert</p>
           ) : listing.visibility === "inactive" ? (
             <p className="mt-1 text-[13px] font-medium text-uf-text-secondary">Deaktiviert</p>

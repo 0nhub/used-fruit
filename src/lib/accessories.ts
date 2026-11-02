@@ -13,7 +13,7 @@ export const ACCESSORY_FILTERS: { id: DesktopAccessoryId | "none"; label: string
 ];
 
 export function acceptsDesktopAccessories(modelId: string): boolean {
-  return ["imac", "mac-mini", "mac-studio", "mac-pro"].includes(modelId);
+  return ["imac", "imac-pro", "mac-mini", "mac-studio", "mac-pro"].includes(modelId);
 }
 
 export function isDesktopAccessoryId(value: unknown): value is DesktopAccessoryId {
@@ -27,7 +27,7 @@ export function parseIncludedAccessories(value: unknown): DesktopAccessoryId[] |
 }
 
 export function needsKeyboardLayout(modelId: string, accessories?: DesktopAccessoryId[]): boolean {
-  return ["macbook-neo", "macbook-air", "macbook-pro"].includes(modelId)
+  return ["macbook-neo", "macbook-air", "macbook-pro", "macbook"].includes(modelId)
     || Boolean(accessories?.includes("keyboard"));
 }
 

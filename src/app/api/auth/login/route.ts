@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { AUTH_ORIGIN, APPLE_ORIGIN, CALLBACK, COOKIE_OPTIONS, FLOW_COOKIE, newFlow, safeAuthNext, seal } from "@/lib/auth";
+import { APPLE_ORIGIN, CALLBACK, COOKIE_OPTIONS, FLOW_COOKIE, newFlow, safeAuthNext, seal } from "@/lib/auth";
 
 import { appleCredentials } from "@/lib/appleAuth";
 
@@ -14,6 +14,6 @@ export async function GET(request: NextRequest) {
     response.headers.set("Cache-Control", "no-store");
     return response;
   } catch {
-    return NextResponse.redirect(`${AUTH_ORIGIN}/anmelden?error=configuration&next=${encodeURIComponent(safeAuthNext(request.nextUrl.searchParams.get("next")))}`);
+    return NextResponse.redirect(`${request.nextUrl.origin}/anmelden?error=configuration&next=${encodeURIComponent(safeAuthNext(request.nextUrl.searchParams.get("next")))}`);
   }
 }

@@ -34,13 +34,24 @@ export async function POST(request: NextRequest) {
       name = [supplied?.name?.firstName, supplied?.name?.lastName].filter(value => typeof value === "string").join(" ").trim().slice(0, 40);
     } catch { /* Name is optional and never used as the identity. */ }
     response = NextResponse.redirect(new URL(safeAuthNext(flow.next), AUTH_ORIGIN), 303);
-    const stored = await transaction(async client => {
-      const account = await appleAccount(client, user, name, tokens.refresh_token, clientId);
-      const session = await createSession(client, account.id, "web");
-      return { account, session };
-    });
-    response.cookies.set(SESSION_COOKIE, seal({ kind: "session", sub: stored.account.id, sid: stored.session.id, name: stored.account.name, exp: Math.floor(Date.now() / 1000) + 3600 }), { ...COOKIE_OPTIONS, maxAge: 3600 });
-  } catch {
+    if (process.env.DATABASE_URL) {
+      const stored = await transaction(async client => {
+        const account = await appleAccount(client, user, name, tokens.refresh_token, clientId);
+        const session = await createSession(client, account.id, "web");
+        return { account, session };
+      });
+      response.cookies.set(SESSION_COOKIE, seal({ kind: "session", sub: stored.account.id, sid: stored.session.id, name: stored.account.name, exp: Math.floor(Date.now() / 1000) + 3600 }), { ...COOKIE_OPTIONS, maxAge: 3600 });
+    } else {
+      response.cookies.set(SESSION_COOKIE, seal({
+        kind: "session",
+        sub: `apple:${user.sub}`,
+        sid: user.sub,
+        name: name || "Anbieter",
+        exp: Math.floor(Date.now() / 1000) + 3600,
+      }), { ...COOKIE_OPTIONS, maxAge: 3600 });
+    }
+  } catch (error) {
+    console.error("apple-callback", error instanceof Error ? error.message : "unknown");
     response = NextResponse.redirect(`${AUTH_ORIGIN}/anmelden?error=signin&next=${encodeURIComponent(safeAuthNext(flow?.kind === "flow" ? flow.next : null))}`, 303);
   }
   response.cookies.set(FLOW_COOKIE, "", { ...COOKIE_OPTIONS, sameSite: "none", maxAge: 0 });

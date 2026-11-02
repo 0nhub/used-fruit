@@ -4,6 +4,7 @@ import { OverlayDialog } from "@/components/OverlayDialog";
 import { useState } from "react";
 import { listingNumber } from "@/lib/listingNumber";
 import { api } from "@/lib/apiClient";
+import { appleLoginHref } from "@/lib/appleLogin";
 import { refreshIdentity } from "@/lib/authClient";
 
 const REASONS = ["Spam oder Werbung", "Betrugsverdacht", "Falsche oder irreführende Angaben", "Unzulässiger Inhalt", "Sonstiges"];
@@ -18,7 +19,7 @@ export function ListingReport({ listingId, displayNumber }: { listingId: string;
 
   return (
     <div>
-      <button type="button" className="cursor-pointer text-uf-link underline-offset-4 transition-colors duration-150 hover:text-uf-action hover:underline focus-visible:underline motion-reduce:transition-none" aria-haspopup="dialog" onClick={async () => { if (!await refreshIdentity()) { location.assign("/anmelden?next=" + encodeURIComponent(location.pathname)); return; } setOpen(true); }}>
+      <button type="button" className="cursor-pointer text-uf-link underline-offset-4 transition-colors duration-150 hover:text-uf-action hover:underline focus-visible:underline motion-reduce:transition-none" aria-haspopup="dialog" onClick={async () => { if (!await refreshIdentity()) { location.assign(appleLoginHref(location.pathname)); return; } setOpen(true); }}>
         Problem melden
       </button>
       {open && (

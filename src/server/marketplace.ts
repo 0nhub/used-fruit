@@ -2,10 +2,11 @@ import { PLACES } from "@/data/locations";
 import { database, transaction, type Transaction } from "./db";
 import { ApiError, requireValue, string, uuid } from "./http";
 import { assertContact, conversationAccess, idempotent, lockPeople } from "./access";
+import { presentListingPrice } from "@/lib/priceAdjustment";
 import { validateListing } from "./listingValidation";
 import { getLocalSeedListing, listLocalSeedListings, localSeedAvailable } from "./localSeedListings";
 
-const listingColumns = `l.id,l.number::text,l.seller_id AS "sellerId",l.title,l.category_id AS "categoryId",l.model_id AS "modelId",l.price_cents AS "priceCents",l.currency,l.specs,l.city,l.postal_code AS "postalCode",l.status,l.version,l.created_at AS "createdAt",l.updated_at AS "updatedAt",l.sold_at AS "soldAt",u.name AS "sellerName",u.emoji AS "sellerEmoji",u.created_at AS "sellerJoinedAt"`;
+const listingColumns = `l.id,l.number::text,l.seller_id AS "sellerId",l.title,l.category_id AS "categoryId",l.model_id AS "modelId",l.price_cents AS "priceCents",l.currency,l.specs,l.city,l.postal_code AS "postalCode",l.status,l.version,l.created_at AS "createdAt",l.updated_at AS "updatedAt",l.sold_at AS "soldAt",u.name AS "sellerName",u.emoji AS "sellerEmoji",u.created_at AS "sellerJoinedAt",(SELECT MIN(o.created_at) FROM offers o WHERE o.listing_id=l.id AND o.status='pending') AS "pendingAt"`;
 const publicSeller = `u.deleted_at IS NULL AND u.banned_at IS NULL`;
 const notBlocked = `NOT EXISTS(SELECT 1 FROM user_blocks b WHERE (b.blocker_id=$1 AND b.blocked_id=l.seller_id) OR (b.blocked_id=$1 AND b.blocker_id=l.seller_id))`;
 
@@ -69,21 +70,33 @@ export async function listListings(userId: string | null, query: URLSearchParams
   }
   const limit=Number(query.get('limit')??50);requireValue(Number.isInteger(limit)&&limit>=1&&limit<=100,'Ungültige Seitengröße.');
   const result=await database().query(`SELECT ${listingColumns},${distance} AS "distanceKm" FROM listings l JOIN users u ON u.id=l.seller_id ${locationJoin} WHERE ${where.join(' AND ')} ORDER BY ${sortColumn} ${direction},l.id ${direction} LIMIT ${bind(limit+1)}`,values);
-  const items=result.rows.slice(0,limit),last=items.at(-1);
-  return {items,nextCursor:result.rows.length>limit&&last?Buffer.from(JSON.stringify([sort,sort==='newest'?last.createdAt:sort==='nearest'?last.distanceKm:last.priceCents,last.id])).toString('base64url'):null};
+  const rows=result.rows.slice(0,limit),last=rows.at(-1);
+  return {items:rows.map(publicListing),nextCursor:result.rows.length>limit&&last?Buffer.from(JSON.stringify([sort,sort==='newest'?last.createdAt:sort==='nearest'?last.distanceKm:last.priceCents,last.id])).toString('base64url'):null};
 }
 export async function getListing(id: string, userId: string | null) {
   if (localSeedAvailable()) return getLocalSeedListing(id);
   const result = await database().query(`SELECT ${listingColumns},CASE WHEN l.seller_id=$1 THEN l.private_specs END AS "privateSpecs" FROM listings l JOIN users u ON u.id=l.seller_id
     WHERE l.id=$2 AND ${publicSeller} AND ${notBlocked} AND (l.status='public' OR (l.seller_id=$1 AND l.status<>'deleted'))`,[userId,uuid(id)]);
   if (!result.rows[0]) throw new ApiError(404,"not_found","Inserat nicht gefunden.");
-  return result.rows[0];
+  return publicListing(result.rows[0]);
+}
+
+async function assertListingPhotos(client: Transaction, userId: string, specs: {photoIds?: string[]}) {
+  const ids = specs.photoIds ?? [];
+  if (!ids.length) return;
+  const found = await client.query("SELECT id FROM media WHERE user_id=$1 AND deleted_at IS NULL AND id = ANY($2::uuid[])", [userId, ids]);
+  requireValue(found.rowCount === ids.length, "Ein Foto ist nicht mehr verfügbar. Bitte lade es erneut hoch.");
+}
+function publicListing<T extends {priceCents:number;specs?:unknown;createdAt:string;soldAt?:string|null;status?:string;updatedAt?:string;pendingAt?:string|Date|null}>(row: T) {
+  const { pendingAt: _pendingAt, ...listing } = presentListingPrice(row);
+  return listing;
 }
 export async function createListing(userId: string, input: Record<string,unknown>, key: string | null) {
   const listing=validateListing(input);
   const result = await transaction(client=>idempotent(client,userId,"listing:create",key,input,async()=> {
     const account=(await client.query("SELECT onboarding_completed FROM users WHERE id=$1 AND banned_at IS NULL AND deleted_at IS NULL FOR UPDATE",[userId])).rows[0];
     if (!account?.onboarding_completed) throw new ApiError(409,"onboarding_required","Bitte vervollständige zuerst dein Konto.");
+    await assertListingPhotos(client, userId, listing.specs);
     return (await client.query(`INSERT INTO listings(seller_id,title,category_id,model_id,price_cents,specs,private_specs,city,postal_code)
       VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id`,[userId,listing.title,listing.categoryId,listing.modelId,listing.priceCents,listing.specs,listing.privateSpecs,listing.city,listing.postalCode])).rows[0];
   }));
@@ -100,6 +113,7 @@ export async function updateListing(id: string, userId: string, input: Record<st
     const status=input.status ?? existing.status;
     requireValue(["public","reserved","inactive"].includes(String(status)),"Ungültiger Status.");
     const next=validateListing({categoryId:existing.category_id,modelId:existing.model_id,priceCents:existing.price_cents,city:existing.city,postalCode:existing.postal_code,specs:{...existing.specs,...existing.private_specs},...input});
+    await assertListingPhotos(client, userId, next.specs);
     await client.query(`UPDATE listings SET title=$2,category_id=$3,model_id=$4,price_cents=$5,specs=$6,private_specs=$7,city=$8,postal_code=$9,status=$10,version=version+1,updated_at=now() WHERE id=$1`,[id,next.title,next.categoryId,next.modelId,next.priceCents,next.specs,next.privateSpecs,next.city,next.postalCode,status]);
   });
   return remove ? {ok:true} : getListing(id,userId);

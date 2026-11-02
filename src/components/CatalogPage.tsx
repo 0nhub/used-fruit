@@ -11,8 +11,8 @@ import { useCatalogFilters } from "@/lib/useCatalogFilters";
 import { SORT_OPTIONS } from "@/lib/format";
 import type { Listing, SortId } from "@/lib/types";
 import { useListings } from "@/lib/useListings";
-import { catalogReturn, rememberCatalogReturn } from "@/lib/catalogReturn";
-import { Suspense, useEffect, type ReactNode } from "react";
+import { catalogReturn, rememberCatalogReturn, restoreCatalogReturn } from "@/lib/catalogReturn";
+import { Suspense, useEffect, useRef, type ReactNode } from "react";
 
 export function CatalogShell(props: {
   listings: Listing[];
@@ -42,11 +42,12 @@ function CatalogShellInner({
   banner?: ReactNode;
 }) {
   const { filtered, userPlace, resetFilters, sidebar } = useCatalogFilters(listings);
+  const scrollerRef = useRef<HTMLElement>(null);
   useEffect(() => {
     const saved = catalogReturn;
     if (!saved || saved.url !== location.pathname + location.search || listings.length === 0) return;
     let frame = requestAnimationFrame(() => {
-      frame = requestAnimationFrame(() => window.scrollTo(0, saved.scrollY));
+      frame = requestAnimationFrame(() => restoreCatalogReturn(scrollerRef.current));
     });
     return () => cancelAnimationFrame(frame);
   }, [listings.length]);
@@ -105,10 +106,10 @@ function CatalogShellInner({
           <FilterSidebar {...sidebar} />
         </div>
 
-        <main onClickCapture={(event) => {
+        <main ref={scrollerRef} onClickCapture={(event) => {
           const link = (event.target as HTMLElement).closest<HTMLAnchorElement>('a[href^="/listing/"]');
           if (link && !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey) {
-            rememberCatalogReturn(decodeURIComponent(link.pathname.split("/").pop()!));
+            rememberCatalogReturn(decodeURIComponent(link.pathname.split("/").pop()!), event.currentTarget);
           }
         }} className="uf-scroll-hidden min-h-0 min-w-0 flex-1 pb-6 pt-3 lg:overflow-y-auto lg:overscroll-contain lg:border-l lg:border-uf-border-soft lg:pt-0 lg:pb-0">
           <div className="hidden h-12 items-center justify-between border-b border-uf-border-soft px-6 lg:flex">
@@ -132,7 +133,7 @@ function CatalogShellInner({
               <p className="text-[17px] font-medium text-uf-text">Keine Treffer</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 items-stretch border-l border-uf-border-soft lg:grid-cols-3 lg:border-l-0">
+            <div className="grid grid-cols-2 items-stretch lg:grid-cols-3">
               {filtered.map((listing) => (
                 <ProductCard key={listing.id} listing={listing} userPlace={userPlace} />
               ))}

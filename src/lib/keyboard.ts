@@ -14,7 +14,7 @@ export const KEYBOARD_LAYOUTS: { id: KeyboardLayoutId; label: string; shortLabel
 ];
 
 export function hasBuiltInKeyboard(modelId: string): boolean {
-  return ["macbook-neo", "macbook-air", "macbook-pro"].includes(modelId);
+  return ["macbook-neo", "macbook-air", "macbook-pro", "macbook"].includes(modelId);
 }
 
 export function isKeyboardLayout(value: unknown): value is KeyboardLayoutId {

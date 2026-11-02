@@ -45,14 +45,26 @@ export function sellerHref(name: string): string | undefined {
   return slug ? `/anbieter/${slug}` : undefined;
 }
 
-export function listingsForSellerSlug(listings: Listing[], slug: string): Listing[] {
+function belongsToSeller(listing: Listing, slug: string, sellerId?: string) {
+  if (!slug) return false;
+  return sellerSlug(listing.sellerName) === slug || Boolean(sellerId && listing.sellerId === sellerId);
+}
+
+export function listingsForSellerSlug(listings: Listing[], slug: string, sellerId?: string): Listing[] {
   if (!slug) return [];
   return listings.filter(
     (listing) =>
-      sellerSlug(listing.sellerName) === slug &&
+      belongsToSeller(listing, slug, sellerId) &&
       !listing.soldAt &&
       (!listing.visibility || listing.visibility === "public"),
   );
+}
+
+export function soldListingsForSellerSlug(listings: Listing[], slug: string, sellerId?: string): Listing[] {
+  if (!slug) return [];
+  return listings
+    .filter((listing) => belongsToSeller(listing, slug, sellerId) && Boolean(listing.soldAt))
+    .sort((a, b) => (b.soldAt ?? "").localeCompare(a.soldAt ?? ""));
 }
 
 function readStoredSellerPages(): Record<string, PublicSeller> {
@@ -116,12 +128,13 @@ export function resolveSellerPage(
   if (!normalized) return null;
 
   const mine = listingsForSellerSlug(listings, normalized);
+  const sold = soldListingsForSellerSlug(listings, normalized);
   const isOwn = Boolean(viewer?.name && sellerSlug(viewer.name) === normalized);
   const stored = readStoredSellerPages()[normalized];
   const seed = SEED_SELLER_PAGES[normalized];
   const first = mine[0];
 
-  if (!mine.length && !stored && !seed && !isOwn) return null;
+  if (!mine.length && !sold.length && !stored && !seed && !isOwn) return null;
 
   const seller: PublicSeller =
     isOwn && viewer

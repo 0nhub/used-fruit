@@ -23,11 +23,12 @@ export function ReputationBadge({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className={variant === "summary" ? "grid w-full cursor-pointer grid-cols-3 divide-x divide-uf-border text-center hover:opacity-80" : "flex min-w-0 max-w-full flex-wrap items-center gap-x-1.5 text-left text-[13px] hover:opacity-80"}
+        className={variant === "summary" ? "flex w-full cursor-pointer flex-col hover:opacity-80" : "flex min-w-0 max-w-full flex-wrap items-center gap-x-1.5 text-left text-[13px] hover:opacity-80"}
         aria-haspopup="dialog"
         aria-expanded={open}
       >
         {variant === "summary" ? <>
+          <span className="grid w-full grid-cols-3 divide-x divide-uf-border text-center">
           <span className="flex min-w-0 flex-col items-center gap-2 px-1 py-2">
             <span style={{ color: reputation.rank.tone }}><RankIcon id={reputation.rank.id} className="h-9 w-9" /></span>
             <span className="text-[12px] font-normal leading-4 text-uf-text-secondary">{reputation.rank.label}</span>
@@ -39,6 +40,17 @@ export function ReputationBadge({
           <span className="flex min-w-0 flex-col items-center gap-2 px-1 py-2">
             <span className="flex h-9 items-center text-[28px] font-semibold leading-none tracking-tight tabular-nums text-uf-text">{reputation.percentPositive == null ? "–" : `${reputation.percentPositive}%`}</span>
             <span className="text-[12px] font-normal leading-4 text-uf-text-secondary">Positives Feedback</span>
+          </span>
+          </span>
+          <span className="grid w-full grid-cols-2 divide-x divide-uf-border border-t border-uf-border text-center">
+            <span className="flex min-w-0 flex-col items-center gap-2 px-1 py-2">
+              <span className="flex h-9 items-center text-[28px] font-semibold leading-none tracking-tight tabular-nums text-uf-text">{reputation.stats.listings}</span>
+              <span className="text-[12px] font-normal leading-4 text-uf-text-secondary">{reputation.stats.listings === 1 ? "Inserat" : "Inserate"}</span>
+            </span>
+            <span className="flex min-w-0 flex-col items-center gap-2 px-1 py-2">
+              <span className="flex h-9 items-center text-[28px] font-semibold leading-none tracking-tight tabular-nums text-uf-text">{reputation.stats.sales}</span>
+              <span className="text-[12px] font-normal leading-4 text-uf-text-secondary">Verkauft</span>
+            </span>
           </span>
         </> : <>
         <span className="inline-flex" style={{ color: reputation.rank.tone }}>

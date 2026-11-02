@@ -7,7 +7,7 @@ export const LEGAL = {
   country: "Deutschland",
   phoneDisplay: "+49 163 6985193",
   phoneHref: "tel:+491636985193",
-  email: "hello@sgroi.ga",
+  email: "usedfruit@sgroi.ga",
   stand: "1. September 2026",
   copyrightYear: 2026,
 } as const;

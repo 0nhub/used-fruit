@@ -7,6 +7,7 @@ import type {
   KeyboardLayoutId,
   DesktopAccessoryId,
   ShippingScope,
+  PriceAdjustment,
 } from "@/lib/types";
 
 export const LISTING_DRAFT_KEY = "used-fruit-listing-draft";
@@ -28,6 +29,7 @@ export interface ListingDraft {
   condition: ConditionId;
   originalBox: boolean;
   price: number;
+  priceAdjustment?: PriceAdjustment;
   city: string;
   postalCode: string;
   locality?: string;
@@ -36,6 +38,7 @@ export interface ListingDraft {
   appleWarrantyUntil?: string;
   batteryMaxCapacityPercent?: number;
   batteryCycleCount?: number;
+  photoIds?: string[];
 }
 
 export function readListingDraft(): ListingDraft | null {

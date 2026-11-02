@@ -2,7 +2,7 @@
 
 import { LegalNav } from "@/components/LegalNav";
 import type { UserLocation } from "@/components/LocationPicker";
-import { CATEGORIES, CONDITIONS, getModelsByCategory } from "@/data/catalog";
+import { CATEGORIES, CONDITIONS, getModelsByCategory, sortModelsByAge } from "@/data/catalog";
 import { ChevronIcon } from "@/components/icons";
 import {
   BATTERY_CAPACITY_FILTERS,
@@ -147,7 +147,18 @@ function parseEuro(value: string): number | undefined {
 }
 
 export function FilterSidebar(props: FilterSidebarProps) {
-  const models = getModelsByCategory(props.categoryId);
+  const [showAllModels, setShowAllModels] = useState(false);
+  const [modelQuery, setModelQuery] = useState("");
+  const models = sortModelsByAge(getModelsByCategory(props.categoryId));
+  useEffect(() => { setShowAllModels(false); setModelQuery(""); }, [props.categoryId]);
+  const visibleModelList = (items: typeof models) => {
+    const sorted = sortModelsByAge(items);
+    const current = sorted.filter((model) => model.featured);
+    const expanded = showAllModels || current.length === 0 || Boolean(props.modelId && !current.some((model) => model.id === props.modelId));
+    const base = expanded ? sorted : current;
+    const query = expanded ? modelQuery.trim().toLowerCase() : "";
+    return query ? base.filter((model) => model.name.toLowerCase().includes(query)) : base;
+  };
   const activeModel = models.find((m) => m.id === props.modelId);
 
   const sizeOptions = useMemo(() => {
@@ -197,7 +208,7 @@ export function FilterSidebar(props: FilterSidebarProps) {
       className={
         embedded
           ? "w-full"
-          : "flex w-full shrink-0 flex-col lg:w-full"
+          : "flex min-h-full w-full flex-col lg:w-full"
       }
     >
       <div>
@@ -234,9 +245,18 @@ export function FilterSidebar(props: FilterSidebarProps) {
       </Section>
 
       <Section title="Modelle">
+        {showAllModels && (
+          <input
+            value={modelQuery}
+            onChange={(event) => setModelQuery(event.target.value)}
+            placeholder="Gerät suchen"
+            aria-label="Gerät suchen"
+            className={`${fieldClass} mb-2`}
+          />
+        )}
         {props.categoryId ? (
           <ul>
-            {models.map((model) => {
+            {visibleModelList(models).map((model) => {
               const selected = props.modelId === model.id;
               return (
                 <li key={model.id}>
@@ -259,6 +279,13 @@ export function FilterSidebar(props: FilterSidebarProps) {
                 </li>
               );
             })}
+            {!showAllModels && visibleModelList(models).length < models.length && (
+              <li>
+                <button type="button" onClick={() => setShowAllModels(true)} className="py-1 text-left text-[13px] text-uf-link">
+                  Mehr
+                </button>
+              </li>
+            )}
           </ul>
         ) : (
           <div className="pb-3">
@@ -272,7 +299,7 @@ export function FilterSidebar(props: FilterSidebarProps) {
                   {group.category.label}
                 </button>
                 <ul>
-                  {group.models.map((model) => (
+                  {visibleModelList(group.models).map((model) => (
                     <li key={model.id}>
                       <button
                         type="button"
@@ -288,6 +315,13 @@ export function FilterSidebar(props: FilterSidebarProps) {
                       </button>
                     </li>
                   ))}
+                  {!showAllModels && visibleModelList(group.models).length < group.models.length && (
+                    <li>
+                      <button type="button" onClick={() => setShowAllModels(true)} className="py-1 text-left text-[13px] text-uf-link">
+                        Mehr
+                      </button>
+                    </li>
+                  )}
                 </ul>
               </div>
             ))}
@@ -484,7 +518,7 @@ export function FilterSidebar(props: FilterSidebarProps) {
       </Section>
       </div>
       {!props.hideLegal && (
-        <div className="shrink-0">
+        <div className="mt-auto shrink-0">
           <LegalNav />
         </div>
       )}

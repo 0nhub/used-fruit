@@ -17,7 +17,7 @@ export function FaqQuestionForm() {
         <label htmlFor="faq-question" className="text-[14px] font-medium">Deine Frage</label>
         <textarea id="faq-question" required maxLength={2000} rows={5} value={question} onChange={(event) => setQuestion(event.target.value)} placeholder="Was möchtest du über Used Fruit wissen?" className="mt-2 block w-full resize-y rounded-xl border border-uf-border bg-white px-3 py-3 text-[14px] outline-offset-2" />
         <p className="mt-2 text-[12px] leading-relaxed text-uf-text-secondary">Der Button öffnet dein E-Mail-Programm. Sende die vorbereitete Nachricht dort an <a href={`mailto:${LEGAL.email}`} className="underline underline-offset-2">{LEGAL.email}</a>.</p>
-        <button type="submit" disabled={!question.trim()} className="mt-4 inline-flex h-11 items-center justify-center rounded-full bg-uf-text px-5 text-[14px] text-white disabled:cursor-not-allowed disabled:opacity-40">E-Mail vorbereiten</button>
+        <button type="submit" disabled={!question.trim()} className="mt-4 inline-flex h-11 items-center justify-center rounded-full bg-uf-action px-5 text-[14px] text-white hover:bg-uf-link disabled:cursor-not-allowed disabled:opacity-40">E-Mail vorbereiten</button>
       </form>
     </section>
   );

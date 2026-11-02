@@ -51,8 +51,29 @@ export async function createSession(client: Transaction, userId: string, kind: "
     [userId, sha256(access), refresh ? sha256(refresh) : null, kind, ttl, familyId ?? null]);
   return { id: result.rows[0].id as string, accessToken: access, refreshToken: refresh, expiresIn: ttl };
 }
+function cookieAccount(session: { sub: string; name: string; sid?: string }): Account {
+  return {
+    id: session.sub,
+    name: session.name || "Anbieter",
+    emoji: "🍏",
+    bio: "",
+    city: "",
+    postal_code: "",
+    email: null,
+    email_verified: false,
+    email_notifications: false,
+    push_notifications: true,
+    onboarding_completed: true,
+    cover_media_id: null,
+    session_id: session.sid ?? session.sub,
+    session_kind: "web",
+  };
+}
+
 export async function authenticate(request: NextRequest, required = true): Promise<Account | null> {
   if (!process.env.DATABASE_URL) {
+    const value = unseal(request.cookies.get(SESSION_COOKIE)?.value);
+    if (value?.kind === "session") return cookieAccount(value);
     if (required) throw new ApiError(401, "unauthorized", "Bitte melde dich an.");
     return null;
   }

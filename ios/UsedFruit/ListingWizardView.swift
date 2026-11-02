@@ -1,4 +1,5 @@
 import SwiftUI
+import PhotosUI
 
 struct CreateOfferView: View {
     @Environment(AppStore.self) private var store
@@ -11,11 +12,18 @@ struct CreateOfferView: View {
     @State private var error = ""
     @State private var publishing = false
     @State private var publishKey = UUID().uuidString
+    @State private var existingPhotoIds: [String] = []
+    @State private var newPhotos: [Data] = []
+    @State private var pickerItems: [PhotosPickerItem] = []
+    @State private var showAllModels = false
+    @State private var showAllChips = false
+    @State private var modelQuery = ""
     @FocusState private var priceFocused: Bool
     private let catalog = WebCatalog.shared
-    private var steps: [String] { catalog.wizardSteps(values) }
+    private var steps: [String] { catalog.wizardSteps(values) + ["photos"] }
     private var step: String { steps[min(index,steps.count-1)] }
-    private var ready: Bool { catalog.valid(step,values:values) }
+    private var photoCount: Int { existingPhotoIds.count + newPhotos.count }
+    private var ready: Bool { step == "photos" ? photoCount >= 1 && photoCount <= 8 : catalog.valid(step,values:values) }
     private func binding(_ key: String) -> Binding<String> { Binding(get:{values[key] ?? ""},set:{values[key]=$0}) }
     private var warrantyDate: Binding<Date> { Binding(get:{DateFormatter.catalog.date(from:values["warrantyUntil"] ?? "") ?? Date()},set:{values["warrantyUntil"]=DateFormatter.catalog.string(from:$0)}) }
     private func choose(_ id: String) {
@@ -24,7 +32,26 @@ struct CreateOfferView: View {
             let fields=["category","model","chip","year","color","size","memory","storage","connectivity","simLock","keyboard","battery"]
             if let at=fields.firstIndex(of:step){for field in fields.dropFirst(at+1){values[field]=nil}}
         }
+        if step == "category" { showAllModels = false; showAllChips = false; modelQuery = "" }
+        if step == "model" { showAllChips = false }
         values=catalog.normalize(values)
+    }
+    private var displayedChoices: [CatalogChoice] {
+        var all = catalog.choices(step, values: values)
+        if step == "model" && !showAllModels {
+            let current = all.filter { catalog.model($0.id)?.featured == true }
+            if !current.isEmpty && (values["model"] == nil || current.contains { $0.id == values["model"] }) { return current }
+        }
+        if step == "model" && showAllModels {
+            let query = modelQuery.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !query.isEmpty { all = all.filter { $0.label.localizedCaseInsensitiveContains(query) } }
+        }
+        if step == "chip" && !showAllChips {
+            let currentIds = Set(catalog.model(values["model"])?.currentChips ?? [])
+            let current = all.filter { currentIds.contains($0.id) }
+            if !current.isEmpty && (values["chip"] == nil || currentIds.contains(values["chip"] ?? "")) { return current }
+        }
+        return all
     }
     var body: some View {
         NavigationStack {
@@ -32,17 +59,44 @@ struct CreateOfferView: View {
             ScrollView {
                 VStack(alignment:.leading,spacing:24) {
                     VStack(alignment:.leading,spacing:10) {
-                        Text(catalog.steps[step]?.title ?? step).font(.largeTitle.bold())
-                        Text(catalog.steps[step]?.subtitle ?? "").font(.title3).foregroundStyle(.secondary)
+                        Text(step == "photos" ? "Fotos" : (catalog.steps[step]?.title ?? step)).font(.largeTitle.bold())
+                        Text(step == "photos" ? "Lade eigene Fotos vom Gerät hoch. Mindestens eines, höchstens acht." : (catalog.steps[step]?.subtitle ?? "")).font(.title3).foregroundStyle(.secondary)
                         if let tip=catalog.steps[step]?.tip {Label(tip,systemImage:"info.circle").font(.footnote).foregroundStyle(.secondary)}
                     }
-                    ForEach(catalog.choices(step,values:values)) {choice in
+                    if step == "model" && showAllModels {
+                        TextField("Gerät suchen", text: $modelQuery).textFieldStyle(SoftInputStyle())
+                    }
+                    ForEach(displayedChoices) {choice in
                         Button {choose(choice.id)} label: {
                             HStack(spacing:14) {
                                 if let hex=choice.hex {Circle().fill(Color(catalogHex:hex)).frame(width:26,height:26).overlay(Circle().stroke(.gray.opacity(0.2)))}
                                 VStack(alignment:.leading,spacing:5){Text(choice.label).font(.headline);if let hint=choice.hint{Text(hint).font(.footnote).foregroundStyle(.secondary)}}
                                 Spacer();Image(systemName:values[step]==choice.id ? "checkmark.circle.fill":"circle").foregroundStyle(values[step]==choice.id ? .blue:.secondary)
                             }.padding(18).frame(maxWidth:.infinity,alignment:.leading).background(Color(.secondarySystemBackground),in:.rect(cornerRadius:18))
+                        }.buttonStyle(.plain)
+                    }
+                    if !showAllModels && !showAllChips && displayedChoices.count < catalog.choices(step, values: values).count {
+                        Button(step == "model" || step == "chip" ? "Mehr" : "") { if step == "model" { showAllModels = true } else { showAllChips = true } }
+                            .font(.headline).frame(maxWidth: .infinity, alignment: .leading).padding(18)
+                            .background(Color(.secondarySystemBackground), in: .rect(cornerRadius: 18))
+                            .buttonStyle(.plain)
+                    }
+                    if step=="accessories" {
+                        let selected = Set((values["accessories"] ?? "").split(separator: ",").map(String.init).filter { $0 != "none" })
+                        ForEach([("keyboard","Tastatur"),("magic-mouse","Magic Mouse"),("magic-trackpad","Magic Trackpad")], id: \.0) { item in
+                            Button {
+                                var next = selected
+                                if next.contains(item.0) { next.remove(item.0) } else { next.insert(item.0) }
+                                values["accessories"] = next.isEmpty ? nil : next.sorted().joined(separator: ",")
+                                if !next.contains("keyboard") { values["keyboard"] = nil; values["keyboardDetails"] = nil }
+                            } label: {
+                                HStack { Text(item.1).font(.headline); Spacer(); Image(systemName: selected.contains(item.0) ? "checkmark.circle.fill" : "circle") }.padding(18).frame(maxWidth:.infinity,alignment:.leading).background(Color(.secondarySystemBackground),in:.rect(cornerRadius:18))
+                            }.buttonStyle(.plain)
+                        }
+                        Button {
+                            values["accessories"] = "none"; values["keyboard"] = nil; values["keyboardDetails"] = nil
+                        } label: {
+                            HStack { Text("Kein Zubehör").font(.headline); Spacer(); Image(systemName: values["accessories"] == "none" ? "checkmark.circle.fill" : "circle") }.padding(18).frame(maxWidth:.infinity,alignment:.leading).background(Color(.secondarySystemBackground),in:.rect(cornerRadius:18))
                         }.buttonStyle(.plain)
                     }
                     if step=="keyboard" && values["keyboard"]=="other" {TextField("Layout genauer beschreiben",text:binding("keyboardDetails")).textFieldStyle(SoftInputStyle())}
@@ -73,6 +127,7 @@ struct CreateOfferView: View {
             .alert("Inserat gespeichert",isPresented:$complete){Button("Zum Katalog"){store.tab=0}}message:{Text("Dein Inserat ist jetzt veröffentlicht und auf anderen Geräten sichtbar.")}
             .onAppear{if values.isEmpty{
                 if let editing {
+                    existingPhotoIds=editing.photoIds ?? []
                     var initial=editing.specs ?? [:];initial["city"]=editing.city;initial["price"]=String(editing.price);initial["battery"]=initial["cycles"] ?? initial["capacity"];initial["warranty"]=initial["warrantyUntil"] == nil ? "no":"yes"
                     values=catalog.normalize((UserDefaults.standard.dictionary(forKey:"backend.editdraft."+store.identity+editing.id) as? [String:String]) ?? initial)
                 }else{values=catalog.normalize(store.data.listingDraft ?? ["category":"iphone"])}
@@ -108,17 +163,51 @@ struct CreateOfferView: View {
                         Text("Im Inserat erscheinen nur Stadt und PLZ. Den Treffpunkt vereinbarst du im Chat.").font(.footnote).foregroundStyle(.secondary)
 
                     }
+                    if step=="photos" {
+                        let columns=[GridItem(.adaptive(minimum:96),spacing:12)]
+                        LazyVGrid(columns:columns,spacing:12) {
+                            ForEach(existingPhotoIds,id:\.self) { id in
+                                ZStack(alignment:.topTrailing) {
+                                    AsyncImage(url:URL(string:"/api/v1/media/"+id,relativeTo:NativeAPI.shared.origin)) { phase in
+                                        if let image=phase.image { image.resizable().scaledToFill() } else { Color(.tertiarySystemFill) }
+                                    }.frame(width:96,height:96).clipped().clipShape(.rect(cornerRadius:16))
+                                    Button { existingPhotoIds.removeAll{$0==id} } label: { Image(systemName:"xmark.circle.fill") }.offset(x:6,y:-6)
+                                }
+                            }
+                            ForEach(Array(newPhotos.enumerated()),id:\.offset) { offset, data in
+                                ZStack(alignment:.topTrailing) {
+                                    if let image=UIImage(data:data) { Image(uiImage:image).resizable().scaledToFill().frame(width:96,height:96).clipped().clipShape(.rect(cornerRadius:16)) }
+                                    Button { newPhotos.remove(at:offset) } label: { Image(systemName:"xmark.circle.fill") }.offset(x:6,y:-6)
+                                }
+                            }
+                        }
+                        if photoCount < 8 {
+                            PhotosPicker(selection:$pickerItems,maxSelectionCount:8-existingPhotoIds.count,matching:.images) { Label("Fotos auswählen",systemImage:"photo") }
+                                .onChange(of:pickerItems) { items in
+                                    Task {
+                                        var loaded:[Data]=[]
+                                        for item in items { if let data=try? await item.loadTransferable(type:Data.self) { loaded.append(data) } }
+                                        newPhotos=Array(loaded.prefix(max(0,8-existingPhotoIds.count)))
+                                    }
+                                }
+                        }
+                        Text("\(photoCount) von 8 Fotos. JPEG, PNG oder WebP, jeweils höchstens 8 MB.").font(.footnote).foregroundStyle(.secondary)
+                    }
     }
     private func publish() async {
         guard !publishing else { return }; publishing=true;defer{publishing=false}
-        guard steps.allSatisfy({catalog.valid($0,values:values)}),let model=catalog.model(values["model"]),let price=Double((values["price"] ?? "").replacingOccurrences(of:",",with:".")) else{error="Bitte prüfe die Angaben in den vorherigen Schritten.";return}
+        guard catalog.wizardSteps(values).allSatisfy({catalog.valid($0,values:values)}),photoCount>=1,let model=catalog.model(values["model"]),let price=Double((values["price"] ?? "").replacingOccurrences(of:",",with:".")) else{error="Bitte prüfe die Angaben in den vorherigen Schritten.";return}
         var specs=values
         if values["showExactAddress"] != "yes" { specs["street"]=nil }
         if values["battery"]=="70" { specs["capacityAtMost"]="yes" }
         specs["createdAt"]=ISO8601DateFormatter().string(from:Date())
         specs[model.battery=="cycles" ? "cycles":"capacity"]=values["battery"]
         if values["warranty"] != "yes" {specs["warrantyUntil"]=nil}
-        let offer=Offer(title:model.name,category:catalog.categories.first{$0.id==model.categoryId}?.label ?? "Mac",price:price,city:values["city"] ?? "",detail:"",seller:store.data.name,specs:specs)
+        var ids=existingPhotoIds
+        do { for data in newPhotos { ids.append(try await store.uploadListingImage(data)) } }
+        catch { self.error=error.localizedDescription;return }
+        existingPhotoIds=ids;newPhotos=[];pickerItems=[]
+        let offer=Offer(title:model.name,category:catalog.categories.first{$0.id==model.categoryId}?.label ?? "Mac",price:price,city:values["city"] ?? "",detail:"",seller:store.data.name,specs:specs,photoIds:ids)
         guard await store.publish(offer,key:publishKey,editing:editing) else { error=store.error ?? "Veröffentlichen fehlgeschlagen. Dein Entwurf bleibt erhalten.";return }
         values=[:];index=0;if editing != nil{dismiss()}else{complete=true};publishKey=UUID().uuidString
     }

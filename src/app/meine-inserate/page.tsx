@@ -29,7 +29,7 @@ function MeineInserateInner() {
       emptyAction={
         <Link
           href="/inserieren"
-          className="inline-flex h-10 items-center rounded-full bg-uf-text px-5 text-[14px] text-white"
+          className="inline-flex h-10 items-center rounded-full bg-uf-action px-5 text-[14px] text-white hover:bg-uf-link"
         >
           Jetzt inserieren
         </Link>

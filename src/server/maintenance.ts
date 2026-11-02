@@ -1,6 +1,7 @@
 import {unlink,rename,mkdir} from 'node:fs/promises';
 import path from 'node:path';
 import {database,transaction} from './db';
+import {isObjectStorageEnabled,retireMediaObject} from './objectStorage';
 import {decryptSecret} from './accounts';
 import {appleClientSecret} from '@/lib/appleAuth';
 import {APPLE_ORIGIN} from '@/lib/auth';
@@ -11,18 +12,24 @@ export async function maintenance() {
   await db.query("DELETE FROM auth_challenges WHERE expires_at<now()-interval '1 day'");
   await db.query("UPDATE device_tokens SET enabled=false WHERE session_id IN (SELECT id FROM sessions WHERE revoked_at IS NOT NULL OR refresh_expires_at<now())");
   const directory=process.env.USED_FRUIT_MEDIA_DIR;
-  if(directory) {
-    const trash=path.join(path.dirname(directory),'media-trash');await mkdir(trash,{recursive:true,mode:0o750});
+  const remote=isObjectStorageEnabled();
+  if(directory || remote) {
     const deleted=(await db.query('SELECT id,filename,deleted_at FROM media WHERE deleted_at IS NOT NULL')).rows;
+    const trash=directory?path.join(path.dirname(directory),'media-trash'):'';
+    if(directory) await mkdir(trash,{recursive:true,mode:0o750});
     for(const image of deleted) {
       // Filenames originate only from our UUID encoder, never from an upload path.
       if(!/^[a-f0-9-]{36}\.webp$/.test(image.filename))continue;
-      const target=path.join(trash,image.filename);
-      try{await rename(path.join(directory,image.filename),target);}catch(error){if((error as NodeJS.ErrnoException).code!=='ENOENT')throw error;}
-      if(new Date(image.deleted_at).getTime()<Date.now()-7*86400000) {
-        try{await unlink(target);}catch(error){if((error as NodeJS.ErrnoException).code!=='ENOENT')throw error;}
-        // Keep the tombstone; historical references cannot resurrect the file.
+      const purge=new Date(image.deleted_at).getTime()<Date.now()-7*86400000;
+      if(directory) {
+        const target=path.join(trash,image.filename);
+        try{await rename(path.join(directory,image.filename),target);}catch(error){if((error as NodeJS.ErrnoException).code!=='ENOENT')throw error;}
+        if(purge) {
+          try{await unlink(target);}catch(error){if((error as NodeJS.ErrnoException).code!=='ENOENT')throw error;}
+          // Keep the tombstone; historical references cannot resurrect the file.
+        }
       }
+      if(remote) await retireMediaObject(image.filename,purge);
     }
   }
   await transaction(async client=> {

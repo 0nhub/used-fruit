@@ -1,3 +1,4 @@
+import { effectivePriceCents, parsePriceAdjustment, priceAdjustmentAsOf } from "@/lib/priceAdjustment";
 import { transaction, database } from "./db";
 import { conversationAccess, idempotent } from "./access";
 import { appendMessage } from "./marketplace";
@@ -14,12 +15,19 @@ export async function createOffer(userId: string, conversationId: string, input:
   return transaction(async client => {
     const conversation = await conversationAccess(client, uuid(conversationId), userId);
     return idempotent(client,userId,"offer:"+conversationId,key,input,async () => {
-      const listing=(await client.query("SELECT status,price_cents,seller_id FROM listings WHERE id=$1 FOR UPDATE",[conversation.listing_id])).rows[0];
+      const listing=(await client.query("SELECT status,price_cents,seller_id,specs,created_at,updated_at,sold_at FROM listings WHERE id=$1 FOR UPDATE",[conversation.listing_id])).rows[0];
       if (!listing || !['public','reserved'].includes(listing.status)) throw new ApiError(409,"unavailable","Das Gerät ist nicht mehr verfügbar.");
       if (listing.seller_id === userId) throw new ApiError(403,"forbidden","Du kannst dein eigenes Inserat nicht kaufen.");
-      if (Number(input.priceCents) !== Number(listing.price_cents)) throw new ApiError(409,"price_changed","Es gilt ausschließlich der aktuelle Inseratspreis. Bitte lade das Inserat erneut.");
+      const pending=(await client.query("SELECT MIN(created_at) AS pending_at FROM offers WHERE listing_id=$1 AND status='pending'",[conversation.listing_id])).rows[0];
+      const currentCents=effectivePriceCents({
+        listedCents:Number(listing.price_cents),
+        adjustment:parsePriceAdjustment(listing.specs?.priceAdjustment),
+        createdAt:listing.created_at,
+        asOf:priceAdjustmentAsOf({createdAt:listing.created_at,soldAt:listing.sold_at,status:listing.status,updatedAt:listing.updated_at,pendingAt:pending?.pending_at}),
+      });
+      if (Number(input.priceCents) !== currentCents) throw new ApiError(409,"price_changed","Es gilt ausschließlich der aktuelle Inseratspreis. Bitte lade das Inserat erneut.");
       const offer=(await client.query(`INSERT INTO offers(conversation_id,listing_id,sender_id,price_cents) VALUES($1,$2,$3,$4) RETURNING id,status,price_cents AS "priceCents"`,[conversationId,conversation.listing_id,userId,input.priceCents])).rows[0];
-      await appendMessage(client,conversation,userId,"Kaufen","offer",Number(listing.price_cents));
+      await appendMessage(client,conversation,userId,"Kaufen","offer",currentCents);
       return offer;
     });
   });

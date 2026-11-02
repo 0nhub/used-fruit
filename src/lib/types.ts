@@ -21,6 +21,16 @@ export type AccessoryFilterId = DesktopAccessoryId | "none";
 
 export type ListingVisibility = "public" | "reserved" | "inactive";
 
+/** Automatic price reduction while the listing is still for sale. */
+export interface PriceAdjustment {
+  /** Euros subtracted after each interval. */
+  amount: number;
+  /** Interval length in days, for example 7 for weekly. */
+  everyDays: number;
+  /** Optional floor in euros. Defaults to 1 €. */
+  floor?: number;
+}
+
 export interface Category {
   id: CategoryId;
   label: string;
@@ -36,6 +46,8 @@ export interface ModelDefinition {
   memoryOptions?: string[];
   storageOptions?: string[];
   chipOptions?: string[];
+  /** Shown in the short model list. Older models stay behind „Mehr“. */
+  featured?: boolean;
   disabled?: boolean;
 }
 
@@ -67,6 +79,10 @@ export interface Listing {
   /** Originalkarton / Originalverpackung vorhanden. */
   originalBox?: boolean;
   price: number;
+  /** Starting price before automatic markdowns. */
+  listedPrice?: number;
+  priceAdjustment?: PriceAdjustment;
+  updatedAt?: string;
   city: string;
   postalCode: string;
   locality?: string;
@@ -85,6 +101,10 @@ export interface Listing {
   soldAt?: string;
   /** Öffentlich, reserviert oder deaktiviert. Fehlt der Wert, gilt öffentlich. */
   visibility?: ListingVisibility;
+  /** Eigene Fotos des Anbieters, in der Anzeigereihenfolge. */
+  photoIds?: string[];
+  /** Öffentliche Bildadressen, zum Beispiel für Beispielinserate. */
+  photoUrls?: string[];
 }
 
 export type SortId = "newest" | "price-asc" | "nearest";

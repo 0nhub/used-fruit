@@ -1,5 +1,6 @@
-import Image from "next/image";
+import { AppleSignInLink } from "@/components/AppleSignInButton";
 import { StoreLogo } from "@/components/icons";
+import { appleLoginHref } from "@/lib/appleLogin";
 import { safeAuthNext, SESSION_COOKIE, unseal } from "@/lib/auth";
 import { cookies } from "next/headers";
 import Link from "next/link";
@@ -14,7 +15,7 @@ export default async function AnmeldenPage({
   const next = safeAuthNext(params.next ?? null);
   const session = unseal((await cookies()).get(SESSION_COOKIE)?.value);
   if (session?.kind === "session") redirect(next);
-  const loginUrl = `/api/auth/login?next=${encodeURIComponent(next)}`;
+  const loginUrl = appleLoginHref(next);
   if (!params.error) redirect(loginUrl);
 
   return (
@@ -25,11 +26,16 @@ export default async function AnmeldenPage({
           <span>Used Fruit</span>
         </Link>
       </header>
-      <main className="flex flex-1 flex-col items-center justify-center px-6 pb-24">
-        <h1 className="sr-only">Mit Apple anmelden</h1>
-        <a href={loginUrl} className="inline-flex max-w-full rounded-3xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-uf-link">
-          <Image src="/apple-sign-in-de.png" width={280} height={48} alt="Mit Apple anmelden" priority className="h-auto max-w-full" />
-        </a>
+      <main className="flex flex-1 flex-col items-center justify-center px-6 pb-24 text-center">
+        <h1 className="text-[22px] font-semibold tracking-tight">Mit Apple anmelden</h1>
+        <p className="mt-3 max-w-sm text-[14px] text-uf-text-secondary">
+          {params.error === "configuration"
+            ? "Die Anmeldung ist hier gerade nicht verfügbar. Bitte später erneut versuchen."
+            : "Bei Apple hat etwas nicht geklappt. Bitte noch einmal versuchen."}
+        </p>
+        <div className="mt-8 flex w-full justify-center">
+          <AppleSignInLink href={loginUrl} />
+        </div>
       </main>
     </div>
   );

@@ -177,7 +177,18 @@ function EnabledAppleMap({
             <span className="mt-1 text-[12px] text-uf-text-secondary">In Apple Maps öffnen</span>
           </a>
         )}
-
+        {!expanded && (
+          <button
+            type="button"
+            aria-label="Karte vergrößern"
+            onClick={() => setFullscreen(true)}
+            className="absolute left-3 top-3 z-10 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-white/95 text-uf-text shadow-md backdrop-blur-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-uf-text focus-visible:ring-offset-2"
+          >
+            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M14 5h5v5M19 5l-6 6M10 19H5v-5M5 19l6-6" />
+            </svg>
+          </button>
+        )}
       </div>
       <div className="shrink-0 space-y-1 px-4 py-4">
         <p className="text-[13px] text-uf-text-secondary">{label}</p>
@@ -186,10 +197,6 @@ function EnabledAppleMap({
             ? "Die Straße ist angegeben und wird veröffentlicht."
             : "Der Punkt zeigt nur Stadt und PLZ. Für den Treffpunkt nimm direkt Kontakt auf."}
         </p>
-        <div className="flex gap-2 pt-3">
-          {!expanded && <button type="button" onClick={() => setFullscreen(true)} className="uf-panel-action flex-1">Vollbild</button>}
-          <a href={mapsHref} target="_blank" rel="noreferrer" className="uf-panel-action flex-1">Apple Maps</a>
-        </div>
       </div>
     </div>
     {fullscreen && createPortal(
@@ -200,6 +207,15 @@ function EnabledAppleMap({
             className="absolute left-[calc(env(safe-area-inset-left)+16px)] top-[calc(env(safe-area-inset-top)+16px)] z-10 flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-white/95 text-uf-text shadow-md backdrop-blur-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-uf-text focus-visible:ring-offset-2">
             <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="m6 6 12 12M18 6 6 18" /></svg>
           </button>
+          <a
+            href={mapsHref}
+            target="_blank"
+            rel="noreferrer"
+            className="absolute right-[calc(env(safe-area-inset-right)+16px)] top-[calc(env(safe-area-inset-top)+16px)] z-10 inline-flex h-11 items-center gap-2 rounded-full bg-white/95 px-4 text-[14px] font-medium text-uf-text shadow-md backdrop-blur-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-uf-text focus-visible:ring-offset-2"
+          >
+            Apple Maps
+            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11 3h6v6M17 3l-8 8M8 4H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4" /></svg>
+          </a>
           <AppleMap lat={lat} lng={lng} label={label} exactAddress={exactAddress} expanded />
         </div>
       </dialog>, document.body)}

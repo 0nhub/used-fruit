@@ -1,14 +1,46 @@
 import Foundation
 
 struct CatalogChoice: Codable, Identifiable { var id: String; var label: String; var hex: String?; var hint: String?; var shortLabel: String?; var compactLabel: String { shortLabel ?? label } }
+struct CatalogSpec: Codable {
+    var chips: [String]?; var sizes: [String]?; var storage: [String]?; var memory: [String]?; var colorIds: [String]?
+}
 struct CatalogVariant: Codable {
     var year: Int?; var chips: [String]?; var sizes: [String]?; var colors: [CatalogChoice]; var memory: [String]?; var storage: [String]?
+    var specs: [CatalogSpec]?
+    func resolved(chip: String?, size: String?, storageValue: String?) -> CatalogVariant {
+        guard let specs, !specs.isEmpty else { return self }
+        var pool = specs
+        if let chip {
+            let specific = specs.filter { $0.chips?.contains(chip) == true }
+            if !specific.isEmpty { pool = specific }
+        }
+        if let size {
+            let specific = pool.filter { $0.sizes?.contains(size) == true }
+            if !specific.isEmpty { pool = specific }
+        }
+        if let storageValue {
+            let specific = pool.filter { $0.storage?.contains(storageValue) == true }
+            if !specific.isEmpty { pool = specific }
+        }
+        func pick(_ groups: [[String]?], fallback: [String]?) -> [String]? {
+            var result: [String] = [], seen = Set<String>()
+            for group in groups { for value in group ?? [] where seen.insert(value).inserted { result.append(value) } }
+            return result.isEmpty ? fallback : result
+        }
+        let colorIds = pick(pool.map(\.colorIds), fallback: nil)
+        let nextColors = colorIds.map { ids in colors.filter { ids.contains($0.id) } } ?? colors
+        return CatalogVariant(year: year, chips: chips, sizes: pick(pool.map(\.sizes), fallback: sizes), colors: nextColors.isEmpty ? colors : nextColors, memory: pick(pool.map(\.memory), fallback: memory), storage: pick(pool.map(\.storage), fallback: storage), specs: specs)
+    }
 }
 struct CatalogModel: Codable, Identifiable {
     var id: String; var categoryId: String; var name: String; var sizes: [String]?; var years: [Int]?; var colors: [CatalogChoice]
     var memoryOptions: [String]?; var storageOptions: [String]?; var chips: [String]; var battery: String?; var keyboard: Bool
+    var featured: Bool?; var currentChips: [String]?
     var variants: [CatalogVariant]; var chipYears: [String: [Int]]
-    func options(_ year: String?) -> CatalogVariant { variants.first { String($0.year ?? 0) == year } ?? CatalogVariant(chips: chips, sizes: sizes, colors: colors, memory: memoryOptions, storage: storageOptions) }
+    func options(_ year: String?, chip: String? = nil, size: String? = nil, storage: String? = nil) -> CatalogVariant {
+        let base = variants.first { String($0.year ?? 0) == year } ?? CatalogVariant(chips: chips, sizes: sizes, colors: colors, memory: memoryOptions, storage: storageOptions)
+        return base.resolved(chip: chip, size: size, storageValue: storage)
+    }
 }
 struct CatalogPlace: Codable, Identifiable, Hashable {
     var postalCode: String; var city: String; var state: String; var lat: Double; var lng: Double
@@ -59,29 +91,39 @@ struct WebCatalog: Codable {
         let chip = values["chip"] ?? (chips.count == 1 ? chips.first : nil)
         let years = m.map { self.years($0, chip: chip) } ?? []
         let year = values["year"] ?? (years.count == 1 ? years.first.map(String.init) : nil)
-        let options = m.flatMap { year != nil || ($0.years ?? []).isEmpty ? $0.options(year) : nil }
+        let options = m.flatMap { year != nil || ($0.years ?? []).isEmpty ? $0.options(year, chip: chip, size: values["size"]) : nil }
+        let memoryOptions = m.flatMap { year != nil || ($0.years ?? []).isEmpty ? $0.options(year, chip: chip, size: values["size"], storage: values["storage"]) : nil }
         var result = ["category","model"]
         if chips.count > 1 { result.append("chip") }
         if chip != nil && years.count > 1 { result.append("year") }
-        for (key, count) in [("color",options?.colors.count ?? 0),("size",options?.sizes?.count ?? 0),("memory",options?.memory?.count ?? 0),("storage",options?.storage?.count ?? 0)] { if count > 1 { result.append(key) } }
+        for (key, count) in [("color",options?.colors.count ?? 0),("size",options?.sizes?.count ?? 0),("storage",options?.storage?.count ?? 0),("memory",memoryOptions?.memory?.count ?? 0)] { if count > 1 { result.append(key) } }
         if m?.categoryId == "ipad" { result.append("connectivity") }
         if m?.categoryId == "iphone" || (m?.categoryId == "ipad" && values["connectivity"] == "cellular") { result.append("simLock") }
-        if m?.keyboard == true { result.append("keyboard") }
+        let desktop = ["imac","imac-pro","mac-mini","mac-studio","mac-pro"].contains(m?.id ?? "")
+        if desktop { result.append("accessories") }
+        if m?.keyboard == true || (values["accessories"] ?? "").split(separator: ",").contains("keyboard") { result.append("keyboard") }
         result += ["condition","packaging","warranty"]
         if m?.battery != nil { result.append("battery") }
         return result + ["price","location","shipping"]
     }
     func choices(_ step: String, values: [String:String]) -> [CatalogChoice] {
-        let m = model(values["model"]), options = m?.options(values["year"])
+        let m = model(values["model"])
+        let options = m?.options(values["year"], chip: values["chip"], size: values["size"])
+        let memoryOptions = m?.options(values["year"], chip: values["chip"], size: values["size"], storage: values["storage"])
         func labels(_ strings: [String]) -> [CatalogChoice] { strings.map { .init(id:$0,label:$0) } }
         switch step {
         case "category": return ["iphone","ipad","mac"].compactMap { id in categories.first { $0.id == id } }
-        case "model": return models.filter { $0.categoryId == values["category"] }.map { .init(id:$0.id,label:$0.name) }
+        case "model":
+            let matched = models.filter { $0.categoryId == values["category"] }
+            return matched.enumerated().sorted { a, b in
+                let ay = a.element.years?.max() ?? 0, by = b.element.years?.max() ?? 0
+                return ay == by ? a.offset < b.offset : ay > by
+            }.map { CatalogChoice(id: $0.element.id, label: $0.element.name) }
         case "chip": return labels(m?.chips ?? [])
-        case "year": return labels(m.map { years($0,chip:values["chip"]).map(String.init) } ?? [])
+        case "year": return labels(m.map { years($0,chip:values["chip"]).map(String.init) } ?? []).sorted { (Int($0.id) ?? 0) > (Int($1.id) ?? 0) }
         case "color": return options?.colors ?? []
         case "size": return labels(options?.sizes ?? [])
-        case "memory": return labels(options?.memory ?? [])
+        case "memory": return labels(memoryOptions?.memory ?? [])
         case "storage": return labels(options?.storage ?? [])
         case "connectivity": return [.init(id:"wifi",label:"WLAN"),.init(id:"cellular",label:"WLAN + Cellular")]
         case "simLock": return [.init(id:"unlocked",label:"Kein SIM-Lock"),.init(id:"locked",label:"Mit SIM-Lock")]
@@ -97,16 +139,26 @@ struct WebCatalog: Codable {
         var v = input
         for key in ["model","chip","year","color","size","memory","storage","connectivity","simLock","keyboard","condition","packaging","warranty","shipping"] {
             let items = choices(key, values:v)
-            if !items.contains(where: { $0.id == v[key] }) { v[key] = items.first?.id }
+            if !items.contains(where: { $0.id == v[key] }) {
+                if key == "model" {
+                    let featured = items.filter { model($0.id)?.featured == true }
+                    v[key] = (featured.first ?? items.first)?.id
+                } else if key == "chip" {
+                    let current = model(v["model"])?.currentChips ?? []
+                    v[key] = current.first { id in items.contains { $0.id == id } } ?? items.first?.id
+                } else { v[key] = items.first?.id }
+            }
         }
         if model(v["model"])?.categoryId != "ipad" { v["connectivity"] = nil }
         if !wizardSteps(v).contains("simLock") { v["simLock"] = nil }
-        if model(v["model"])?.keyboard != true { v["keyboard"] = nil; v["keyboardDetails"] = nil }
+        let desktopKeyboard = (v["accessories"] ?? "").split(separator: ",").contains("keyboard")
+        if model(v["model"])?.keyboard != true && !desktopKeyboard { v["keyboard"] = nil; v["keyboardDetails"] = nil }
         return v
     }
     func valid(_ step: String, values v: [String:String]) -> Bool {
         let raw = (v[step] ?? "").trimmingCharacters(in:.whitespacesAndNewlines)
         switch step {
+        case "accessories": return raw == "none" || !raw.isEmpty
         case "keyboard": return keyboard.contains { $0.id == raw } && (raw != "other" || (1...100).contains((v["keyboardDetails"] ?? "").trimmingCharacters(in:.whitespacesAndNewlines).count))
         case "warranty": return raw == "no" || (raw == "yes" && !(v["warrantyUntil"] ?? "").isEmpty)
         case "battery":

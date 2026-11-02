@@ -16,9 +16,7 @@ struct SessionTokens: Codable { var accessToken: String; var refreshToken: Strin
         let query: [String:Any] = [kSecClass as String:kSecClassGenericPassword,kSecAttrService as String:service,kSecReturnData as String:true,kSecMatchLimit as String:kSecMatchLimitOne]
         if SecItemCopyMatching(query as CFDictionary,&value) == errSecSuccess, let data=value as? Data { tokens=try? JSONDecoder().decode(SessionTokens.self,from:data) }
     }
-    #if DEBUG
     var screenshotMode = false
-    #endif
     var hasSession: Bool { tokens != nil }
     func storeTokens(_ value: [String:Any]) throws {
         let saved=try JSONDecoder().decode(SessionTokens.self,from:JSONSerialization.data(withJSONObject:value))
@@ -33,9 +31,7 @@ struct SessionTokens: Codable { var accessToken: String; var refreshToken: Strin
     }
     func clear() { tokens=nil;SecItemDelete([kSecClass as String:kSecClassGenericPassword,kSecAttrService as String:service] as CFDictionary) }
     func request(_ path:String,method:String="GET",body:[String:Any]?=nil,key:String?=nil,authenticated:Bool=true,retry:Bool=true,uploadData:Data?=nil,mediaType:String?=nil) async throws -> [String:Any] {
-        #if DEBUG
         guard !screenshotMode else { throw NativeAPIError(message:"Im lokalen Testkonto werden keine Serveraktionen ausgeführt.") }
-        #endif
         var request=URLRequest(url:URL(string:"/api/v1"+path,relativeTo:origin)!)
         request.httpMethod=method;request.timeoutInterval=20;request.cachePolicy = .reloadIgnoringLocalCacheData
         if authenticated,let tokens { request.setValue("Bearer "+tokens.accessToken,forHTTPHeaderField:"Authorization") }

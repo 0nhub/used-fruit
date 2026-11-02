@@ -5,11 +5,16 @@ import sharp from 'sharp';
 import { transaction } from './db';
 import { assertContact, lockPeople } from './access';
 import { ApiError, requireValue, uuid } from './http';
+import { isObjectStorageEnabled, putMediaObject, readMediaObject, retireMediaObject } from './objectStorage';
 
-function mediaDirectory() {
-  const directory=process.env.USED_FRUIT_MEDIA_DIR;
-  if (!directory || !path.isAbsolute(directory)) throw new Error('Media directory unavailable');
+function localMediaDirectory() {
+  const directory=process.env.USED_FRUIT_MEDIA_DIR || (process.env.NODE_ENV !== 'production' ? path.join(process.cwd(), '.data', 'media') : '');
+  if (!directory || !path.isAbsolute(directory)) return null;
   return directory;
+}
+async function removeStored(filename: string, directory: string | null, remote: boolean) {
+  if (remote) await retireMediaObject(filename, true);
+  if (directory) await unlink(path.join(directory, filename)).catch((error: NodeJS.ErrnoException) => { if (error.code !== 'ENOENT') throw error; });
 }
 export async function uploadMedia(userId: string,request: Request) {
   const supported=['image/jpeg','image/png','image/webp'];
@@ -25,29 +30,37 @@ export async function uploadMedia(userId: string,request: Request) {
     requireValue(['jpeg','png','webp'].includes(metadata.format??'') && (metadata.pages??1)===1,'Nicht unterstütztes Bild.');
     encoded=await pipeline.rotate().resize({width:2000,height:2000,fit:'inside',withoutEnlargement:true}).webp({quality:85}).toBuffer();
   } catch { throw new ApiError(400,'invalid_image','Dieses Bild konnte nicht verarbeitet werden.'); }
-  const id=randomUUID(),filename=id+'.webp',directory=mediaDirectory();
-  await mkdir(directory,{recursive:true,mode:0o750});
-  await writeFile(path.join(directory,filename),encoded,{flag:'wx',mode:0o640});
+  const id=randomUUID(),filename=id+'.webp',remote=isObjectStorageEnabled(),directory=localMediaDirectory();
+  if (!remote && !directory) throw new Error('Media storage unavailable');
+  if (remote) await putMediaObject(filename, encoded);
+  else { await mkdir(directory!,{recursive:true,mode:0o750}); await writeFile(path.join(directory!,filename),encoded,{flag:'wx',mode:0o640}); }
   try {
     await transaction(async client=> {
       await lockPeople(client,[userId]);
       const user=(await client.query('SELECT id FROM users WHERE id=$1 AND deleted_at IS NULL AND banned_at IS NULL',[userId])).rowCount;
       if (!user) throw new ApiError(401,'unauthorized','Bitte melde dich erneut an.');
       const count=(await client.query('SELECT count(*)::int AS count FROM media WHERE user_id=$1 AND deleted_at IS NULL',[userId])).rows[0].count;
-      if (count>=20) throw new ApiError(409,'media_limit','Bitte entferne zuerst ein nicht mehr benötigtes Bild.');
+      if (count>=80) throw new ApiError(409,'media_limit','Bitte entferne zuerst ein nicht mehr benötigtes Bild.');
       await client.query("INSERT INTO media(id,user_id,filename,mime_type,size_bytes) VALUES($1,$2,$3,'image/webp',$4)",[id,userId,filename,encoded.length]);
     });
-  } catch (error) { await unlink(path.join(directory,filename)); throw error; }
+  } catch (error) { await removeStored(filename, remote ? null : directory, remote); throw error; }
   return {id,url:'/api/v1/media/'+id};
 }
 export async function readMedia(id: string,userId: string|null) {
   const row=await transaction(async client=> {
-    const media=(await client.query('SELECT m.* FROM media m JOIN users u ON u.id=m.user_id WHERE m.id=$1 AND m.deleted_at IS NULL AND u.deleted_at IS NULL AND u.banned_at IS NULL AND (u.cover_media_id=m.id OR u.id=$2)',[uuid(id),userId])).rows[0];
+    const media=(await client.query(`SELECT m.* FROM media m JOIN users u ON u.id=m.user_id WHERE m.id=$1 AND m.deleted_at IS NULL AND u.deleted_at IS NULL AND u.banned_at IS NULL AND (u.cover_media_id=m.id OR u.id=$2 OR EXISTS (SELECT 1 FROM listings l WHERE l.seller_id=m.user_id AND l.status IN ('public','sold') AND jsonb_typeof(l.specs->'photoIds')='array' AND l.specs->'photoIds' ? m.id::text))`,[uuid(id),userId])).rows[0];
     if (!media) throw new ApiError(404,'not_found','Bild nicht gefunden.');
     if (userId) await assertContact(client,userId,media.user_id);
     return media;
   });
-  const bytes=await readFile(path.join(mediaDirectory(),row.filename));
+  let bytes: Buffer | null = null;
+  if (isObjectStorageEnabled()) bytes = await readMediaObject(row.filename);
+  if (!bytes) {
+    const directory = localMediaDirectory();
+    if (!directory) throw new ApiError(404, 'not_found', 'Bild nicht gefunden.');
+    try { bytes = await readFile(path.join(directory, row.filename)); }
+    catch (error) { if ((error as NodeJS.ErrnoException).code === 'ENOENT') throw new ApiError(404, 'not_found', 'Bild nicht gefunden.'); throw error; }
+  }
   return new Response(new Uint8Array(bytes),{headers:{'Content-Type':'image/webp','Content-Length':String(bytes.length),'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'}});
 }
 export async function deleteMedia(id: string,userId: string) {

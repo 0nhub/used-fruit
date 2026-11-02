@@ -4,8 +4,10 @@ import { AppleMark } from "@/components/AppleSignInButton";
 import { HeartIcon, MessageIcon } from "@/components/icons";
 import { MessageNotifier } from "@/components/MessageNotifier";
 import { ProfileMenu } from "@/components/ProfileMenu";
+import { appleLoginHref } from "@/lib/appleLogin";
 import { useProfile } from "@/lib/useProfile";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const iconBtn =
   "flex h-8 w-8 items-center justify-center rounded-full text-uf-text-secondary hover:bg-uf-bg-subtle hover:text-uf-text sm:h-9 sm:w-9";
@@ -15,6 +17,7 @@ const guestBtn =
 
 export function NavActions() {
   const { signedIn, ready } = useProfile();
+  const pathname = usePathname();
 
   if (!ready) {
     return <div className="h-8 w-[9.5rem] sm:h-9" aria-hidden />;
@@ -29,13 +32,13 @@ export function NavActions() {
         >
           Inserieren
         </Link>
-        <Link
-          href="/anmelden"
+        <a
+          href={appleLoginHref(pathname)}
           className={`${guestBtn} inline-flex border border-uf-border text-uf-text hover:bg-uf-bg-subtle`}
         >
           <AppleMark className="mr-1.5 block h-[18px] w-[14px] shrink-0 -translate-y-px" />
           Mit Apple anmelden
-        </Link>
+        </a>
       </div>
     );
   }

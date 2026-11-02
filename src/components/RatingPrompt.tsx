@@ -20,7 +20,7 @@ export function RatingPrompt({
         <button
           type="button"
           onClick={() => onRate("positive")}
-          className="inline-flex h-9 items-center gap-1.5 rounded-full bg-uf-text px-3 text-[13px] text-white hover:bg-[#424245]"
+          className="inline-flex h-9 items-center gap-1.5 rounded-full bg-uf-action px-3 text-[13px] text-white hover:bg-uf-link"
         >
           <ThumbUpIcon className="h-4 w-4" />
           Positiv

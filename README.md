@@ -268,7 +268,7 @@ Header: `SiteHeader` (Logo, Kategorien, Aktionen). `Header.tsx` ist nur ein dün
 
 ## Rechtliches / Betreiber
 
-Kontaktdaten der Rechtstexte: `src/lib/legal.ts` (Name, Anschrift, Telefon, `hello@sgroi.ga`).  
+Kontaktdaten der Rechtstexte: `src/lib/legal.ts` (Name, Anschrift, Telefon, `usedfruit@sgroi.ga`).  
 Used Fruit ist **kein** Apple Authorized Reseller und **nicht** von Apple autorisiert, gesponsert oder empfohlen.
 
 ---

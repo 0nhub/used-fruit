@@ -11,15 +11,23 @@ export function AppleMark({ className }: { className?: string }) {
   );
 }
 
+const appleSignInClass =
+  "flex h-12 w-full max-w-xs items-center justify-center gap-2.5 rounded-full bg-black px-5 text-[15px] font-medium text-white hover:bg-[#1d1d1f]";
+
 export function AppleSignInButton({ onClick }: { onClick: () => void }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="flex h-12 w-full max-w-xs items-center justify-center gap-2.5 rounded-full bg-black px-5 text-[15px] font-medium text-white hover:bg-[#1d1d1f]"
-    >
+    <button type="button" onClick={onClick} className={appleSignInClass}>
       <AppleMark className="block h-5 w-4 shrink-0 -translate-y-px" />
       Mit Apple anmelden
     </button>
+  );
+}
+
+export function AppleSignInLink({ href }: { href: string }) {
+  return (
+    <a href={href} className={appleSignInClass}>
+      <AppleMark className="block h-5 w-4 shrink-0 -translate-y-px" />
+      Mit Apple anmelden
+    </a>
   );
 }

@@ -1,7 +1,7 @@
 import { getModelById } from "@/data/catalog";
 import type { BatteryMetric, CategoryId, Listing } from "@/lib/types";
 
-const CYCLE_MODEL_IDS = new Set(["macbook-neo", "macbook-air", "macbook-pro"]);
+const CYCLE_MODEL_IDS = new Set(["macbook-neo", "macbook-air", "macbook-pro", "macbook"]);
 const CAPACITY_CATEGORIES = new Set<CategoryId>(["iphone", "ipad"]);
 
 export const BATTERY_CAPACITY_FILTERS = [95, 90, 85, 80] as const;

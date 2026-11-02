@@ -3,6 +3,7 @@
 import { RatingPrompt } from "@/components/RatingPrompt";
 import { ArchiveIcon, BanIcon, ExternalLinkIcon, MessageIcon, MoreIcon, MuteIcon, TrashIcon } from "@/components/icons";
 import { ProductImage } from "@/components/ProductImage";
+import { listingCoverUrl } from "@/lib/listingPhotos";
 import { SiteHeader } from "@/components/SiteHeader";
 import {
   formatListingHeadline,
@@ -23,6 +24,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 
+import { appleLoginHref } from "@/lib/appleLogin";
 import { currentIdentity } from "@/lib/authClient";
 import { useChatPresence } from "@/lib/useChatPresence";
 import { showApiError } from "@/lib/apiClient";
@@ -230,8 +232,8 @@ function NachrichtenInner() {
             Melde dich an, um Kaufanfragen und Chats zu sehen.
           </p>
           <a
-            href="/anmelden?next=/nachrichten"
-            className="mt-6 inline-flex h-10 items-center rounded-full bg-uf-text px-5 text-[14px] text-white"
+            href={appleLoginHref("/nachrichten")}
+            className="mt-6 inline-flex h-10 items-center rounded-full bg-uf-action px-5 text-[14px] text-white hover:bg-uf-link"
           >
             Mit Apple anmelden
           </a>
@@ -351,8 +353,7 @@ function NachrichtenInner() {
                     <div className="flex min-w-0 items-center gap-3">
                       <span className="h-11 w-[3.6rem] shrink-0 overflow-hidden rounded-[10px] bg-uf-bg-subtle">
                         <ProductImage
-                          modelId={listing.modelId}
-                          colorId={listing.colorId}
+                          src={listingCoverUrl(listing)}
                           alt={title}
                           className="h-full"
                           demo={isDemoListing(listing.id)}
@@ -370,8 +371,7 @@ function NachrichtenInner() {
                       <span className="h-11 w-[3.6rem] shrink-0 overflow-hidden rounded-[10px] bg-uf-bg-subtle">
                         {listing ? (
                           <ProductImage
-                            modelId={listing.modelId}
-                            colorId={listing.colorId}
+                            src={listingCoverUrl(listing)}
                             alt=""
                             className="h-full"
                             demo={isDemoListing(listing.id)}
@@ -473,31 +473,33 @@ function NachrichtenInner() {
                   }`}
                 >
                   {selected.offer.status === "pending" &&
-                    `Offenes Angebot: ${formatPrice(selected.offer.price)}.`}
+                    (iAmSeller
+                      ? `Kaufanfrage über ${formatPrice(selected.offer.price)}. Du kannst annehmen oder ablehnen.`
+                      : `Kaufanfrage über ${formatPrice(selected.offer.price)} gesendet. Der Anbieter kann annehmen oder ablehnen.`)}
                   {selected.offer.status === "accepted" &&
-                    `Kauf vereinbart für ${formatPrice(selected.offer.price)}. Ihr könnt jetzt Versand oder Abholung klären.`}
+                    `Kauf vereinbart für ${formatPrice(selected.offer.price)}. Das Gerät gilt als verkauft. Ihr könnt jetzt Versand oder Abholung klären.`}
                   {selected.offer.status === "declined" &&
-                    `Angebot über ${formatPrice(selected.offer.price)} abgelehnt.`}
+                    `Kaufanfrage über ${formatPrice(selected.offer.price)} abgelehnt.`}
                   {ratingWaiting && ratingDaysLeft > 0 && (
                     <p className="mt-2 text-[13px] text-[#1d6b32]/80">
                       Bewertung in {ratingDaysLeft === 1 ? "1 Tag" : `${ratingDaysLeft} Tagen`} möglich.
                     </p>
                   )}
-                  {selected.offer.status === "pending" && !selected.archived && !counterpartBlocked && (
+                  {selected.offer.status === "pending" && iAmSeller && !selected.archived && !counterpartBlocked && (
                     <div className="mt-2 flex gap-2">
                       <button
                         type="button"
                         onClick={() => resolveOffer(selected.id, "accepted", "seller")}
-                        className="h-8 rounded-full bg-uf-text px-3 text-[12px] text-white"
+                        className="h-8 rounded-full bg-uf-action px-3 text-[12px] text-white hover:bg-uf-link"
                       >
-                        Angebot annehmen
+                        Annehmen
                       </button>
                       <button
                         type="button"
                         onClick={() => resolveOffer(selected.id, "declined", "seller")}
                         className="h-8 rounded-full border border-uf-border bg-white px-3 text-[12px] text-uf-text"
                       >
-                        Offerte ablehnen
+                        Ablehnen
                       </button>
                     </div>
                   )}
@@ -533,14 +535,12 @@ function NachrichtenInner() {
                         >
                           {message.kind === "offer" && (
                             <p className="font-medium">
-                              Kaufoption {message.price != null ? formatPrice(message.price) : ""}
+                              Kaufanfrage{message.price != null ? ` ${formatPrice(message.price)}` : ""}
                             </p>
                           )}
                           {message.kind === "accept" && <p className="font-medium">Kauf bestätigt</p>}
-                          {message.kind === "decline" && <p>Angebot abgelehnt</p>}
-                          {message.text && (
-                            <p className={message.kind === "text" ? "" : "mt-1 opacity-90"}>{message.text}</p>
-                          )}
+                          {message.kind === "decline" && <p>Kaufanfrage abgelehnt</p>}
+                          {message.kind === "text" && message.text ? <p>{message.text}</p> : null}
                         </div>
                         <p className="mt-1 px-1 text-[11px] text-uf-text-tertiary">
                           {formatMessageTime(message.at)}
@@ -596,7 +596,7 @@ function NachrichtenInner() {
                   />
                   <button
                     type="submit"
-                    className="h-10 rounded-full bg-uf-text px-4 text-[13px] text-white"
+                    className="h-10 rounded-full bg-uf-action px-4 text-[13px] text-white hover:bg-uf-link"
                   >
                     Senden
                   </button>
@@ -640,7 +640,7 @@ function NachrichtenInner() {
                     leaveConversation("blockiert");
                   }
                 }}
-                className="h-9 rounded-full bg-uf-text px-4 text-[13px] text-white"
+                className="h-9 rounded-full bg-uf-action px-4 text-[13px] text-white hover:bg-uf-link"
               >
                 {confirm === "delete" ? "Löschen" : "Blockieren"}
               </button>

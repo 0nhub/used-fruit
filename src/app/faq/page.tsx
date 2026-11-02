@@ -23,15 +23,16 @@ const groups = [
     questions: [
       ["Wie finde ich ein passendes Gerät?", "Wähle zunächst eine Kategorie und grenze die Ergebnisse mit den Filtern ein. Je nach Gerät kannst du beispielsweise Modell, Speicher, Zustand, Tastaturlayout, Garantie oder Versand auswählen. Über den Standort und Umkreis suchst du in deiner Nähe."],
       ["Wie merke ich mir ein Angebot?", "Tippe auf das Herz. Als Gast wirst du zur Anmeldung weitergeleitet. Nach erfolgreicher Anmeldung wird deine Auswahl in den Favoriten übernommen."],
-      ["Was passiert bei Kaufen oder Nachricht?", "Beide Buttons öffnen die Unterhaltung zum Inserat. Wenn du nicht angemeldet bist, meldest du dich zuerst an. Es wird dabei weder automatisch eine Nachricht verschickt noch eine Zahlung ausgelöst. Die weiteren Absprachen erfolgen im Chat."],
+      ["Was passiert bei Kaufen oder Nachricht?", "Nachricht öffnet nur die Unterhaltung. Kaufen zeigt zuerst den Inseratspreis zur Bestätigung. Danach geht eine Kaufanfrage an den Anbieter. Es wird keine Zahlung ausgelöst. Der Anbieter kann annehmen oder ablehnen. Nimmt er an, gilt das Gerät als verkauft. Weitere Absprachen erfolgen im Chat."],
       ["Wie funktionieren Abholung und Versand?", "Im Inserat steht, ob nur Abholung oder auch Versand möglich ist. Treffpunkt, Versandkosten und die weitere Abwicklung besprichst du mit dem Anbieter. Mit dem Filter Versand möglich findest du Angebote, die Versand vorsehen."],
-      ["Was zeigt die Karte?", "Ohne veröffentlichte Straße zeigt die Karte nur den ungefähren Ort anhand von Stadt und Postleitzahl. Den genauen Treffpunkt vereinbarst du direkt. Vollbild vergrößert die Karte; Apple Maps öffnet den Ort im Kartendienst."],
+      ["Was zeigt die Karte?", "Ohne veröffentlichte Straße zeigt die Karte nur den ungefähren Ort anhand von Stadt und Postleitzahl. Den genauen Treffpunkt vereinbarst du direkt. Das Pfeil-Symbol vergrößert die Karte; in der Vollansicht öffnet Apple Maps den Ort in einem neuen Tab."],
     ],
   },
   {
     title: "Ein Gerät inserieren",
     questions: [
       ["Wie erstelle ich ein Inserat?", "Der Assistent führt dich Schritt für Schritt durch die Geräteangaben. In Auswahllisten ist die erste Option vorausgewählt. Prüfe jede Angabe und ändere sie passend zu deinem Gerät; die Vorauswahl ist keine automatische Geräteerkennung."],
+      ["Kann der Preis automatisch sinken?", "Ja. Beim Preis kannst du eine automatische Senkung einschalten, zum Beispiel 10 € pro Woche oder 10 € alle vier Tage. Der aktuelle Preis gilt für Katalog und Kaufanfrage. Die Senkung stoppt, sobald das Gerät verkauft oder reserviert ist beziehungsweise eine Kaufanfrage offen ist."],
       ["Kann ich mein Inserat vor der Anmeldung vorbereiten?", "Ja. Du kannst die Angaben zunächst ausfüllen. Am Ende führt Mit Apple anmelden & veröffentlichen zur Anmeldung oder Registrierung. Dein fertiger Entwurf bleibt im selben Browser-Tab erhalten und wird nach erfolgreicher Anmeldung übernommen. Bereits angemeldet kannst du direkt veröffentlichen."],
       ["Muss ich eigene Produktfotos aufnehmen?", "Für die Katalogdarstellung nutzt Used Fruit einheitliche Modellansichten. Diese zeigen nicht den individuellen Zustand deines Exemplars. Beschreibe den Zustand deshalb zutreffend und kläre Gebrauchsspuren oder Besonderheiten vor dem Kauf direkt mit Interessenten."],
       ["Warum sind Tastaturlayout und SIM-Lock wichtig?", "Bei einem MacBook ist die Tastatur fest eingebaut. Gib deshalb das tatsächliche Layout an, etwa DE/AT oder CH. Bei iPhones und Cellular-iPads wählst du Ohne SIM-Lock oder Mit SIM-Lock. Gemeint ist die Bindung an einen Mobilfunkanbieter, nicht die SIM-PIN. Prüfe die Angabe am Gerät beziehungsweise beim Anbieter."],

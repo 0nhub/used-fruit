@@ -10,9 +10,10 @@ import {
   IPAD_CONNECTIVITY,
   getModelsByCategory,
   getModelById,
+  sortModelsByAge,
 } from "@/data/catalog";
 import { formatPlaceLabel } from "@/data/locations";
-import { chipsForModel, optionsForYear, yearsForChip } from "@/data/modelYears";
+import { chipsForModel, currentChipsForModel, optionsForSelection, yearsForChip } from "@/data/modelYears";
 import { getBatteryMetricForModel } from "@/lib/device";
 import { SIM_LOCK_OPTIONS, needsSimLock, isSimLockStatus } from "@/lib/simLock";
 import { DESKTOP_ACCESSORIES, acceptsDesktopAccessories, hasValidDesktopAccessories, needsKeyboardLayout } from "@/lib/accessories";
@@ -30,11 +31,28 @@ import {
   soleSpecValues,
   STEP_COPY,
 } from "@/lib/listingWizard";
+import { appleLoginHref } from "@/lib/appleLogin";
+import {
+  LISTING_PHOTO_LIMIT,
+  clearListingPhotoFiles,
+  listingPhotoUrl,
+  readListingPhotoFiles,
+  saveListingPhotoFiles,
+  uploadListingPhoto,
+} from "@/lib/listingPhotos";
+import { formatPrice } from "@/lib/format";
+import {
+  PRICE_ADJUSTMENT_PRESETS,
+  formatPriceAdjustment,
+  listingDisplayPrice,
+  parsePriceAdjustment,
+  priceAdjustmentError,
+} from "@/lib/priceAdjustment";
 import { useListings } from "@/lib/useListings";
 import { useProfile } from "@/lib/useProfile";
-import type { CategoryId, ConditionId, DesktopAccessoryId, IpadConnectivity, KeyboardLayoutId, ShippingScope, SimLockStatus } from "@/lib/types";
+import type { CategoryId, ConditionId, DesktopAccessoryId, IpadConnectivity, KeyboardLayoutId, PriceAdjustment, ShippingScope, SimLockStatus } from "@/lib/types";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 
 function swatchNeedsOutline(hex: string): boolean {
   const raw = hex.replace("#", "");
@@ -103,6 +121,27 @@ function OptionRow({
 const fieldClass =
   "mt-1.5 w-full rounded-xl border border-uf-border bg-white px-3 py-2.5 text-[14px] outline-none";
 
+type DraftPhoto = { key: string; preview: string; file?: File; id?: string };
+
+function wizardPriceAdjustment(
+  startPrice: number,
+  enabled: boolean,
+  amount: string,
+  count: string,
+  unit: "days" | "weeks",
+  floor: string,
+): PriceAdjustment | undefined {
+  if (!enabled) return undefined;
+  const everyDays = Number(count.replace(",", ".")) * (unit === "weeks" ? 7 : 1);
+  const adjustment = parsePriceAdjustment({
+    amount: Number(amount.replace(",", ".")),
+    everyDays,
+    floor: floor.trim() ? Number(floor.replace(",", ".")) : undefined,
+  });
+  if (!adjustment || priceAdjustmentError(adjustment, startPrice)) return undefined;
+  return adjustment;
+}
+
 export function ListingWizard() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -115,6 +154,9 @@ export function ListingWizard() {
   const [stepIndex, setStepIndex] = useState(0);
   const [categoryId, setCategoryId] = useState<CategoryId | undefined>("iphone");
   const [modelId, setModelId] = useState("");
+  const [showAllModels, setShowAllModels] = useState(false);
+  const [showAllChips, setShowAllChips] = useState(false);
+  const [modelQuery, setModelQuery] = useState("");
   const [colorId, setColorId] = useState("");
   const [chip, setChip] = useState("");
   const [size, setSize] = useState("");
@@ -128,43 +170,62 @@ export function ListingWizard() {
   const [includedAccessories, setIncludedAccessories] = useState<DesktopAccessoryId[] | undefined>();
   const [condition, setCondition] = useState<ConditionId | undefined>();
   const [originalBox, setOriginalBox] = useState<boolean | undefined>();
-  const [hasAppleWarranty, setHasAppleWarranty] = useState(true);
+  const [hasAppleWarranty, setHasAppleWarranty] = useState(false);
   const [warrantyUntil, setWarrantyUntil] = useState("");
   const [batteryCapacity, setBatteryCapacity] = useState("");
   const [batteryCycles, setBatteryCycles] = useState("");
   const [price, setPrice] = useState("");
+  const [priceAdjust, setPriceAdjust] = useState(false);
+  const [dropAmount, setDropAmount] = useState("10");
+  const [intervalCount, setIntervalCount] = useState("1");
+  const [intervalUnit, setIntervalUnit] = useState<"days" | "weeks">("weeks");
+  const [floorPrice, setFloorPrice] = useState("");
   const [locationQuery, setLocationQuery] = useState("");
   const [city, setCity] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [locality, setLocality] = useState("");
   const [street, setStreet] = useState("");
+  const [showFullAddress, setShowFullAddress] = useState(false);
   const [shippingScope, setShippingScope] = useState<ShippingScope | undefined>();
+  const [photos, setPhotos] = useState<DraftPhoto[]>([]);
+  const [photosReady, setPhotosReady] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const leaveRef = useRef<(go: () => void) => void>((go) => go());
+  const photosRef = useRef<DraftPhoto[]>([]);
+  photosRef.current = photos;
 
   const model = modelId ? getModelById(modelId) : undefined;
-  const models = useMemo(() => categoryId
+  const models = useMemo(() => sortModelsByAge(categoryId
     ? getModelsByCategory(categoryId).filter((item) => !item.disabled)
-    : [], [categoryId]);
+    : []), [categoryId]);
+  const currentModels = useMemo(() => models.filter((item) => item.featured), [models]);
+  const visibleModels = useMemo(() => {
+    const base = showAllModels || currentModels.length === 0 ? models : currentModels;
+    const query = showAllModels ? modelQuery.trim().toLowerCase() : "";
+    if (!query) return base;
+    return base.filter((item) => item.name.toLowerCase().includes(query));
+  }, [models, currentModels, showAllModels, modelQuery]);
   const batteryMetric = getBatteryMetricForModel(modelId);
   const steps = useMemo(
-    () => buildWizardSteps(modelId || undefined, year, chip, connectivity, includedAccessories),
-    [modelId, year, chip, connectivity, includedAccessories],
+    () => buildWizardSteps(modelId || undefined, year, chip, connectivity, includedAccessories, size || undefined, storage || undefined),
+    [modelId, year, chip, connectivity, includedAccessories, size, storage],
   );
   const step = steps[Math.min(stepIndex, steps.length - 1)];
   const copy = STEP_COPY[step];
-  const yearOptions = optionsForYear(
-    model,
-    year ?? (model?.years?.length === 1 ? model.years[0] : undefined),
-  );
+  const resolvedYear = year ?? (model?.years?.length === 1 ? model.years[0] : undefined);
+  const yearOptions = optionsForSelection(model, resolvedYear, chip || undefined, size || undefined);
+  const memoryOptions = optionsForSelection(model, resolvedYear, chip || undefined, size || undefined, storage || undefined);
   const chipChoices = useMemo(() => chipsForModel(model), [model]);
-  const yearChoices = useMemo(() => yearsForChip(model, chip || undefined), [model, chip]);
+  const currentChipChoices = useMemo(() => currentChipsForModel(model), [model]);
+  const visibleChips = !currentChipChoices || showAllChips ? chipChoices : currentChipChoices;
+  const yearChoices = useMemo(() => [...yearsForChip(model, chip || undefined)].sort((a, b) => b - a), [model, chip]);
 
   useEffect(() => {
     if (!profileReady || restoredDraft.current) return;
     restoredDraft.current = true;
     const draft = readListingDraft();
-    if (!draft || !getModelById(draft.modelId)) return;
+    if (draft && getModelById(draft.modelId)) {
     setCategoryId(draft.categoryId); setModelId(draft.modelId); setChip(draft.chip ?? "");
     setColorId(draft.colorId); setSize(draft.size ?? ""); setYear(draft.year);
     setMemory(draft.memory ?? ""); setStorage(draft.storage ?? "");
@@ -175,11 +236,49 @@ export function ListingWizard() {
     setHasAppleWarranty(Boolean(draft.appleWarrantyUntil)); setWarrantyUntil(draft.appleWarrantyUntil ?? "");
     setBatteryCapacity(draft.batteryMaxCapacityPercent == null ? "" : String(draft.batteryMaxCapacityPercent));
     setBatteryCycles(draft.batteryCycleCount == null ? "" : String(draft.batteryCycleCount));
-    setPrice(String(draft.price)); setCity(draft.city); setPostalCode(draft.postalCode);
-    setLocationQuery(draft.postalCode + " " + draft.city); setLocality(draft.locality ?? ""); setStreet(draft.street ?? "");
+    setPrice(String(draft.price));
+    if (draft.priceAdjustment) {
+      setPriceAdjust(true);
+      setDropAmount(String(draft.priceAdjustment.amount));
+      if (draft.priceAdjustment.everyDays % 7 === 0) {
+        setIntervalCount(String(draft.priceAdjustment.everyDays / 7));
+        setIntervalUnit("weeks");
+      } else {
+        setIntervalCount(String(draft.priceAdjustment.everyDays));
+        setIntervalUnit("days");
+      }
+      setFloorPrice(draft.priceAdjustment.floor != null ? String(draft.priceAdjustment.floor) : "");
+    }
+    setCity(draft.city); setPostalCode(draft.postalCode);
+    setLocationQuery(draft.postalCode + " " + draft.city);
+    setLocality(draft.locality ?? (draft.city ? "Mitte" : ""));
+    setStreet(draft.street ?? "");
+    setShowFullAddress(Boolean(draft.street?.trim()));
     setShippingScope(draft.shippingScope);
-    setStepIndex(buildWizardSteps(draft.modelId, draft.year, draft.chip, draft.connectivity, draft.includedAccessories).length - 1);
+    setStepIndex(buildWizardSteps(draft.modelId, draft.year, draft.chip, draft.connectivity, draft.includedAccessories, draft.size, draft.storage).length - 1);
+    if (draft.modelId && !getModelById(draft.modelId)?.featured) setShowAllModels(true);
+    }
+    void readListingPhotoFiles()
+      .then((files) => {
+        const saved = (draft?.photoIds ?? []).filter((id): id is string => typeof id === "string").map((id) => ({
+          key: id,
+          id,
+          preview: listingPhotoUrl(id),
+        }));
+        const pending = files.map((file) => ({
+          key: crypto.randomUUID(),
+          file,
+          preview: URL.createObjectURL(file),
+        }));
+        setPhotos([...saved, ...pending].slice(0, LISTING_PHOTO_LIMIT));
+      })
+      .finally(() => setPhotosReady(true));
   }, [profileReady]);
+
+  useEffect(() => {
+    if (!photosReady) return;
+    void saveListingPhotoFiles(photos.flatMap((photo) => (photo.file ? [photo.file] : [])));
+  }, [photos, photosReady]);
 
   useEffect(() => {
     const sole = soleSpecValues(model);
@@ -189,13 +288,14 @@ export function ListingWizard() {
 
   useEffect(() => {
     if (!model) return;
-    const options = optionsForYear(model, year);
+    const options = optionsForSelection(model, year, chip || undefined, size || undefined);
+    const narrowed = optionsForSelection(model, year, chip || undefined, size || undefined, storage || undefined);
     if (chip && year != null && options.chips && !options.chips.includes(chip)) setChip("");
     if (size && options.sizes && !options.sizes.includes(size)) setSize("");
     if (colorId && !options.colors.some((item) => item.id === colorId)) setColorId("");
-    if (memory && options.memory && !options.memory.includes(memory)) setMemory("");
     if (storage && options.storage && !options.storage.includes(storage)) setStorage("");
-    const sole = soleSpecValues(model, year, chip);
+    if (memory && narrowed.memory && !narrowed.memory.includes(memory)) setMemory("");
+    const sole = soleSpecValues(model, year, chip, size || undefined, storage || undefined);
     if (chip && year != null && !yearsForChip(model, chip).includes(year)) setYear(undefined);
     else if (sole.year != null) setYear(sole.year);
     if (sole.chip) setChip(sole.chip);
@@ -203,17 +303,17 @@ export function ListingWizard() {
     if (sole.size) setSize(sole.size);
     if (sole.memory) setMemory(sole.memory);
     if (sole.storage) setStorage(sole.storage);
-  }, [model, year, chip]);
+  }, [model, year, chip, size, storage]);
 
   // Pick the first displayed choice only when this step has no selection yet.
   useEffect(() => {
     switch (step) {
-      case "model": if (!modelId && models[0]) setModelId(models[0].id); break;
-      case "chip": if (!chip && chipChoices[0]) setChip(chipChoices[0]); break;
+      case "model": if (!modelId && visibleModels[0]) setModelId(visibleModels[0].id); break;
+      case "chip": if (!chip && visibleChips[0]) setChip(visibleChips[0]); break;
       case "year": if (year == null && yearChoices[0] != null) setYear(yearChoices[0]); break;
       case "color": if (!colorId && yearOptions.colors[0]) setColorId(yearOptions.colors[0].id); break;
       case "size": if (!size && yearOptions.sizes?.[0]) setSize(yearOptions.sizes[0]); break;
-      case "memory": if (!memory && yearOptions.memory?.[0]) setMemory(yearOptions.memory[0]); break;
+      case "memory": if (!memory && memoryOptions.memory?.[0]) setMemory(memoryOptions.memory[0]); break;
       case "storage": if (!storage && yearOptions.storage?.[0]) setStorage(yearOptions.storage[0]); break;
       case "connectivity": if (!connectivity) setConnectivity(IPAD_CONNECTIVITY[0].id); break;
       case "simLock": if (!isSimLockStatus(simLock)) setSimLock(SIM_LOCK_OPTIONS[0].id); break;
@@ -222,7 +322,7 @@ export function ListingWizard() {
       case "packaging": if (originalBox == null) setOriginalBox(true); break;
       case "shipping": if (!shippingScope) setShippingScope("local"); break;
     }
-  }, [step, modelId, models, chip, chipChoices, year, yearChoices, colorId, yearOptions.colors, yearOptions.sizes, yearOptions.memory, yearOptions.storage, size, memory, storage, connectivity, simLock, keyboardLayout, condition, originalBox, shippingScope]);
+  }, [step, modelId, visibleModels, chip, visibleChips, year, yearChoices, colorId, yearOptions.colors, yearOptions.sizes, memoryOptions.memory, yearOptions.storage, size, memory, storage, connectivity, simLock, keyboardLayout, condition, originalBox, shippingScope]);
 
   const resetSpecs = () => {
     setColorId("");
@@ -238,7 +338,7 @@ export function ListingWizard() {
     setIncludedAccessories(undefined);
     setCondition(undefined);
     setOriginalBox(undefined);
-    setHasAppleWarranty(true);
+    setHasAppleWarranty(false);
     setWarrantyUntil("");
     setBatteryCapacity("");
     setBatteryCycles("");
@@ -288,12 +388,16 @@ export function ListingWizard() {
         return true;
       case "price": {
         const parsed = Number(price.replace(",", "."));
-        return !Number.isNaN(parsed) && parsed > 0;
+        if (Number.isNaN(parsed) || parsed <= 0) return false;
+        if (!priceAdjust) return true;
+        return Boolean(wizardPriceAdjustment(parsed, true, dropAmount, intervalCount, intervalUnit, floorPrice));
       }
       case "location":
-        return Boolean(city.trim() && postalCode.trim() && locality.trim());
+        return Boolean(city.trim() && postalCode.trim());
       case "shipping":
         return Boolean(shippingScope);
+      case "photos":
+        return photos.length > 0 && photos.length <= LISTING_PHOTO_LIMIT;
     }
   };
 
@@ -309,7 +413,7 @@ export function ListingWizard() {
   const goNext = () => {
     setError("");
     if (!canContinue()) return;
-    if (step === "shipping") {
+    if (step === "photos") {
       publish();
       return;
     }
@@ -335,7 +439,25 @@ export function ListingWizard() {
       const requestKey = sessionStorage.getItem("used-fruit-publish-key") || crypto.randomUUID();
       sessionStorage.setItem("used-fruit-publish-key", requestKey);
       publicationId.current = "pending";
+      setUploading(true);
       try {
+      const nextPhotos = [...photosRef.current];
+      const photoIds: string[] = [];
+      for (let index = 0; index < nextPhotos.length; index += 1) {
+        const photo = nextPhotos[index];
+        const id = photo.id ?? (photo.file ? await uploadListingPhoto(photo.file) : "");
+        if (!id) continue;
+        photoIds.push(id);
+        if (photo.preview.startsWith("blob:")) URL.revokeObjectURL(photo.preview);
+        nextPhotos[index] = { ...photo, id, file: undefined, preview: listingPhotoUrl(id) };
+      }
+      photosRef.current = nextPhotos;
+      setPhotos(nextPhotos);
+      if (photoIds.length < 1) {
+        publicationId.current = null;
+        setError("Bitte mindestens ein Foto hinzufügen.");
+        return;
+      }
       const saved = await addListing({
         id,
         categoryId: draft.categoryId,
@@ -355,6 +477,8 @@ export function ListingWizard() {
         condition: draft.condition,
         originalBox: draft.originalBox,
         price: draft.price,
+        listedPrice: draft.price,
+        priceAdjustment: draft.priceAdjustment,
         city: draft.city,
         postalCode: draft.postalCode,
         locality: draft.locality,
@@ -368,14 +492,18 @@ export function ListingWizard() {
         appleWarrantyUntil: draft.appleWarrantyUntil,
         batteryMaxCapacityPercent: draft.batteryMaxCapacityPercent,
         batteryCycleCount: draft.batteryCycleCount,
+        photoIds,
       }, requestKey);
       publicationId.current = saved.id;
       sessionStorage.removeItem("used-fruit-publish-key");
       clearListingDraft();
+      await clearListingPhotoFiles();
       router.push(`/listing/${saved.id}`);
       } catch (error) {
         publicationId.current = null;
         setError(error instanceof Error ? error.message : "Veröffentlichen fehlgeschlagen. Dein Entwurf bleibt erhalten.");
+      } finally {
+        setUploading(false);
       }
     },
     [addListing, profile.emoji, profile.name, router],
@@ -406,6 +534,23 @@ export function ListingWizard() {
     if (Number.isNaN(parsedPrice) || parsedPrice <= 0) {
       setError("Bitte einen gültigen Preis angeben.");
       return;
+    }
+    let priceAdjustment: PriceAdjustment | undefined;
+    if (priceAdjust) {
+      priceAdjustment = wizardPriceAdjustment(parsedPrice, true, dropAmount, intervalCount, intervalUnit, floorPrice);
+      if (!priceAdjustment) {
+        setError(
+          priceAdjustmentError(
+            parsePriceAdjustment({
+              amount: Number(dropAmount.replace(",", ".")),
+              everyDays: Number(intervalCount.replace(",", ".")) * (intervalUnit === "weeks" ? 7 : 1),
+              floor: floorPrice.trim() ? Number(floorPrice.replace(",", ".")) : undefined,
+            }) ?? { amount: 0, everyDays: 0 },
+            parsedPrice,
+          ) ?? "Bitte die automatische Preissenkung prüfen.",
+        );
+        return;
+      }
     }
     if (hasAppleWarranty && !warrantyUntil) {
       setError("Bitte das Ablaufdatum der Apple-Garantie angeben.");
@@ -448,6 +593,7 @@ export function ListingWizard() {
       condition,
       originalBox,
       price: parsedPrice,
+      priceAdjustment,
       city: city.trim(),
       postalCode: postalCode.trim(),
       locality: locality.trim() || undefined,
@@ -456,34 +602,66 @@ export function ListingWizard() {
       appleWarrantyUntil: hasAppleWarranty ? warrantyUntil : undefined,
       batteryMaxCapacityPercent,
       batteryCycleCount,
+      photoIds: photosRef.current.flatMap((photo) => (photo.id ? [photo.id] : [])),
     };
+  };
+
+  const addPhotos = (event: ChangeEvent<HTMLInputElement>) => {
+    const selected = Array.from(event.target.files ?? []);
+    event.target.value = "";
+    const accepted: DraftPhoto[] = [];
+    let rejected = false;
+    for (const file of selected) {
+      const type = file.type === "image/jpg" ? "image/jpeg" : file.type;
+      if (!["image/jpeg", "image/png", "image/webp"].includes(type)) {
+        rejected = true;
+        continue;
+      }
+      accepted.push({ key: crypto.randomUUID(), file, preview: URL.createObjectURL(file) });
+    }
+    setError(rejected ? "Bitte nur JPEG, PNG oder WebP hinzufügen." : "");
+    setPhotos((current) => [...current, ...accepted].slice(0, LISTING_PHOTO_LIMIT));
+  };
+
+  const removePhoto = (key: string) => {
+    setPhotos((current) => {
+      const photo = current.find((item) => item.key === key);
+      if (photo?.preview.startsWith("blob:")) URL.revokeObjectURL(photo.preview);
+      return current.filter((item) => item.key !== key);
+    });
   };
 
   const publish = () => {
     const draft = collectDraft();
     if (!draft) return;
-    if (!profileReady) return;
-    writeListingDraft(draft);
-    if (!signedIn) {
-      writeListingDraft(draft);
-      setLeavingForLogin(true);
+    if (!photosRef.current.length) {
+      setError("Bitte mindestens ein Foto hinzufügen.");
       return;
     }
-    commitListing(draft);
+    void (async () => {
+      await saveListingPhotoFiles(photosRef.current.flatMap((photo) => (photo.file ? [photo.file] : [])));
+      if (!profileReady) return;
+      writeListingDraft(draft);
+      if (!signedIn) {
+        setLeavingForLogin(true);
+        return;
+      }
+      commitListing(draft);
+    })();
   };
 
   useEffect(() => {
     if (!leavingForLogin) return;
-    router.push(`/anmelden?next=${encodeURIComponent("/inserieren?publish=1")}`);
-  }, [leavingForLogin, router]);
+    window.location.assign(appleLoginHref("/inserieren?publish=1"));
+  }, [leavingForLogin]);
 
   useEffect(() => {
-    if (!profileReady || !signedIn || !onboardingCompleted) return;
+    if (!photosReady || !profileReady || !signedIn || !onboardingCompleted) return;
     if (searchParams.get("publish") !== "1") return;
     const draft = readListingDraft();
     if (!draft) return;
     commitListing(draft);
-  }, [commitListing, profileReady, searchParams, signedIn, onboardingCompleted]);
+  }, [commitListing, photosReady, profileReady, searchParams, signedIn, onboardingCompleted]);
 
   return (
     <UnsavedGuard
@@ -495,7 +673,7 @@ export function ListingWizard() {
     >
       <BindTryLeave leaveRef={leaveRef} />
     <div className="flex min-h-dvh flex-col bg-uf-bg-subtle">
-      <SiteHeader minimal onLogoClick={() => leaveRef.current(() => { clearListingDraft(); router.push("/"); })} />
+      <SiteHeader minimal onLogoClick={() => leaveRef.current(() => { clearListingDraft(); void clearListingPhotoFiles(); router.push("/"); })} />
       <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col px-4 py-8">
         <div className="mb-8 flex items-center gap-4">
           <button
@@ -555,26 +733,47 @@ export function ListingWizard() {
                   onSelect={() => {
                     setCategoryId(category.id);
                     setModelId("");
+                    setShowAllModels(false);
+                    setShowAllChips(false);
+                    setModelQuery("");
                     resetSpecs();
                   }}
                 />
               ))}
 
+            {step === "model" && showAllModels && (
+              <input
+                value={modelQuery}
+                onChange={(event) => setModelQuery(event.target.value)}
+                placeholder="Gerät suchen"
+                aria-label="Gerät suchen"
+                className="w-full rounded-2xl border border-uf-border bg-uf-bg-subtle px-4 py-3.5 text-[15px] outline-none"
+              />
+            )}
+            {step === "model" && showAllModels && modelQuery.trim() && visibleModels.length === 0 && (
+              <p className="px-1 text-[14px] text-uf-text-secondary">Kein Gerät mit diesem Namen.</p>
+            )}
             {step === "model" &&
-              models.map((item) => (
+              visibleModels.map((item) => (
                 <OptionRow
                   key={item.id}
                   label={item.name}
                   selected={modelId === item.id}
                   onSelect={() => {
                     setModelId(item.id);
+                    setShowAllChips(false);
                     resetSpecs();
                   }}
                 />
               ))}
+            {step === "model" && !showAllModels && currentModels.length > 0 && currentModels.length < models.length && (
+              <button type="button" onClick={() => setShowAllModels(true)} className="w-full rounded-2xl border border-uf-border px-4 py-3.5 text-left text-[15px] text-uf-link">
+                Mehr
+              </button>
+            )}
 
             {step === "chip" &&
-              chipChoices.map((value) => (
+              visibleChips.map((value) => (
                 <OptionRow
                   key={value}
                   label={value}
@@ -590,6 +789,11 @@ export function ListingWizard() {
                   }}
                 />
               ))}
+            {step === "chip" && currentChipChoices && !showAllChips && (
+              <button type="button" onClick={() => setShowAllChips(true)} className="w-full rounded-2xl border border-uf-border px-4 py-3.5 text-left text-[15px] text-uf-link">
+                Mehr
+              </button>
+            )}
 
             {step === "year" &&
               yearChoices.map((value) => (
@@ -629,7 +833,7 @@ export function ListingWizard() {
               ))}
 
             {step === "memory" &&
-              yearOptions.memory?.map((value) => (
+              memoryOptions.memory?.map((value) => (
                 <OptionRow
                   key={value}
                   label={value}
@@ -747,17 +951,17 @@ export function ListingWizard() {
             {step === "warranty" && (
               <>
                 <OptionRow
-                  label="Ja, Apple-Garantie ist noch gültig"
-                  selected={hasAppleWarranty}
-                  onSelect={() => setHasAppleWarranty(true)}
-                />
-                <OptionRow
                   label="Nein, keine gültige Garantie"
                   selected={!hasAppleWarranty}
                   onSelect={() => {
                     setHasAppleWarranty(false);
                     setWarrantyUntil("");
                   }}
+                />
+                <OptionRow
+                  label="Ja, Apple-Garantie ist noch gültig"
+                  selected={hasAppleWarranty}
+                  onSelect={() => setHasAppleWarranty(true)}
                 />
                 {hasAppleWarranty && (
                   <div className="pt-3">
@@ -806,19 +1010,150 @@ export function ListingWizard() {
             )}
 
             {step === "price" && (
-              <input
-                className={fieldClass}
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                inputMode="decimal"
-                placeholder="z. B. 749"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    goNext();
-                  }
-                }}
-              />
+              <>
+                <input
+                  className={fieldClass}
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  inputMode="decimal"
+                  placeholder="z. B. 749"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !priceAdjust) {
+                      e.preventDefault();
+                      goNext();
+                    }
+                  }}
+                />
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={priceAdjust}
+                  onClick={() => setPriceAdjust((open) => !open)}
+                  className="mt-4 flex w-full items-center justify-between gap-4 rounded-2xl border border-uf-border-soft px-4 py-3 text-left"
+                >
+                  <span>
+                    <span className="block text-[14px] text-uf-text">
+                      Preis automatisch senken
+                    </span>
+                    <span className="mt-0.5 block text-[12px] text-uf-text-tertiary">
+                      Solange niemand kauft oder reserviert, sinkt der Preis schrittweise
+                    </span>
+                  </span>
+                  <span
+                    className={`relative h-7 w-11 shrink-0 rounded-full transition-colors ${
+                      priceAdjust ? "bg-uf-text" : "bg-[#d2d2d7]"
+                    }`}
+                  >
+                    <span
+                      className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow-sm transition-[left] ${
+                        priceAdjust ? "left-[18px]" : "left-0.5"
+                      }`}
+                    />
+                  </span>
+                </button>
+                {priceAdjust ? (
+                  <div className="mt-4 space-y-3">
+                    <div className="flex flex-wrap gap-2">
+                      {PRICE_ADJUSTMENT_PRESETS.map((preset) => {
+                        const selected =
+                          Number(dropAmount.replace(",", ".")) === preset.amount &&
+                          Number(intervalCount.replace(",", ".")) * (intervalUnit === "weeks" ? 7 : 1) === preset.everyDays;
+                        return (
+                          <button
+                            key={preset.label}
+                            type="button"
+                            onClick={() => {
+                              setDropAmount(String(preset.amount));
+                              if (preset.everyDays % 7 === 0) {
+                                setIntervalCount(String(preset.everyDays / 7));
+                                setIntervalUnit("weeks");
+                              } else {
+                                setIntervalCount(String(preset.everyDays));
+                                setIntervalUnit("days");
+                              }
+                            }}
+                            className={`h-8 rounded-full px-3 text-[13px] ${
+                              selected
+                                ? "bg-uf-text text-white"
+                                : "border border-uf-border bg-white text-uf-text hover:bg-uf-bg-subtle"
+                            }`}
+                          >
+                            {preset.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                      <label className="block">
+                        <span className="text-[12px] tracking-wide text-uf-text-secondary uppercase">Senkung in €</span>
+                        <input
+                          className={fieldClass}
+                          value={dropAmount}
+                          onChange={(e) => setDropAmount(e.target.value)}
+                          inputMode="decimal"
+                          placeholder="10"
+                        />
+                      </label>
+                      <label className="block">
+                        <span className="text-[12px] tracking-wide text-uf-text-secondary uppercase">Alle</span>
+                        <input
+                          className={fieldClass}
+                          value={intervalCount}
+                          onChange={(e) => setIntervalCount(e.target.value)}
+                          inputMode="numeric"
+                          placeholder="1"
+                        />
+                      </label>
+                      <label className="col-span-2 block sm:col-span-1">
+                        <span className="text-[12px] tracking-wide text-uf-text-secondary uppercase">Tage oder Wochen</span>
+                        <select
+                          className={fieldClass}
+                          value={intervalUnit}
+                          onChange={(e) => setIntervalUnit(e.target.value === "weeks" ? "weeks" : "days")}
+                        >
+                          <option value="days">Tage</option>
+                          <option value="weeks">Wochen</option>
+                        </select>
+                      </label>
+                    </div>
+                    <label className="block">
+                      <span className="text-[12px] tracking-wide text-uf-text-secondary uppercase">
+                        Mindestpreis (optional)
+                      </span>
+                      <input
+                        className={fieldClass}
+                        value={floorPrice}
+                        onChange={(e) => setFloorPrice(e.target.value)}
+                        inputMode="decimal"
+                        placeholder="nicht unter …"
+                      />
+                    </label>
+                    {(() => {
+                      const parsed = Number(price.replace(",", "."));
+                      const adjustment = wizardPriceAdjustment(parsed, true, dropAmount, intervalCount, intervalUnit, floorPrice);
+                      if (!adjustment || Number.isNaN(parsed) || parsed <= 0) {
+                        return (
+                          <p className="text-[13px] text-uf-text-secondary">
+                            Lege Betrag und Abstand fest. Die Senkung stoppt bei Verkauf oder Reservierung.
+                          </p>
+                        );
+                      }
+                      const start = new Date();
+                      const next = listingDisplayPrice(
+                        { price: parsed, listedPrice: parsed, priceAdjustment: adjustment, createdAt: start.toISOString() },
+                        new Date(start.getTime() + adjustment.everyDays * 86_400_000),
+                      );
+                      return (
+                        <p className="text-[13px] text-uf-text-secondary">
+                          Ohne Kauf sinkt der Preis um {formatPriceAdjustment(adjustment)}. In{" "}
+                          {adjustment.everyDays === 1 ? "einem Tag" : `${adjustment.everyDays} Tagen`}{" "}
+                          wären es {formatPrice(next)}. Stoppt bei Verkauf oder Reservierung.
+                        </p>
+                      );
+                    })()}
+                  </div>
+                ) : null}
+              </>
             )}
 
             {step === "location" && (
@@ -832,13 +1167,15 @@ export function ListingWizard() {
                     setPostalCode("");
                     setLocality("");
                     setStreet("");
+                    setShowFullAddress(false);
                   }}
                   onSelect={(place) => {
                     setLocationQuery(formatPlaceLabel(place));
                     setCity(place.city);
                     setPostalCode(place.postalCode);
-                    setLocality("");
+                    setLocality("Mitte");
                     setStreet("");
+                    setShowFullAddress(false);
                   }}
                   inputClassName={fieldClass.replace("mt-1.5 ", "")}
                   placeholder="Tippe PLZ oder Ort…"
@@ -850,14 +1187,14 @@ export function ListingWizard() {
                     </p>
                     <label className="block pt-3">
                       <span className="text-[12px] tracking-wide text-uf-text-secondary uppercase">
-                        Ortschaft
+                        Ortschaft (optional)
                       </span>
                       <input
                         className={fieldClass}
                         value={locality}
                         onChange={(e) => setLocality(e.target.value)}
                         maxLength={40}
-                        placeholder="z. B. Vaihingen"
+                        placeholder="z. B. City"
                         autoComplete="off"
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
@@ -867,20 +1204,54 @@ export function ListingWizard() {
                         }}
                       />
                     </label>
-                    <label className="block pt-3">
-                      <span className="text-[12px] tracking-wide text-uf-text-secondary uppercase">
-                        Straße (optional)
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={showFullAddress}
+                      onClick={() => {
+                        setShowFullAddress((open) => {
+                          if (open) setStreet("");
+                          return !open;
+                        });
+                      }}
+                      className="mt-4 flex w-full items-center justify-between gap-4 rounded-2xl border border-uf-border-soft px-4 py-3 text-left"
+                    >
+                      <span>
+                        <span className="block text-[14px] text-uf-text">
+                          Vollständige Adresse anzeigen
+                        </span>
+                        <span className="mt-0.5 block text-[12px] text-uf-text-tertiary">
+                          Erst dann kannst du die Straße eingeben
+                        </span>
                       </span>
-                      <input
-                        className={fieldClass}
-                        value={street}
-                        onChange={(e) => setStreet(e.target.value)}
-                        maxLength={80}
-                        placeholder="z. B. Königstraße 12"
-                        autoComplete="street-address"
-                      />
-                    </label>
-                    <p className="text-[12px] text-uf-text-tertiary">
+                      <span
+                        className={`relative h-7 w-11 shrink-0 rounded-full transition-colors ${
+                          showFullAddress ? "bg-uf-text" : "bg-[#d2d2d7]"
+                        }`}
+                      >
+                        <span
+                          className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow-sm transition-[left] ${
+                            showFullAddress ? "left-[18px]" : "left-0.5"
+                          }`}
+                        />
+                      </span>
+                    </button>
+                    {showFullAddress ? (
+                      <label className="block pt-3">
+                        <span className="text-[12px] tracking-wide text-uf-text-secondary uppercase">
+                          Straße
+                        </span>
+                        <input
+                          className={fieldClass}
+                          value={street}
+                          onChange={(e) => setStreet(e.target.value)}
+                          maxLength={80}
+                          placeholder="z. B. Königstraße 12"
+                          autoComplete="street-address"
+                        />
+                      </label>
+                    ) : null}
+                    <p className="pt-3 text-[12px] text-uf-text-tertiary">
                       {street.trim()
                         ? "Die Straße wird im Inserat veröffentlicht."
                         : "Ohne Straße erscheint nur ein ungefährer Ort."}
@@ -904,6 +1275,44 @@ export function ListingWizard() {
                 />
               </>
             )}
+
+            {step === "photos" && (
+              <div>
+                {photos.length > 0 && (
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    {photos.map((photo) => (
+                      <div key={photo.key} className="relative aspect-square overflow-hidden rounded-2xl bg-uf-bg-subtle">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={photo.preview} alt="" className="h-full w-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => removePhoto(photo.key)}
+                          className="absolute top-2 right-2 flex h-7 w-7 items-center justify-center rounded-full bg-black/70 text-[16px] text-white"
+                          aria-label="Foto entfernen"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {photos.length < LISTING_PHOTO_LIMIT && (
+                  <label className="mt-4 flex h-12 cursor-pointer items-center justify-center rounded-2xl border border-dashed border-uf-border text-[14px] text-uf-text hover:border-uf-text">
+                    Fotos auswählen
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      multiple
+                      className="sr-only"
+                      onChange={addPhotos}
+                    />
+                  </label>
+                )}
+                <p className="pt-3 text-[12px] text-uf-text-tertiary">
+                  {photos.length} von {LISTING_PHOTO_LIMIT} Fotos. Die Standardbilder entfallen, es zählen nur deine Aufnahmen.
+                </p>
+              </div>
+            )}
           </div>
 
           {error && <p className="mt-4 text-[13px] text-red-600">{error}</p>}
@@ -912,10 +1321,10 @@ export function ListingWizard() {
             <button
               type="button"
               onClick={goNext}
-              disabled={!canContinue() || (step === "shipping" && (!profileReady || leavingForLogin))}
-              className="h-11 rounded-full bg-uf-text px-6 text-[14px] font-medium text-white hover:bg-black disabled:cursor-not-allowed disabled:opacity-40"
+              disabled={!canContinue() || uploading || (step === "photos" && (!profileReady || leavingForLogin))}
+              className="h-11 rounded-full bg-uf-action px-6 text-[14px] font-medium text-white hover:bg-uf-link disabled:cursor-not-allowed disabled:opacity-40"
             >
-              {step === "shipping" ? (signedIn ? "Veröffentlichen" : "Mit Apple anmelden & veröffentlichen") : "Weiter"}
+              {step === "photos" ? (uploading ? "Wird veröffentlicht …" : signedIn ? "Veröffentlichen" : "Mit Apple anmelden & veröffentlichen") : "Weiter"}
             </button>
           </div>
         </section>

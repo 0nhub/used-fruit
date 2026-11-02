@@ -6,6 +6,7 @@ import {
   readProfile,
   type UserProfile,
 } from "@/lib/profile";
+import { appleLoginHref } from "@/lib/appleLogin";
 import { currentIdentity, endSession, refreshIdentity } from "@/lib/authClient";
 import { api, invalidateApi } from "./apiClient";
 import { useCallback, useEffect, useState } from "react";
@@ -36,7 +37,7 @@ export function useProfile() {
   }, [refresh]);
 
   const saveProfile = useCallback(async (next: UserProfile, completeOnboarding = false) => {
-    if (!currentIdentity()) { window.location.assign("/anmelden?next=/profil"); throw new Error("Bitte melde dich an."); }
+    if (!currentIdentity()) { window.location.assign(appleLoginHref("/profil")); throw new Error("Bitte melde dich an."); }
     let coverMediaId = next.coverImage?.startsWith("/api/v1/media/") ? next.coverImage.split("/").at(-1) : null;
     if (next.coverImage?.startsWith("data:")) {
       const image = await (await fetch(next.coverImage)).blob();
@@ -57,7 +58,7 @@ export function useProfile() {
   }, []);
 
   const login = useCallback(() => {
-    window.location.assign("/anmelden");
+    window.location.assign(appleLoginHref());
   }, []);
 
   const deleteAccount = useCallback(() => {

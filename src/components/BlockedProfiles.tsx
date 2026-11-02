@@ -3,6 +3,7 @@
 import { useId, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useMessages } from "@/lib/useMessages";
+import { appleLoginHref } from "@/lib/appleLogin";
 import { refreshIdentity } from "@/lib/authClient";
 
 export function BlockSellerButton({ name, userId }: { name: string; userId: string }) {
@@ -14,7 +15,7 @@ export function BlockSellerButton({ name, userId }: { name: string; userId: stri
   return <>
   <button type="button" className="cursor-pointer text-[14px] text-uf-link underline-offset-4 transition-colors duration-150 hover:text-uf-action hover:underline focus-visible:underline motion-reduce:transition-none" onClick={async () => {
     if (!await refreshIdentity()) {
-      window.location.assign(`/anmelden?next=${encodeURIComponent(location.pathname)}`);
+      window.location.assign(appleLoginHref(location.pathname));
       return;
     }
     dialog.current?.showModal();
@@ -31,7 +32,7 @@ export function BlockSellerButton({ name, userId }: { name: string; userId: stri
         if (!await block(userId)) return;
         dialog.current?.close();
         router.push("/");
-      }} className="min-h-11 rounded-full bg-uf-text px-4 text-[13px] text-white transition-colors duration-150 hover:bg-[#424245] motion-reduce:transition-none">Blockieren</button>
+      }} className="min-h-11 rounded-full bg-uf-action px-4 text-[13px] text-white transition-colors duration-150 hover:bg-uf-link motion-reduce:transition-none">Blockieren</button>
     </div>
   </dialog>
   </>;

@@ -1,11 +1,12 @@
 import { getModelById, CONDITIONS } from "@/data/catalog";
-import { chipsForModel, optionsForYear, yearsForChip } from "@/data/modelYears";
+import { chipsForModel, optionsForSelection, yearsForChip } from "@/data/modelYears";
 import { acceptsDesktopAccessories, hasValidDesktopAccessories, isDesktopAccessoryId } from "@/lib/accessories";
 import { hasBuiltInKeyboard, hasValidKeyboard } from "@/lib/keyboard";
 import { isSimLockStatus, needsSimLock } from "@/lib/simLock";
 import { getBatteryMetricForModel } from "@/lib/device";
+import { parsePriceAdjustment, priceAdjustmentError } from "@/lib/priceAdjustment";
 import type { Listing } from "@/lib/types";
-import { requireValue, string } from "./http";
+import { requireValue, string, uuid } from "./http";
 
 export function validateListing(input: Record<string, unknown>) {
   const modelId = string(input.modelId, 100);
@@ -23,7 +24,10 @@ export function validateListing(input: Record<string, unknown>) {
   if (chips.length) requireValue(chips.includes(String(s.chip)), "Ungültiger Chip.");
   const years = yearsForChip(model, typeof s.chip === "string" ? s.chip : undefined);
   if (years.length) requireValue(years.includes(Number(s.year)) && typeof s.year === "number", "Ungültiges Modelljahr.");
-  const options = optionsForYear(model, typeof s.year === "number" ? s.year : undefined);
+  const year = typeof s.year === "number" ? s.year : undefined;
+  const chip = typeof s.chip === "string" ? s.chip : undefined;
+  const size = typeof s.size === "string" ? s.size : undefined;
+  const options = optionsForSelection(model, year, chip, size, typeof s.storage === "string" ? s.storage : undefined);
   requireValue(options.colors.some(color => color.id === s.colorId), "Ungültige Farbe.");
   for (const [key, allowed] of [["size", options.sizes], ["memory", options.memory], ["storage", options.storage]] as const) {
     if (allowed?.length) requireValue(allowed.includes(String(s[key])), "Ungültige Gerätevariante: " + key);
@@ -50,8 +54,20 @@ export function validateListing(input: Record<string, unknown>) {
   if (metric === "capacity") requireValue(Number.isInteger(s.batteryMaxCapacityPercent) && Number(s.batteryMaxCapacityPercent) >= 0 && Number(s.batteryMaxCapacityPercent) <= 100, "Ungültiger Batteriezustand.");
   if (metric === "cycles") requireValue(Number.isInteger(s.batteryCycleCount) && Number(s.batteryCycleCount) >= 0 && Number(s.batteryCycleCount) <= 100000, "Ungültige Ladezyklen.");
   if (s.appleWarrantyUntil) requireValue(typeof s.appleWarrantyUntil === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s.appleWarrantyUntil) && Number.isFinite(Date.parse(s.appleWarrantyUntil)) && new Date(s.appleWarrantyUntil).toISOString().slice(0,10) === s.appleWarrantyUntil, "Ungültiges Garantiedatum.");
-  const publicKeys = ["chip","year","colorId","size","memory","storage","condition","originalBox","shippingScope","connectivity","simLock","keyboardLayout","keyboardLayoutDetails","includedAccessories","batteryMaxCapacityPercent","batteryCycleCount","appleWarrantyUntil"];
-  const specs = Object.fromEntries(publicKeys.filter(key => s[key] !== undefined && !(key === "appleWarrantyUntil" && !s[key])).map(key => [key,s[key]]));
+  if (s.photoIds !== undefined) {
+    requireValue(Array.isArray(s.photoIds) && s.photoIds.length <= 8, "Bitte füge höchstens acht Fotos hinzu.");
+    const photoIds = s.photoIds.map((id) => uuid(id));
+    requireValue(new Set(photoIds).size === photoIds.length, "Bitte füge jedes Foto nur einmal hinzu.");
+    s.photoIds = photoIds;
+  }
+  const priceAdjustment = s.priceAdjustment === undefined ? undefined : parsePriceAdjustment(s.priceAdjustment);
+  if (s.priceAdjustment !== undefined) {
+    requireValue(Boolean(priceAdjustment), "Ungültige automatische Preisanpassung.");
+    const adjustmentError = priceAdjustmentError(priceAdjustment!, Number(input.priceCents) / 100);
+    requireValue(!adjustmentError, adjustmentError ?? "Ungültige automatische Preisanpassung.");
+  }
+  const publicKeys = ["chip","year","colorId","size","memory","storage","condition","originalBox","shippingScope","connectivity","simLock","keyboardLayout","keyboardLayoutDetails","includedAccessories","batteryMaxCapacityPercent","batteryCycleCount","appleWarrantyUntil","priceAdjustment","photoIds"];
+  const specs = Object.fromEntries(publicKeys.filter(key => s[key] !== undefined && !(key === "appleWarrantyUntil" && !s[key])).map(key => [key, key === "priceAdjustment" ? priceAdjustment : s[key]]));
   const privateSpecs: Record<string,string> = {};
   for (const key of ["serialNumber", "street", "locality"]) if (s[key]) privateSpecs[key] = string(s[key], 200);
   const city = string(input.city, 80);

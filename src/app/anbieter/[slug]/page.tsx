@@ -2,13 +2,19 @@
 
 import { SellerShop } from "@/components/SellerShop";
 import type { PublicSeller } from "@/lib/sellerPage";
+import {
+  listingsForSellerSlug,
+  resolveSellerPage,
+  sellerSlug,
+  soldListingsForSellerSlug,
+} from "@/lib/sellerPage";
 import { api } from "@/lib/apiClient";
 import { currentIdentity } from "@/lib/authClient";
 import { useListings } from "@/lib/useListings";
 import { useProfile } from "@/lib/useProfile";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 
 export default function AnbieterPage() {
   return (
@@ -18,21 +24,78 @@ export default function AnbieterPage() {
   );
 }
 
+function uniqueListings(items: ReturnType<typeof listingsForSellerSlug>) {
+  const seen = new Set<string>();
+  return items.filter((item) => {
+    if (seen.has(item.id)) return false;
+    seen.add(item.id);
+    return true;
+  });
+}
+
 function AnbieterInner() {
   const params = useParams();
-  const slug = typeof params.slug === "string" ? params.slug : "";
-  const { listings, ready: listingsReady } = useListings();
-  const { ready: profileReady } = useProfile();
-  const [seller, setSeller] = useState<PublicSeller | null>();
+  const slug = typeof params.slug === "string" ? sellerSlug(params.slug) : "";
+  const { listings, allListings, ready: listingsReady } = useListings();
+  const { profile, signedIn, ready: profileReady } = useProfile();
+  const [remote, setRemote] = useState<PublicSeller | null>();
+
   useEffect(() => {
-    let active = true; setSeller(undefined);
+    let active = true;
+    setRemote(undefined);
     api<PublicSeller & { coverMediaId: string | null }>("/users/" + encodeURIComponent(slug))
-      .then(value => { if (active) setSeller({ ...value, coverImage: value.coverMediaId ? "/api/v1/media/" + value.coverMediaId : undefined }); })
-      .catch(() => { if (active) setSeller(null); });
-    return () => { active = false; };
+      .then((value) => {
+        if (active) {
+          setRemote({
+            ...value,
+            coverImage: value.coverMediaId ? "/api/v1/media/" + value.coverMediaId : undefined,
+          });
+        }
+      })
+      .catch(() => {
+        if (active) setRemote(null);
+      });
+    return () => {
+      active = false;
+    };
   }, [slug]);
 
-  if (!listingsReady || !profileReady || seller === undefined) {
+  const local = useMemo(
+    () =>
+      resolveSellerPage(
+        slug,
+        allListings,
+        signedIn
+          ? {
+              name: profile.name,
+              emoji: profile.emoji,
+              bio: profile.bio,
+              coverImage: profile.coverImage,
+            }
+          : undefined,
+      ),
+    [allListings, profile.bio, profile.coverImage, profile.emoji, profile.name, signedIn, slug],
+  );
+
+  const seller = remote ?? local?.seller ?? null;
+  const isOwn = remote
+    ? currentIdentity()?.id === remote.id
+    : Boolean(local?.isOwn);
+
+  const shopListings = useMemo(
+    () =>
+      uniqueListings([
+        ...listingsForSellerSlug(listings, slug, remote?.id),
+        ...(local?.listings ?? []),
+      ]),
+    [listings, local?.listings, remote?.id, slug],
+  );
+  const soldListings = useMemo(
+    () => soldListingsForSellerSlug(allListings, slug, remote?.id),
+    [allListings, remote?.id, slug],
+  );
+
+  if (!listingsReady || !profileReady || (remote === undefined && !local)) {
     return <div className="min-h-dvh bg-white" />;
   }
 
@@ -50,5 +113,12 @@ function AnbieterInner() {
     );
   }
 
-  return <SellerShop seller={seller} listings={listings.filter(listing => listing.sellerId === slug)} isOwn={currentIdentity()?.id === slug} />;
+  return (
+    <SellerShop
+      seller={seller}
+      listings={shopListings}
+      soldListings={soldListings}
+      isOwn={isOwn}
+    />
+  );
 }
